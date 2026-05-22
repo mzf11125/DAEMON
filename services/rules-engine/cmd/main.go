@@ -49,9 +49,7 @@ func main() {
 		r.Use(mw)
 	}
 	r.Use(middleware.Timeout(60 * time.Second))
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		dhttp.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok", "service": "rules-engine"})
-	})
+	dhttp.MountHealth(r, "rules-engine")
 	r.Post("/v1/evaluate", evaluateHandler(pool, ch, rulesRoot))
 
 	srv := &http.Server{Addr: ":" + strconv.Itoa(cfg.HTTPPort), Handler: r}

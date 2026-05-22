@@ -36,9 +36,7 @@ func main() {
 		r.Use(mw)
 	}
 	r.Use(middleware.Timeout(30 * time.Second))
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		dhttp.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok", "service": "case-service"})
-	})
+	dhttp.MountHealth(r, "case-service")
 	r.Get("/v1/cases", listCases(pool))
 	r.Get("/v1/cases/{caseId}", getCase(pool))
 

@@ -1,0 +1,7 @@
+{
+  "caseId": "ontology-manifest",
+  "criteria": [
+    { "id": "toolsCalled", "weight": 0.5, "description": "ontology_manifest invoked" },
+    { "id": "manifestShape", "weight": 0.5, "description": "Manifest JSON present" }
+  ]
+}

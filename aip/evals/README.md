@@ -17,7 +17,13 @@ Environment:
 
 ## CI
 
-Optional workflow `.github/workflows/aip-eval.yml` (continue-on-error until stack available in CI).
+Workflow `.github/workflows/aip-eval.yml` runs on PRs (Postgres, migrations, ontology stack, `EVAL_DETERMINISTIC=true`). Blocking gate once green.
+
+End-to-end proof (build + eval + baseline compare):
+
+```bash
+./scripts/prove-aip-eval.sh
+```
 
 ## Waivers
 

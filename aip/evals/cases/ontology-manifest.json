@@ -1,0 +1,12 @@
+{
+  "caseId": "ontology-manifest",
+  "version": 1,
+  "mode": "tool",
+  "input": {},
+  "expect": {
+    "toolsCalled": ["ontology_manifest"],
+    "mustIncludeManifest": true,
+    "forbiddenTools": ["ontology_execute_action", "OpenCase"]
+  },
+  "expectedTool": "ontology_manifest"
+}

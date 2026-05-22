@@ -1,0 +1,3 @@
+[submodule "external/daemon-system-ontology"]
+	path = external/daemon-system-ontology
+	url = https://github.com/daemon-blockint-tech/daemon-system-ontology.git

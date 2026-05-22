@@ -3,45 +3,19 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { z } from "zod";
-
-const ontologyUrl = process.env.ONTOLOGY_SERVICE_URL ?? "http://localhost:8081";
-const tenantId = process.env.TENANT_ID ?? "tenant-demo";
-const rateLimitPerMin = Number(process.env.MCP_RATE_LIMIT_PER_MIN ?? 60);
-
-const rateBuckets = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(key: string): void {
-  const now = Date.now();
-  const bucket = rateBuckets.get(key) ?? { count: 0, resetAt: now + 60_000 };
-  if (now > bucket.resetAt) {
-    bucket.count = 0;
-    bucket.resetAt = now + 60_000;
-  }
-  bucket.count += 1;
-  rateBuckets.set(key, bucket);
-  if (bucket.count > rateLimitPerMin) {
-    throw new Error(JSON.stringify({ code: "RATE_LIMITED", message: "too many requests", retryable: true }));
-  }
-}
-
-async function ontologyFetch(path: string, authHeader?: string) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "X-Tenant-Id": tenantId,
-  };
-  if (authHeader) {
-    headers.Authorization = authHeader;
-  }
-  const res = await fetch(`${ontologyUrl}${path}`, { headers });
-  const body = await res.json();
-  if (!res.ok) {
-    throw new Error(JSON.stringify(body));
-  }
-  return body;
-}
+import { MCP_TOOL_SCHEMA_VERSION } from "./config.js";
+import {
+  checkRateLimit,
+  ontologyFetch,
+  platformFetch,
+  caseFetch,
+} from "./services.js";
 
 function buildServer(getAuth?: () => string | undefined) {
-  const server = new McpServer({ name: "daemon-ontology", version: "0.1.0" });
+  const server = new McpServer({
+    name: "daemon-ontology",
+    version: MCP_TOOL_SCHEMA_VERSION,
+  });
 
   server.tool(
     "ontology_manifest",
@@ -71,18 +45,23 @@ function buildServer(getAuth?: () => string | undefined) {
       const max = signalLimit ?? 10;
       const items = (signals.items ?? []).slice(0, max);
       const report: Record<string, unknown> = {
+        toolsSchemaVersion: MCP_TOOL_SCHEMA_VERSION,
         signals: items.map((s) => ({
           signalId: s.primaryKey,
           summary: s.properties?.summary,
           severity: s.properties?.severity,
         })),
         recommendation:
-          "Human-in-the-loop: call OpenCase with title and signalIds[] when escalation is warranted.",
+          "Human-in-the-loop: call OpenCase in the console with title and signalIds[] when escalation is warranted.",
       };
       if (caseId) {
-        const links = await ontologyFetch(`/v1/objects/Case/${caseId}/links`, auth);
         report.caseId = caseId;
-        report.links = links;
+        try {
+          report.links = await ontologyFetch(`/v1/objects/Case/${encodeURIComponent(caseId)}/links`, auth);
+        } catch (err) {
+          report.linksError =
+            err instanceof Error ? err.message : "failed to load case links (route may be unavailable)";
+        }
       }
       return { content: [{ type: "text", text: JSON.stringify(report, null, 2) }] };
     },
@@ -105,6 +84,59 @@ function buildServer(getAuth?: () => string | undefined) {
       if (Array.isArray(data.items) && data.items.length > max) {
         data.items = data.items.slice(0, max);
       }
+      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "list_audit_events",
+    "List audit log events for the tenant (read-only). Optional filter by case via resourceType=Case and resourceId.",
+    {
+      resourceType: z.string().optional(),
+      resourceId: z.string().optional().describe("e.g. case id when resourceType is Case"),
+      limit: z.number().int().min(1).max(100).optional(),
+    },
+    async ({ resourceType, resourceId, limit }) => {
+      const auth = getAuth?.();
+      checkRateLimit(auth ?? "anonymous");
+      const params = new URLSearchParams();
+      if (resourceType) params.set("resourceType", resourceType);
+      if (resourceId) params.set("resourceId", resourceId);
+      if (limit) params.set("limit", String(limit));
+      const q = params.toString();
+      const path = q ? `/v1/audit/events?${q}` : "/v1/audit/events";
+      const data = await platformFetch(path, auth);
+      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "summarize_case_context",
+    "Read-only synthesis of case title and linked signals via ontology function.",
+    {
+      caseId: z.string().describe("Case id to summarize"),
+    },
+    async ({ caseId }) => {
+      const auth = getAuth?.();
+      checkRateLimit(auth ?? "anonymous");
+      const data = await ontologyFetch("/v1/functions/summarizeCaseContext", auth, {
+        method: "POST",
+        body: JSON.stringify({ caseId }),
+      });
+      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "get_case",
+    "Fetch case record from case-service (read-only).",
+    {
+      caseId: z.string().describe("Case id"),
+    },
+    async ({ caseId }) => {
+      const auth = getAuth?.();
+      checkRateLimit(auth ?? "anonymous");
+      const data = await caseFetch(`/v1/cases/${encodeURIComponent(caseId)}`, auth);
       return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
     },
   );
@@ -148,7 +180,7 @@ async function mainSSE() {
   });
 
   app.listen(port, () => {
-    console.error(`mcp-ontology SSE listening on :${port}`);
+    console.error(`mcp-ontology SSE listening on :${port} (schema ${MCP_TOOL_SCHEMA_VERSION})`);
   });
 }
 

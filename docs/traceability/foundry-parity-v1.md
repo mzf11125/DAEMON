@@ -12,7 +12,7 @@
 | Pack framework doc | `docs/lifecycle/pack-framework-v1.md` | loader merges `packs` in manifest GET |
 | UX spec | `docs/ux/operational-cockpit-flow-v1.md` | UX-AC-01–06 |
 | Assumption register | `docs/governance/assumption-register-parity-v1.md` | review before pilot |
-| Agent read path | MCP `investigate_case` | aip/mcp-ontology |
+| Agent read path | MCP `investigate_case` + AIP Phase 2 eval/orchestrator | [aip-phase-2.md](./aip-phase-2.md), `aip/mcp-ontology`, `make aip-eval` |
 | CI full loop | `.github/workflows/ci.yml` `e2e-full` | `E2E_FULL=1` |
 | API contracts v1 | OpenAPI, pagination, 422 validation, error `requestId` | `api/openapi-v1.yaml`, `packages/go-common/http/*_test.go` |
 

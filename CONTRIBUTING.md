@@ -67,6 +67,16 @@ See [docs/developer-tools/api.md](docs/developer-tools/api.md).
 - Sector packs: `ontology/v2/examples/packs/*/manifest.json` — follow [docs/lifecycle/pack-framework-v1.md](docs/lifecycle/pack-framework-v1.md).
 - Role gates for actions are defined in the manifest; do not bypass them in handlers.
 
+## AIP (agents, MCP, evals)
+
+- Build TypeScript AIP packages: `make aip-build`
+- Golden eval (requires ontology-service on `:8081`): `make aip-eval` with `EVAL_DETERMINISTIC=true` for CI parity
+- Record baseline after a green run: `EVAL_RECORD_BASELINE=true make aip-eval`
+- Full proof script: `./scripts/prove-aip-eval.sh`
+- Orchestrator CLI: `make aip-orchestrator` (optional `CASE=investigate-case-readonly`)
+- LLM gateway (OpenAI-compatible proxy on `:8092`): `make aip-llm-build` then `pnpm --filter @daemon/llm-gateway start` — requires `pnpm install` at repo root (Makefile runs it via `pnpm-workspace`)
+- Details: [aip/evals/README.md](aip/evals/README.md), [docs/traceability/aip-phase-2.md](docs/traceability/aip-phase-2.md)
+
 ## Checks before PR
 
 Minimum (matches CI `validate` job):

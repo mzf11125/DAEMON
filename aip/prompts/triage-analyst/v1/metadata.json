@@ -2,7 +2,7 @@
   "agentId": "triage-analyst",
   "promptVersion": "v1",
   "riskTier": "medium",
-  "evalCaseIds": ["triage-list-signals"],
+  "evalCaseIds": ["triage-list-signals", "ontology-manifest", "investigate-case-readonly"],
   "owner": "platform",
   "lastReviewed": "2026-05-22"
 }

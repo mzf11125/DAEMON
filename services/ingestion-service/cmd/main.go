@@ -45,9 +45,7 @@ func main() {
 		r.Use(mw)
 	}
 	r.Use(middleware.Timeout(30 * time.Second))
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		dhttp.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok", "service": "ingestion-service"})
-	})
+	dhttp.MountHealth(r, "ingestion-service")
 	r.Route("/v1", func(r chi.Router) {
 		r.Post("/jobs", createJob(pool, cfg, repoRoot))
 		r.Get("/jobs/{jobId}", getJob(pool))

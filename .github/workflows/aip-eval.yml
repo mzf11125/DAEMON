@@ -5,12 +5,40 @@ on:
     paths:
       - "aip/**"
       - "packages/aip-agent/**"
+      - "packages/go-common/**"
+      - "services/ontology-service/**"
+      - "services/platform-api/**"
+      - "services/case-service/**"
+      - ".github/workflows/aip-eval.yml"
+      - "scripts/prove-aip-eval.sh"
   workflow_dispatch:
 
 jobs:
   aip-eval:
     runs-on: ubuntu-latest
-    continue-on-error: true
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: daemon
+          POSTGRES_PASSWORD: daemon
+          POSTGRES_DB: daemon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U daemon -d daemon"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://daemon:daemon@localhost:5432/daemon?sslmode=disable
+      OIDC_REQUIRED: "false"
+      ONTOLOGY_SERVICE_URL: http://localhost:8081
+      PLATFORM_API_URL: http://localhost:8080
+      CASE_SERVICE_URL: http://localhost:8084
+      TENANT_ID: tenant-demo
+      EVAL_DETERMINISTIC: "true"
+      EVAL_SKIP_BASELINE: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -20,9 +48,25 @@ jobs:
         with:
           node-version: "20"
           cache: pnpm
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
       - run: pnpm install --frozen-lockfile || pnpm install
+      - name: Migrate and seed
+        run: |
+          psql "$DATABASE_URL" -f infra/migrations/postgres/001_init.sql
+          psql "$DATABASE_URL" -f infra/migrations/postgres/002_indexes_fk.sql || true
+          psql "$DATABASE_URL" -f infra/migrations/postgres/003_ingestion_params.sql || true
+          cd infra/seed && go run .
+      - name: Start Go services
+        run: |
+          (cd services/platform-api && go run ./cmd) &
+          (cd services/ontology-service && go run ./cmd) &
+          (cd services/case-service && go run ./cmd) &
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:8081/health && curl -sf http://localhost:8080/health && curl -sf http://localhost:8084/health && break
+            sleep 2
+          done
       - run: make aip-build
-      - name: Run golden eval (requires ontology on localhost:8081)
+      - name: Golden eval
         run: make aip-eval
-        env:
-          ONTOLOGY_SERVICE_URL: http://localhost:8081

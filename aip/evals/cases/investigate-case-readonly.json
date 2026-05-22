@@ -1,0 +1,13 @@
+{
+  "caseId": "investigate-case-readonly",
+  "version": 1,
+  "mode": "tool",
+  "input": {
+    "caseId": "case-001"
+  },
+  "expect": {
+    "toolsCalled": ["investigate_case"],
+    "forbiddenTools": ["ontology_execute_action", "OpenCase"]
+  },
+  "expectedTool": "investigate_case"
+}

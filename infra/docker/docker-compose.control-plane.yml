@@ -1,0 +1,43 @@
+# Control-plane + Redis sidecar stack.
+# Usage: docker compose -f infra/docker/docker-compose.control-plane.yml up -d
+# Requires: DAEMON Go services running (make up-apps)
+
+services:
+  control-plane:
+    build:
+      context: ../..
+      dockerfile: apps/control-plane/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: "4000"
+      CONTROL_PLANE_SECRET: "${CONTROL_PLANE_SECRET:-change-me-in-production}"
+      REDIS_URL: "redis://:${REDIS_PASSWORD:-daemon-redis}@redis:6379"
+      HEALTH_POLL_INTERVAL_MS: "30000"
+      # Registered DAEMON service endpoints for health polling
+      DAEMON_PLATFORM_API_URL: "http://host.docker.internal:8080"
+      DAEMON_ONTOLOGY_SERVICE_URL: "http://host.docker.internal:8081"
+      DAEMON_INGESTION_SERVICE_URL: "http://host.docker.internal:8082"
+      DAEMON_RULES_ENGINE_URL: "http://host.docker.internal:8083"
+      DAEMON_CASE_SERVICE_URL: "http://host.docker.internal:8084"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7.4-alpine
+    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD:-daemon-redis}"
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-daemon-redis}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  redis_data:

@@ -1,0 +1,6 @@
+linkType:
+  apiName: PartyAssignedToCase
+  displayName: Party Assigned To Case
+  fromObjectType: Party
+  toObjectType: Case
+  cardinality: MANY_TO_ONE

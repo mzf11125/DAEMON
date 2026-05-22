@@ -1,0 +1,8 @@
+{
+  "apiName": "summarizeCaseContext",
+  "inputs": [
+    "caseId"
+  ],
+  "outputType": "string",
+  "editsOntology": false
+}

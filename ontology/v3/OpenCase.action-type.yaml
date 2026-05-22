@@ -1,0 +1,12 @@
+actionType:
+  apiName: OpenCase
+  displayName: Open Case
+  targetObjectType: Case
+  parameters:
+    - name: signalIds
+      type: string
+      required: false
+    - name: title
+      type: string
+      required: false
+  requiresApproval: true

@@ -1,4 +1,4 @@
-.PHONY: up down up-legacy up-apps down-apps migrate migrate-legacy seed test test-integration validate-ontology pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration
+.PHONY: up down up-legacy up-apps down-apps migrate migrate-legacy seed test test-integration validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration
 
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
@@ -84,8 +84,14 @@ test:
 	done
 	pnpm -r typecheck
 
-validate-ontology:
-	./scripts/validate-ontology.sh
+ontology-compile: pnpm-workspace
+	pnpm --filter @daemon/ontology-language build
+	pnpm ontology:compile
+
+ontology-validate:
+	ONTOLOGY_ROOT=ontology/v2-compiled ./scripts/validate-ontology.sh
+
+validate-ontology: ontology-sync
 
 check-stubs:
 	./scripts/check-no-stub-handlers.sh
@@ -135,8 +141,8 @@ platform-check:
 check-data:
 	./scripts/data-health-check.sh
 
-demo: up supabase-up migrate seed pipeline-all
-	@echo "Data ready. Run: ./scripts/supabase-seed-auth.sh && make run-platform-api (etc.)"
+demo: up supabase-up migrate seed pipeline-all ontology-sync
+	@echo "Data ready (ontology v2-compiled synced). Run: ./scripts/supabase-seed-auth.sh && make run-platform-api (etc.)"
 
 dune-dev-setup:
 	@echo "Layer A (developer machine, not CI) — see docs/integrations/dune-agent-tooling-v1.md"

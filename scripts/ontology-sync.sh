@@ -1,16 +1,24 @@
 #!/usr/bin/env bash
-# Pilot: validate DAEMON ontology/v2 artifacts; future hook for packages/ontology-language YAML compile.
+# R0: compile ontology/v3 YAML → ontology/v2-compiled JSON, then validate runtime artifacts.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-echo "ontology-sync: validate ontology/v2"
+if [[ ! -d ontology/v3 ]]; then
+  echo "ontology-sync: missing ontology/v3 — run: pnpm ontology:port-v3" >&2
+  exit 1
+fi
+
+pnpm --filter @daemon/ontology-language build
+pnpm ontology:compile
+
+export ONTOLOGY_ROOT="${ONTOLOGY_ROOT:-ontology/v2-compiled}"
 ./scripts/validate-ontology.sh
 
 if [[ -d external/daemon-system-ontology ]]; then
   echo "ontology-sync: upstream pin present at external/daemon-system-ontology"
 else
-  echo "ontology-sync: no upstream submodule yet (see docs/architecture/ontology-merge-research-v1.md)"
+  echo "ontology-sync: no upstream pin at external/daemon-system-ontology (see docs/architecture/ontology-merge-research-v1.md)"
 fi
 
-echo "ontology-sync: OK"
+echo "ontology-sync: OK (${ONTOLOGY_ROOT})"

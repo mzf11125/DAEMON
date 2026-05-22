@@ -14,3 +14,6 @@ tmp/
 .idea/
 .vscode/
 clickhouse-api-key-daemon-admin.txt
+ontology/v2-compiled/
+packages/ontology-language/dist/
+**/*.tsbuildinfo

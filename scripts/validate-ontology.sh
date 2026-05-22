@@ -3,11 +3,17 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 
+ONTOLOGY_ROOT="${ONTOLOGY_ROOT:-ontology/v2-compiled}"
+export ONTOLOGY_ROOT
+
 python3 - <<'PY'
-import json, sys
+import json, os, sys
 from pathlib import Path
 
-root = Path("ontology/v2")
+root = Path(os.environ.get("ONTOLOGY_ROOT", "ontology/v2-compiled"))
+if not root.is_dir():
+    sys.exit(f"ontology root not found: {root} (run: make ontology-sync)")
+
 manifest = json.loads((root / "manifest.json").read_text())
 required = ["version", "domain", "objectTypes", "linkTypes", "actionTypes", "functions"]
 for k in required:
@@ -54,15 +60,13 @@ PY
 (cd packages/go-common/rules && go test -run TestOntologyRuleFiles -count=1) || exit 1
 
 python3 - <<'PY'
-import json, sys
+import os, sys
 from pathlib import Path
-
-root = Path("ontology/v2")
 
 iface = Path("interfaces/ontology")
 for name in ["operational-entity", "investigatable", "timestamped", "locateable"]:
     if not (iface / f"{name}.json").exists():
         sys.exit(f"missing interface: {name}")
 
-print("validate-ontology: ok")
+print(f"validate-ontology: ok ({os.environ.get('ONTOLOGY_ROOT', 'ontology/v2-compiled')})")
 PY

@@ -1,0 +1,27 @@
+objectType:
+  apiName: Observation
+  displayName: Observation
+  primaryKey: observationId
+  titleProperty: label
+  properties:
+    - name: observationId
+      type: string
+      required: true
+    - name: label
+      type: string
+      required: true
+    - name: value
+      type: string
+      required: false
+    - name: unit
+      type: string
+      required: false
+    - name: observedAt
+      type: timestamp
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

@@ -1,0 +1,12 @@
+actionType:
+  apiName: EscalateSignal
+  displayName: Escalate Signal
+  targetObjectType: Signal
+  parameters:
+    - name: signalId
+      type: string
+      required: false
+    - name: severity
+      type: string
+      required: false
+  requiresApproval: true

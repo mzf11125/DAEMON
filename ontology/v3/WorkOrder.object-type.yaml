@@ -1,0 +1,30 @@
+objectType:
+  apiName: WorkOrder
+  displayName: Work Order
+  primaryKey: workOrderId
+  titleProperty: title
+  properties:
+    - name: workOrderId
+      type: string
+      required: true
+    - name: title
+      type: string
+      required: true
+    - name: ownerId
+      type: string
+      required: false
+    - name: priority
+      type: string
+      required: false
+    - name: status
+      type: string
+      required: false
+    - name: openedAt
+      type: timestamp
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

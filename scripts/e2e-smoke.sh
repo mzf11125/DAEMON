@@ -15,7 +15,7 @@ export CLICKHOUSE_DSN="${CLICKHOUSE_DSN:-clickhouse://daemon:daemon@localhost:90
 export NEO4J_URI="${NEO4J_URI:-neo4j://localhost:7687}"
 export NEO4J_USER="${NEO4J_USER:-neo4j}"
 export NEO4J_PASSWORD="${NEO4J_PASSWORD:-daemonneo4j}"
-export ONTOLOGY_ROOT="${ONTOLOGY_ROOT:-$root/ontology/v2}"
+export ONTOLOGY_ROOT="${ONTOLOGY_ROOT:-$root/ontology/v2-compiled}"
 export REPO_ROOT="$root"
 TENANT="${TENANT:-tenant-demo}"
 

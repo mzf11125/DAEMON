@@ -1,0 +1,12 @@
+actionType:
+  apiName: RecordDecision
+  displayName: Record Decision
+  targetObjectType: Decision
+  parameters:
+    - name: caseId
+      type: string
+      required: false
+    - name: outcome
+      type: string
+      required: false
+  requiresApproval: true

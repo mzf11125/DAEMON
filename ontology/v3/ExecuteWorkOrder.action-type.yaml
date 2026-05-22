@@ -1,0 +1,12 @@
+actionType:
+  apiName: ExecuteWorkOrder
+  displayName: Execute Work Order
+  targetObjectType: WorkOrder
+  parameters:
+    - name: workOrderId
+      type: string
+      required: false
+    - name: status
+      type: string
+      required: false
+  requiresApproval: true

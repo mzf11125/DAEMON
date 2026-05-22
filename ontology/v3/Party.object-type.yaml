@@ -1,0 +1,21 @@
+objectType:
+  apiName: Party
+  displayName: Party
+  primaryKey: partyId
+  titleProperty: displayName
+  properties:
+    - name: partyId
+      type: string
+      required: true
+    - name: displayName
+      type: string
+      required: true
+    - name: email
+      type: string
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

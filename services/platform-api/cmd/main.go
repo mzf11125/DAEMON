@@ -39,9 +39,7 @@ func main() {
 		r.Use(mw)
 	}
 	r.Use(middleware.Timeout(30 * time.Second))
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		dhttp.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok", "service": "platform-api"})
-	})
+	dhttp.MountHealth(r, "platform-api")
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/me", meHandler(pool, authCfg))
 		r.Get("/audit/events", listAuditEventsHandler(pool))

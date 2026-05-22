@@ -1,0 +1,7 @@
+{
+  "caseId": "investigate-case-readonly",
+  "criteria": [
+    { "id": "toolsCalled", "weight": 0.5, "description": "investigate_case invoked" },
+    { "id": "readOnly", "weight": 0.5, "description": "No mutating tools" }
+  ]
+}

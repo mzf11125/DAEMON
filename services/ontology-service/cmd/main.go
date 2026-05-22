@@ -56,9 +56,7 @@ func main() {
 		r.Use(mw)
 	}
 	r.Use(middleware.Timeout(30 * time.Second))
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		dhttp.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok", "service": "ontology-service"})
-	})
+	dhttp.MountHealth(r, "ontology-service")
 	r.Get("/v1/ontology/v2/manifest", func(w http.ResponseWriter, r *http.Request) {
 		dhttp.WriteJSON(w, http.StatusOK, manifest)
 	})

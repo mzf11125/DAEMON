@@ -1,4 +1,4 @@
-.PHONY: up down up-legacy up-apps down-apps migrate migrate-legacy seed test test-integration validate-ontology pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service aip-build aip-eval platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration
+.PHONY: up down up-legacy up-apps down-apps migrate migrate-legacy seed test test-integration validate-ontology pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration
 
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
@@ -105,12 +105,29 @@ run-rules-engine:
 run-case-service:
 	cd services/case-service && go run ./cmd
 
-aip-build:
+pnpm-workspace:
+	pnpm install
+
+aip-build: pnpm-workspace
 	pnpm --filter @daemon/mcp-ontology build
 	pnpm --filter @daemon/aip-agent build
 
+aip-llm-build: pnpm-workspace
+	pnpm --filter @daemon/llm-gateway build
+
 aip-eval: aip-build
 	pnpm --filter @daemon/aip-agent eval
+
+# Override: make aip-orchestrator CASE=investigate-case-readonly
+CASE ?= triage-list-signals
+aip-orchestrator: aip-build
+	pnpm --filter @daemon/aip-agent orchestrator -- --case $(CASE)
+
+prove-aip-eval: aip-build
+	./scripts/prove-aip-eval.sh
+
+ontology-sync:
+	./scripts/ontology-sync.sh
 
 platform-check:
 	./scripts/platform-check.sh

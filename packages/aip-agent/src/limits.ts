@@ -1,3 +1,7 @@
-export const AGENT_MAX_STEPS = Number(process.env.AGENT_MAX_STEPS ?? 8);
-export const AGENT_MAX_TOKENS = Number(process.env.AGENT_MAX_TOKENS ?? 4096);
-export const AGENT_TIMEOUT_MS = Number(process.env.AGENT_TIMEOUT_MS ?? 120_000);
+export function maxPromptChars(): number {
+  return Number(process.env.AIP_MAX_PROMPT_CHARS ?? 12_000);
+}
+
+export function maxOutputTokens(): number {
+  return Number(process.env.AIP_MAX_OUTPUT_TOKENS ?? 1024);
+}

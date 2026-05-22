@@ -1,0 +1,14 @@
+{
+  "caseId": "triage-list-signals-agent",
+  "version": 1,
+  "mode": "agent",
+  "agentId": "triage-analyst",
+  "promptVersion": "v1",
+  "input": {
+    "userMessage": "List Signal objects for triage (read-only)."
+  },
+  "expect": {
+    "toolsCalled": ["ontology_list_objects"],
+    "forbiddenTools": ["ontology_execute_action", "OpenCase"]
+  }
+}

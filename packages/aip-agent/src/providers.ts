@@ -8,7 +8,15 @@ export function resolveProvider(): LLMProvider {
   return "openrouter";
 }
 
+export function gatewayEnabled(): boolean {
+  return process.env.LLM_GATEWAY_ENABLED === "true";
+}
+
 export function resolveBaseURL(provider: LLMProvider): string {
+  if (gatewayEnabled() || process.env.LLM_GATEWAY_URL) {
+    const base = (process.env.LLM_GATEWAY_URL ?? "http://localhost:8092").replace(/\/$/, "");
+    return `${base}/v1`;
+  }
   switch (provider) {
     case "ollama":
       return process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/v1";

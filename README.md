@@ -75,6 +75,20 @@ Integration tests (Docker + stack; from repo root):
 make test-integration
 ```
 
+### AIP (agents, MCP, golden eval)
+
+Requires **ontology-service** on `:8081` (and `:8080` / `:8084` for audit/case MCP tools).
+
+```bash
+make aip-build
+export OIDC_REQUIRED=false
+export EVAL_DETERMINISTIC=true   # CI parity without API keys
+make aip-eval
+./scripts/prove-aip-eval.sh
+```
+
+Optional: LLM gateway on `:8092` (`LLM_GATEWAY_ENABLED=true`), LangSmith (`LANGCHAIN_TRACING_V2=true` in staging). See [docs/traceability/aip-phase-2.md](docs/traceability/aip-phase-2.md).
+
 Full stack in Docker (data stores + Go service images):
 
 ```bash

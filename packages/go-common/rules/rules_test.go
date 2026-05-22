@@ -46,7 +46,7 @@ func TestValidateSQLRejectsMutation(t *testing.T) {
 }
 
 func TestOntologyRuleFiles(t *testing.T) {
-	root := filepath.Join("..", "..", "..", "ontology", "v2", "rules")
+	root := filepath.Join("..", "..", "..", "ontology", "v2-compiled", "rules")
 	entries, err := os.ReadDir(root)
 	if err != nil {
 		t.Skip("ontology rules dir not found:", err)

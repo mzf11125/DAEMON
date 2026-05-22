@@ -9,9 +9,9 @@ RUN go build -o /out/ontology-service ./cmd
 
 FROM alpine:3.20
 RUN apk add --no-cache ca-certificates
-ENV ONTOLOGY_ROOT=/ontology/v2
+ENV ONTOLOGY_ROOT=/ontology/v2-compiled
 COPY --from=build /out/ontology-service /ontology-service
-COPY ontology/v2 /ontology/v2
+COPY ontology/v2-compiled /ontology/v2-compiled
 COPY interfaces/ontology /interfaces/ontology
 EXPOSE 8081
 ENTRYPOINT ["/ontology-service"]

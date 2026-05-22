@@ -1,0 +1,6 @@
+linkType:
+  apiName: SignalLinkedToCase
+  displayName: Signal Linked To Case
+  fromObjectType: Signal
+  toObjectType: Case
+  cardinality: MANY_TO_ONE

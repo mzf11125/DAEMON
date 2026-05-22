@@ -8,8 +8,8 @@ RUN go build -o /out/rules-engine ./cmd
 
 FROM alpine:3.20
 RUN apk add --no-cache ca-certificates
-ENV ONTOLOGY_ROOT=/ontology/v2
+ENV RULES_ROOT=/ontology/v2-compiled/rules
 COPY --from=build /out/rules-engine /rules-engine
-COPY ontology/v2/rules /ontology/v2/rules
+COPY ontology/v2-compiled/rules /ontology/v2-compiled/rules
 EXPOSE 8083
 ENTRYPOINT ["/rules-engine"]

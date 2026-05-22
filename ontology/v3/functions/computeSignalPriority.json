@@ -1,0 +1,8 @@
+{
+  "apiName": "computeSignalPriority",
+  "inputs": [
+    "signalIds"
+  ],
+  "outputType": "object",
+  "editsOntology": false
+}

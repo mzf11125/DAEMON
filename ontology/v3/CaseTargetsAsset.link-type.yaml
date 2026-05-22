@@ -1,0 +1,6 @@
+linkType:
+  apiName: CaseTargetsAsset
+  displayName: Case Targets Asset
+  fromObjectType: Case
+  toObjectType: Asset
+  cardinality: MANY_TO_ONE

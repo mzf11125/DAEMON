@@ -1,0 +1,27 @@
+objectType:
+  apiName: Asset
+  displayName: Asset
+  primaryKey: assetId
+  titleProperty: name
+  properties:
+    - name: assetId
+      type: string
+      required: true
+    - name: name
+      type: string
+      required: true
+    - name: tenantId
+      type: string
+      required: true
+    - name: status
+      type: string
+      required: false
+    - name: externalId
+      type: string
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

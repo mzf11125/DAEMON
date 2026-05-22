@@ -1,0 +1,6 @@
+linkType:
+  apiName: AssetEmitsObservation
+  displayName: Asset Emits Observation
+  fromObjectType: Asset
+  toObjectType: Observation
+  cardinality: ONE_TO_MANY

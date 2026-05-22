@@ -1,0 +1,15 @@
+actionType:
+  apiName: RecordObservation
+  displayName: Record Observation
+  targetObjectType: Observation
+  parameters:
+    - name: assetId
+      type: string
+      required: false
+    - name: label
+      type: string
+      required: false
+    - name: value
+      type: string
+      required: false
+  requiresApproval: true

@@ -63,7 +63,7 @@ See [docs/developer-tools/api.md](docs/developer-tools/api.md).
 
 ## Ontology and packs
 
-- Edit manifests under `ontology/v2/`; run `make validate-ontology` before opening a PR.
+- Edit core schemas under `ontology/v3/` (YAML); run `make ontology-sync` (compiles to `ontology/v2-compiled/`) before opening a PR. Legacy JSON under `ontology/v2/` remains for sector packs and compile enrichment.
 - Sector packs: `ontology/v2/examples/packs/*/manifest.json` — follow [docs/lifecycle/pack-framework-v1.md](docs/lifecycle/pack-framework-v1.md).
 - Role gates for actions are defined in the manifest; do not bypass them in handlers.
 

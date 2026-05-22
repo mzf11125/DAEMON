@@ -1,0 +1,27 @@
+objectType:
+  apiName: Site
+  displayName: Site
+  primaryKey: siteId
+  titleProperty: name
+  properties:
+    - name: siteId
+      type: string
+      required: true
+    - name: name
+      type: string
+      required: true
+    - name: region
+      type: string
+      required: false
+    - name: latitude
+      type: string
+      required: false
+    - name: longitude
+      type: string
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

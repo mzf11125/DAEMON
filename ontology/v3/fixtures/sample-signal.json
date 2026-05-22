@@ -1,0 +1,7 @@
+{
+  "signalId": "signal-001",
+  "summary": "High temperature on Line A",
+  "severity": "high",
+  "status": "open",
+  "priority": "P1"
+}

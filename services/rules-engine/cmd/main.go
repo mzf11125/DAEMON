@@ -30,7 +30,7 @@ func main() {
 	cfg := config.LoadBase(8083)
 	rulesRoot := os.Getenv("RULES_ROOT")
 	if rulesRoot == "" {
-		rulesRoot = filepath.Join("..", "..", "ontology", "v2", "rules")
+		rulesRoot = filepath.Join("..", "..", "ontology", "v2-compiled", "rules")
 	}
 	ctx := context.Background()
 	pool, err := db.NewPostgres(ctx, cfg.DatabaseURL)

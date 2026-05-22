@@ -1,0 +1,12 @@
+actionType:
+  apiName: CloseCase
+  displayName: Close Case
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: false
+    - name: reason
+      type: string
+      required: false
+  requiresApproval: true

@@ -1,0 +1,6 @@
+linkType:
+  apiName: WorkOrderTargetsAsset
+  displayName: Work Order Targets Asset
+  fromObjectType: WorkOrder
+  toObjectType: Asset
+  cardinality: MANY_TO_ONE

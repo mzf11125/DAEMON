@@ -37,11 +37,15 @@ func main() {
 	}
 	defer ch.Close()
 
-	driver, err := neo4j.NewDriverWithContext(neoURI, neo4j.BasicAuth(neoUser, neoPass, ""))
-	if err != nil {
-		log.Fatal(err)
+	skipNeo := getenv("SKIP_NEO4J_SEED", "") == "1" || getenv("SKIP_NEO4J_SEED", "") == "true"
+	var driver neo4j.DriverWithContext
+	if !skipNeo {
+		driver, err = neo4j.NewDriverWithContext(neoURI, neo4j.BasicAuth(neoUser, neoPass, ""))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer driver.Close(ctx)
 	}
-	defer driver.Close(ctx)
 
 	now := time.Now().UTC()
 	tenant := "tenant-demo"
@@ -96,15 +100,17 @@ func main() {
 		{"PartyAssignedToCase", "party-001", "case-001"},
 		{"WorkOrderTargetsAsset", "wo-001", "asset-001"},
 	}
-	sess := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
-	defer sess.Close(ctx)
-	for _, l := range links {
-		_, err = sess.Run(ctx, `
-			MERGE (a:Entity {id: $from}) MERGE (b:Entity {id: $to})
-			MERGE (a)-[r:LINK {type: $type}]->(b)`,
-			map[string]any{"type": l.typ, "from": l.from, "to": l.to})
-		if err != nil {
-			log.Fatal(err)
+	if driver != nil {
+		sess := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+		defer sess.Close(ctx)
+		for _, l := range links {
+			_, err = sess.Run(ctx, `
+				MERGE (a:Entity {id: $from}) MERGE (b:Entity {id: $to})
+				MERGE (a)-[r:LINK {type: $type}]->(b)`,
+				map[string]any{"type": l.typ, "from": l.from, "to": l.to})
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 

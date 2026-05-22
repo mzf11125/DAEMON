@@ -5,6 +5,7 @@ package integration_test
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"os"
@@ -40,31 +41,34 @@ func TestRulesEvaluateCreatesSignal(t *testing.T) {
 	defer ch.Close()
 
 	now := time.Now().UTC()
-	if err := ch.Exec(ctx, `INSERT INTO dataset_observations (observation_id, label, value, unit, observed_at, asset_id, created_at, updated_at)
-		VALUES ('obs-hot-1', 'temperature_c', 99.0, 'C', $1, 'asset-001', $1, $1)`, now); err != nil {
+	if err := ch.Exec(ctx, `INSERT INTO dataset_observations (observation_id, label, value, unit, observed_at, asset_id, tenant_id, created_at, updated_at)
+		VALUES ('obs-hot-1', 'temperature_c', 99.0, 'C', $1, 'asset-001', 'tenant-demo', $1, $1)`, now); err != nil {
 		t.Fatal(err)
 	}
 
-	port := "18084"
-	rulesRoot := filepath.Join(env.RepoRoot, "ontology", "v2", "rules")
-	cmd := exec.CommandContext(ctx, "go", "run", "./cmd")
-	cmd.Dir = filepath.Join(env.RepoRoot, "services", "rules-engine")
-	cmd.Env = append(os.Environ(),
+	port := "38185"
+	rulesRoot := filepath.Join(env.RepoRoot, "ontology", "v2-compiled", "rules")
+	if _, err := os.Stat(rulesRoot); err != nil {
+		sync := exec.CommandContext(ctx, "make", "ontology-sync")
+		sync.Dir = env.RepoRoot
+		if out, err := sync.CombinedOutput(); err != nil {
+			t.Fatalf("ontology-sync: %v: %s", err, out)
+		}
+	}
+	cmd := testutil.BuildAndStart(ctx, t, filepath.Join(env.RepoRoot, "services", "rules-engine"), "rules-engine",
 		"DATABASE_URL="+env.PostgresURL,
 		"CLICKHOUSE_DSN="+env.ClickHouseDSN,
 		"HTTP_PORT="+port,
 		"RULES_ROOT="+rulesRoot,
+		"OIDC_REQUIRED=false",
 	)
-	if err := cmd.Start(); err != nil {
-		t.Fatal(err)
-	}
 	defer func() {
 		_ = cmd.Process.Kill()
 		_, _ = cmd.Process.Wait()
 	}()
 
 	base := "http://localhost:" + port
-	waitHealth(t, base+"/health", 90*time.Second)
+	waitServiceHealth(t, base+"/health", "rules-engine", 90*time.Second)
 
 	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, base+"/v1/evaluate", bytes.NewReader([]byte("{}")))
 	req.Header.Set("Content-Type", "application/json")
@@ -74,9 +78,18 @@ func TestRulesEvaluateCreatesSignal(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		b, _ := io.ReadAll(resp.Body)
-		t.Fatalf("evaluate: %d %s", resp.StatusCode, string(b))
+		t.Fatalf("evaluate: %d %s", resp.StatusCode, string(body))
+	}
+	var evalBody struct {
+		Count int `json:"count"`
+	}
+	if err := json.Unmarshal(body, &evalBody); err != nil {
+		t.Fatalf("decode evaluate: %v", err)
+	}
+	if evalBody.Count < 1 {
+		t.Fatalf("evaluate returned count=%d (expected >=1); check RULES_ROOT and ClickHouse seed", evalBody.Count)
 	}
 
 	pool, err := pgxpool.New(ctx, env.PostgresURL)

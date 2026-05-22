@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -23,25 +22,22 @@ func TestIngestionJobInvalidSimParams(t *testing.T) {
 	env := testutil.SetupDataStores(ctx, t)
 	defer env.Cleanup(ctx)
 
-	port := "18084"
-	cmd := exec.CommandContext(ctx, "go", "run", "./cmd")
-	cmd.Dir = filepath.Join(env.RepoRoot, "services", "ingestion-service")
-	cmd.Env = append(cmd.Env,
+	port := "38184"
+	svcDir := filepath.Join(env.RepoRoot, "services", "ingestion-service")
+	cmd := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
 		"DATABASE_URL="+env.PostgresURL,
 		"CLICKHOUSE_DSN="+env.ClickHouseDSN,
 		"HTTP_PORT="+port,
 		"REPO_ROOT="+env.RepoRoot,
+		"OIDC_REQUIRED=false",
 	)
-	if err := cmd.Start(); err != nil {
-		t.Fatal(err)
-	}
 	defer func() {
 		_ = cmd.Process.Kill()
 		_, _ = cmd.Process.Wait()
 	}()
 
 	base := "http://localhost:" + port
-	waitHealth(t, base+"/health", 90*time.Second)
+	waitServiceHealth(t, base+"/health", "ingestion-service", 90*time.Second)
 
 	body, _ := json.Marshal(map[string]any{
 		"connector": "sim-dune",

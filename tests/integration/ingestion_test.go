@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -26,25 +24,22 @@ func TestIngestionJobSeedCSV(t *testing.T) {
 	env := testutil.SetupDataStores(ctx, t)
 	defer env.Cleanup(ctx)
 
-	port := "18082"
-	cmd := exec.CommandContext(ctx, "go", "run", "./cmd")
-	cmd.Dir = filepath.Join(env.RepoRoot, "services", "ingestion-service")
-	cmd.Env = append(os.Environ(),
+	port := "38182"
+	svcDir := filepath.Join(env.RepoRoot, "services", "ingestion-service")
+	cmd := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
 		"DATABASE_URL="+env.PostgresURL,
 		"CLICKHOUSE_DSN="+env.ClickHouseDSN,
 		"HTTP_PORT="+port,
 		"REPO_ROOT="+env.RepoRoot,
+		"OIDC_REQUIRED=false",
 	)
-	if err := cmd.Start(); err != nil {
-		t.Fatal(err)
-	}
 	defer func() {
 		_ = cmd.Process.Kill()
 		_, _ = cmd.Process.Wait()
 	}()
 
 	base := "http://localhost:" + port
-	waitHealth(t, base+"/health", 90*time.Second)
+	waitServiceHealth(t, base+"/health", "ingestion-service", 90*time.Second)
 
 	body, _ := json.Marshal(map[string]string{"connector": "seed-csv"})
 	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, base+"/v1/jobs", bytes.NewReader(body))
@@ -104,7 +99,16 @@ func TestIngestionJobTenantIsolation(t *testing.T) {
 	}
 	defer pool.Close()
 
+	_, err = pool.Exec(ctx, `INSERT INTO tenants (tenant_id, name) VALUES ('tenant-a', 'Tenant A') ON CONFLICT DO NOTHING`)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	jobID := "00000000-0000-4000-8000-000000000001"
+	_, err = pool.Exec(ctx, `INSERT INTO tenants (tenant_id, name) VALUES ('tenant-a', 'Tenant A'), ('tenant-b', 'Tenant B') ON CONFLICT DO NOTHING`)
+	if err != nil {
+		t.Fatal(err)
+	}
 	_, err = pool.Exec(ctx,
 		`INSERT INTO ingestion_jobs (job_id, tenant_id, connector, status) VALUES ($1::uuid,$2,$3,$4)`,
 		jobID, "tenant-a", "seed-csv", "completed")
@@ -112,25 +116,22 @@ func TestIngestionJobTenantIsolation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	port := "18083"
-	cmd := exec.CommandContext(ctx, "go", "run", "./cmd")
-	cmd.Dir = filepath.Join(env.RepoRoot, "services", "ingestion-service")
-	cmd.Env = append(os.Environ(),
+	port := "38183"
+	svcDir := filepath.Join(env.RepoRoot, "services", "ingestion-service")
+	cmd := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
 		"DATABASE_URL="+env.PostgresURL,
 		"CLICKHOUSE_DSN="+env.ClickHouseDSN,
 		"HTTP_PORT="+port,
 		"REPO_ROOT="+env.RepoRoot,
+		"OIDC_REQUIRED=false",
 	)
-	if err := cmd.Start(); err != nil {
-		t.Fatal(err)
-	}
 	defer func() {
 		_ = cmd.Process.Kill()
 		_, _ = cmd.Process.Wait()
 	}()
 
 	base := fmt.Sprintf("http://localhost:%s", port)
-	waitHealth(t, base+"/health", 90*time.Second)
+	waitServiceHealth(t, base+"/health", "ingestion-service", 90*time.Second)
 
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, base+"/v1/jobs/"+jobID, nil)
 	req.Header.Set("X-Tenant-Id", "tenant-b")
@@ -144,19 +145,3 @@ func TestIngestionJobTenantIsolation(t *testing.T) {
 	}
 }
 
-func waitHealth(t *testing.T, url string, timeout time.Duration) {
-	t.Helper()
-	deadline := time.Now().Add(timeout)
-	for time.Now().Before(deadline) {
-		resp, err := http.Get(url)
-		if err == nil && resp.StatusCode == http.StatusOK {
-			resp.Body.Close()
-			return
-		}
-		if resp != nil {
-			resp.Body.Close()
-		}
-		time.Sleep(time.Second)
-	}
-	t.Fatalf("timeout waiting for %s", url)
-}

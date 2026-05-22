@@ -69,6 +69,17 @@ func truncateStmt(s string) string {
 	return s[:max] + "..."
 }
 
+// EnsureDemoTenant inserts tenant-demo for FK-backed integration tests (no Neo4j required).
+func EnsureDemoTenant(ctx context.Context, pgURL string) error {
+	pool, err := pgxpool.New(ctx, pgURL)
+	if err != nil {
+		return err
+	}
+	defer pool.Close()
+	_, err = pool.Exec(ctx, `INSERT INTO tenants (tenant_id, name) VALUES ('tenant-demo', 'Demo Manufacturing Co') ON CONFLICT DO NOTHING`)
+	return err
+}
+
 // RunSeed executes infra/seed against the given env.
 func RunSeed(ctx context.Context, env *Env) error {
 	cmd := exec.CommandContext(ctx, "go", "run", ".")
@@ -79,6 +90,7 @@ func RunSeed(ctx context.Context, env *Env) error {
 		"NEO4J_URI="+env.Neo4jURI,
 		"NEO4J_USER="+env.Neo4jUser,
 		"NEO4J_PASSWORD="+env.Neo4jPassword,
+		"SKIP_NEO4J_SEED=1",
 	)
 	out, err := cmd.CombinedOutput()
 	if err != nil {

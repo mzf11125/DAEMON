@@ -1,0 +1,11 @@
+---
+description: Go services and pipelines
+globs:
+  - "services/**"
+  - "pipelines/**"
+  - "packages/go-common/**"
+---
+
+# Golang
+
+Use chi, pgx, structured errors. No mock handlers in runtime paths.

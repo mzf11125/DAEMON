@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DaemonEvalRubric",
+  "type": "object",
+  "properties": {
+    "caseId": { "type": "string" },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+          "description": { "type": "string" }
+        },
+        "required": ["id", "weight"]
+      }
+    }
+  },
+  "required": ["caseId", "criteria"]
+}

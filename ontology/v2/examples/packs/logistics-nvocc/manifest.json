@@ -1,0 +1,8 @@
+{
+  "packId": "logistics-nvocc",
+  "displayName": "Logistics / NVOCC",
+  "status": "stub",
+  "sector": "logistics",
+  "connectorProfiles": ["tms", "ais", "edi"],
+  "regulatoryNotes": "Manifest-only v1; full E2E post–product selection (A-PACK-04)."
+}

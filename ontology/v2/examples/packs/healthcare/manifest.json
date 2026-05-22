@@ -1,0 +1,7 @@
+{
+  "packId": "healthcare",
+  "version": "0.1.0",
+  "description": "Sector stub — clinical ops signals (non-regulated placeholder)",
+  "status": "stub",
+  "extends": "enterprise-operations"
+}

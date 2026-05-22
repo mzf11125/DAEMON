@@ -1,0 +1,6 @@
+{
+  "apiName": "CaseTargetsAsset",
+  "sourceType": "Case",
+  "targetType": "Asset",
+  "cardinality": "many-to-one"
+}

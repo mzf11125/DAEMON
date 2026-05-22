@@ -1,0 +1,18 @@
+go 1.25.0
+
+use (
+	./infra/seed
+	./packages/dune-ingest
+	./packages/go-common
+	./packages/pipeline-runner
+	./pipelines/features
+	./pipelines/quality
+	./pipelines/raw-ingest
+	./pipelines/transforms
+	./services/case-service
+	./services/ingestion-service
+	./services/ontology-service
+	./services/platform-api
+	./services/rules-engine
+	./tests/integration
+)

@@ -1,0 +1,6 @@
+{
+  "apiName": "SignalLinkedToCase",
+  "sourceType": "Signal",
+  "targetType": "Case",
+  "cardinality": "many-to-one"
+}

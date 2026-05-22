@@ -1,0 +1,47 @@
+{
+  "apiName": "Case",
+  "displayName": "Case",
+  "primaryKey": "caseId",
+  "titleProperty": "title",
+  "backingDataset": "dataset_cases",
+  "implements": [
+    "Investigatable",
+    "Timestamped"
+  ],
+  "properties": [
+    {
+      "id": "caseId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "title",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "ownerId",
+      "type": "string"
+    },
+    {
+      "id": "priority",
+      "type": "string"
+    },
+    {
+      "id": "status",
+      "type": "string"
+    },
+    {
+      "id": "openedAt",
+      "type": "datetime"
+    },
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

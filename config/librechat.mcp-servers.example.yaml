@@ -1,0 +1,16 @@
+# Merge this block into your LibreChat librechat.yaml under `mcpServers:`.
+# Docs: https://www.librechat.ai/docs/features/mcp#basic-configuration
+#
+# After editing librechat.yaml, restart LibreChat. For ClickHouse Cloud remote MCP:
+# 1. Enable MCP on the service (Connect → Connect with MCP).
+# 2. Authenticate via OAuth when LibreChat prompts (callback:
+#    ${LIBRECHAT_BASE_URL}/api/mcp/clickhouse-cloud/oauth/callback).
+
+mcpServers:
+  clickhouse-cloud:
+    type: streamable-http
+    url: https://mcp.clickhouse.cloud/mcp
+    # OAuth discovery is automatic; use a higher init timeout for first connect.
+    initTimeout: 150000
+    title: ClickHouse Cloud
+    description: Query ClickHouse Cloud (list databases/tables, run SELECT, service metadata)

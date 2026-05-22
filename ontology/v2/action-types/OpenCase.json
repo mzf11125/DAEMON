@@ -1,0 +1,17 @@
+{
+  "apiName": "OpenCase",
+  "displayName": "Open Case",
+  "requiredRoles": [
+    "analyst"
+  ],
+  "parameters": [
+    {
+      "id": "signalIds",
+      "type": "string[]"
+    },
+    {
+      "id": "title",
+      "type": "string"
+    }
+  ]
+}

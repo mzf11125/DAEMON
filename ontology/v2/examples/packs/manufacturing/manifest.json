@@ -1,0 +1,7 @@
+{
+  "packId": "manufacturing",
+  "version": "0.1.0",
+  "description": "Sector stub — line downtime, quality, and maintenance work orders",
+  "status": "stub",
+  "extends": "enterprise-operations"
+}

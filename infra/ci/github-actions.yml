@@ -1,0 +1,4 @@
+# Canonical CI lives in the repository root workflow.
+# This path mirrors the plan layout; do not duplicate job definitions here.
+#
+# See: ../../.github/workflows/ci.yml

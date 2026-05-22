@@ -1,0 +1,7 @@
+{
+  "packId": "finance-ledger",
+  "displayName": "Finance / ledger",
+  "status": "stub",
+  "sector": "finance",
+  "connectorProfiles": ["gl", "subledger"]
+}

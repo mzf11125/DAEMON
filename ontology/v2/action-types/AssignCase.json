@@ -1,0 +1,18 @@
+{
+  "apiName": "AssignCase",
+  "displayName": "Assign Case",
+  "requiredRoles": [
+    "lead",
+    "analyst"
+  ],
+  "parameters": [
+    {
+      "id": "caseId",
+      "type": "string"
+    },
+    {
+      "id": "partyId",
+      "type": "string"
+    }
+  ]
+}

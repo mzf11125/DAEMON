@@ -1,0 +1,78 @@
+{
+  "realm": "daemon-demo",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "roles": {
+    "realm": [
+      { "name": "analyst" },
+      { "name": "lead" }
+    ]
+  },
+  "users": [
+    {
+      "id": "user-analyst-1",
+      "username": "analyst",
+      "enabled": true,
+      "email": "analyst@demo.local",
+      "firstName": "Alex",
+      "lastName": "Analyst",
+      "credentials": [
+        { "type": "password", "value": "analyst", "temporary": false }
+      ],
+      "realmRoles": ["analyst", "lead"],
+      "attributes": {
+        "tenant_id": ["tenant-demo"]
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "console-web",
+      "name": "Console Web",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000", "+"],
+      "protocolMappers": [
+        {
+          "name": "tenant_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "tenant_id",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "daemon-api",
+      "name": "Daemon API",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "daemon-api-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true
+    }
+  ]
+}

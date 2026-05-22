@@ -1,0 +1,7 @@
+{
+  "packId": "energy-utilities",
+  "version": "0.1.0",
+  "description": "Sector stub — grid, outage, and asset health signals",
+  "status": "stub",
+  "extends": "enterprise-operations"
+}

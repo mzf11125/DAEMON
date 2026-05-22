@@ -1,0 +1,34 @@
+{
+  "apiName": "Decision",
+  "displayName": "Decision",
+  "primaryKey": "decisionId",
+  "titleProperty": "outcome",
+  "backingDataset": "dataset_decisions",
+  "implements": [
+    "Timestamped"
+  ],
+  "properties": [
+    {
+      "id": "decisionId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "outcome",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "caseId",
+      "type": "string"
+    },
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

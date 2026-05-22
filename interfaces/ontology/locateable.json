@@ -1,0 +1,17 @@
+{
+  "apiName": "Locateable",
+  "properties": [
+    {
+      "id": "latitude",
+      "type": "double"
+    },
+    {
+      "id": "longitude",
+      "type": "double"
+    },
+    {
+      "id": "region",
+      "type": "string"
+    }
+  ]
+}

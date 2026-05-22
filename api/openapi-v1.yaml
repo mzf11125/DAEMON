@@ -1,0 +1,205 @@
+openapi: 3.1.0
+info:
+  title: DAEMON Platform API v1
+  version: 1.0.0
+  description: |
+    Multi-service HTTP API (platform-api, ontology-service, case-service, rules-engine, ingestion-service).
+    Success responses use `{ data }`. Errors use `{ error: { code, message, requestId?, timestamp } }`.
+servers:
+  - url: http://127.0.0.1:8080
+    description: platform-api
+  - url: http://127.0.0.1:8081
+    description: ontology-service
+  - url: http://127.0.0.1:8084
+    description: case-service
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    TenantId:
+      name: X-Tenant-Id
+      in: header
+      required: true
+      schema:
+        type: string
+        example: tenant-demo
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 50
+    Offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+  schemas:
+    EnvelopeError:
+      type: object
+      properties:
+        error:
+          type: object
+          required: [code, message, timestamp]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            requestId:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+    ListMeta:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+        hasMore:
+          type: boolean
+        returned:
+          type: integer
+paths:
+  /health:
+    get:
+      summary: Health check (each service)
+      responses:
+        "200":
+          description: OK
+  /v1/me:
+    get:
+      summary: Current user profile
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/TenantId" }]
+      servers: [{ url: http://127.0.0.1:8080 }]
+  /v1/audit/events:
+    get:
+      summary: List audit events
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/TenantId" }
+        - { $ref: "#/components/parameters/Limit" }
+        - { $ref: "#/components/parameters/Offset" }
+        - name: resourceType
+          in: query
+          schema: { type: string }
+        - name: resourceId
+          in: query
+          schema: { type: string }
+      servers: [{ url: http://127.0.0.1:8080 }]
+    post:
+      summary: Append audit event
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/TenantId" }]
+      servers: [{ url: http://127.0.0.1:8080 }]
+  /v1/ontology/v2/manifest:
+    get:
+      summary: Ontology v2 manifest
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/TenantId" }]
+      servers: [{ url: http://127.0.0.1:8081 }]
+  /v1/objects/{objectType}:
+    get:
+      summary: List ontology objects by type
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/TenantId" }
+        - { $ref: "#/components/parameters/Limit" }
+        - { $ref: "#/components/parameters/Offset" }
+        - name: objectType
+          in: path
+          required: true
+          schema: { type: string }
+      servers: [{ url: http://127.0.0.1:8081 }]
+  /v1/objects/{objectType}/{id}:
+    get:
+      summary: Get ontology object
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/TenantId" }
+        - name: objectType
+          in: path
+          required: true
+          schema: { type: string }
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      servers: [{ url: http://127.0.0.1:8081 }]
+  /v1/objects/Case/{id}/links:
+    get:
+      summary: Case links (SignalLinkedToCase)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/TenantId" }
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      servers: [{ url: http://127.0.0.1:8081 }]
+  /v1/actions/{actionType}:
+    post:
+      summary: Execute ontology action (Foundry-style RPC)
+      description: |
+        Semantic validation failures return HTTP 422 (`MISSING_PARAM`, `SIGNAL_NOT_FOUND`).
+        Malformed JSON returns 400 (`INVALID_JSON`).
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/TenantId" }
+        - name: actionType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - OpenCase
+              - RecordDecision
+              - AssignCase
+              - CloseCase
+              - EscalateSignal
+              - RecordObservation
+              - ExecuteWorkOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      servers: [{ url: http://127.0.0.1:8081 }]
+  /v1/functions/summarizeCaseContext:
+    post:
+      summary: Read-only case context summary
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/TenantId" }]
+      servers: [{ url: http://127.0.0.1:8081 }]
+  /v1/cases:
+    get:
+      summary: List cases
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/TenantId" }
+        - { $ref: "#/components/parameters/Limit" }
+        - { $ref: "#/components/parameters/Offset" }
+      servers: [{ url: http://127.0.0.1:8084 }]
+  /v1/cases/{caseId}:
+    get:
+      summary: Get case with signalIds
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/TenantId" }
+        - name: caseId
+          in: path
+          required: true
+          schema: { type: string }
+      servers: [{ url: http://127.0.0.1:8084 }]

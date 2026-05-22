@@ -1,0 +1,11 @@
+{
+  "apiName": "Account",
+  "displayName": "Account",
+  "primaryKey": "accountId",
+  "properties": {
+    "accountId": { "type": "string" },
+    "customerId": { "type": "string" },
+    "currency": { "type": "string" }
+  },
+  "implements": ["operational-entity"]
+}

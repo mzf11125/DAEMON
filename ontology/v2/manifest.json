@@ -1,0 +1,71 @@
+{
+  "version": "2.0.0",
+  "domain": "enterprise-operations",
+  "description": "Industry-agnostic operational primitives",
+  "defaultPack": null,
+  "availablePacks": [
+    "aml-fintech",
+    "logistics-nvocc",
+    "healthcare-ops",
+    "government-ops",
+    "web3-intel",
+    "agri-food",
+    "banking-core",
+    "finance-ledger",
+    "logistics",
+    "healthcare",
+    "public-sector",
+    "web3-operations",
+    "agriculture",
+    "manufacturing",
+    "energy-utilities"
+  ],
+  "objectTypes": [
+    "Organization",
+    "Site",
+    "Asset",
+    "Party",
+    "WorkOrder",
+    "Observation",
+    "Signal",
+    "Case",
+    "Decision"
+  ],
+  "linkTypes": [
+    "OrganizationOperatesSite",
+    "SiteHostsAsset",
+    "AssetEmitsObservation",
+    "ObservationRaisedSignal",
+    "SignalLinkedToCase",
+    "CaseTargetsAsset",
+    "CaseTargetsOrganization",
+    "PartyAssignedToCase",
+    "WorkOrderTargetsAsset"
+  ],
+  "actionTypes": [
+    "RecordObservation",
+    "OpenCase",
+    "AssignCase",
+    "EscalateSignal",
+    "ExecuteWorkOrder",
+    "RecordDecision",
+    "CloseCase"
+  ],
+  "functions": [
+    "aggregateObservations",
+    "computeSignalPriority",
+    "summarizeCaseContext",
+    "matchReferenceList"
+  ],
+  "backingDatasets": {
+    "Organization": "dataset_organizations",
+    "Site": "dataset_sites",
+    "Asset": "dataset_assets",
+    "Party": "dataset_parties",
+    "WorkOrder": "dataset_work_orders",
+    "Observation": "dataset_observations",
+    "Signal": "dataset_signals",
+    "Case": "dataset_cases",
+    "Decision": "dataset_decisions"
+  }
+}

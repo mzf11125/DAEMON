@@ -1,0 +1,8 @@
+{
+  "packId": "healthcare-ops",
+  "displayName": "Healthcare operations",
+  "status": "stub",
+  "sector": "healthcare",
+  "connectorProfiles": ["emr", "lis", "billing"],
+  "regulatoryNotes": "See docs/ontology/healthcare-ops-assume-case-v1.md"
+}

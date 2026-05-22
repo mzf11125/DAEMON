@@ -1,0 +1,9 @@
+{
+  "apiName": "aggregateObservations",
+  "inputs": [
+    "assetId",
+    "windowDays"
+  ],
+  "outputType": "object",
+  "editsOntology": false
+}

@@ -1,0 +1,43 @@
+{
+  "apiName": "Site",
+  "displayName": "Site",
+  "primaryKey": "siteId",
+  "titleProperty": "name",
+  "backingDataset": "dataset_sites",
+  "implements": [
+    "Locateable",
+    "Timestamped"
+  ],
+  "properties": [
+    {
+      "id": "siteId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "region",
+      "type": "string"
+    },
+    {
+      "id": "latitude",
+      "type": "double"
+    },
+    {
+      "id": "longitude",
+      "type": "double"
+    },
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "apiName": "Observation",
+  "displayName": "Observation",
+  "primaryKey": "observationId",
+  "titleProperty": "label",
+  "backingDataset": "dataset_observations",
+  "implements": [
+    "Timestamped"
+  ],
+  "properties": [
+    {
+      "id": "observationId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "label",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "value",
+      "type": "double"
+    },
+    {
+      "id": "unit",
+      "type": "string"
+    },
+    {
+      "id": "observedAt",
+      "type": "datetime"
+    },
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

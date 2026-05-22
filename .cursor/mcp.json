@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "clickhouse-cloud": {
+      "url": "https://mcp.clickhouse.cloud/mcp",
+      "headers": {}
+    },
+    "daemon-ontology": {
+      "command": "node",
+      "args": ["aip/mcp-ontology/dist/index.js"],
+      "env": {
+        "ONTOLOGY_SERVICE_URL": "http://localhost:8081",
+        "TENANT_ID": "tenant-demo"
+      }
+    }
+  }
+}

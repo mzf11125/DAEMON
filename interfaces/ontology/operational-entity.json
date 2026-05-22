@@ -1,0 +1,17 @@
+{
+  "apiName": "OperationalEntity",
+  "properties": [
+    {
+      "id": "tenantId",
+      "type": "string"
+    },
+    {
+      "id": "status",
+      "type": "string"
+    },
+    {
+      "id": "externalId",
+      "type": "string"
+    }
+  ]
+}

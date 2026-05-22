@@ -1,0 +1,7 @@
+{
+  "packId": "government-ops",
+  "displayName": "Government operations",
+  "status": "stub",
+  "sector": "public-sector",
+  "connectorProfiles": ["case-management", "open-data"]
+}

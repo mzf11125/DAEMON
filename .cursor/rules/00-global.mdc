@@ -1,0 +1,9 @@
+---
+description: Daemon rule 00-global
+globs: []
+alwaysApply: true
+---
+
+# 00-global
+
+See CONTRIBUTING.md and docs/developer-tools/repo-layout.md.

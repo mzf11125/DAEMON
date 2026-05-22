@@ -1,0 +1,7 @@
+{
+  "packId": "agri-food",
+  "displayName": "Agriculture & food chain",
+  "status": "stub",
+  "sector": "agriculture",
+  "connectorProfiles": ["erp", "iot-sensors"]
+}

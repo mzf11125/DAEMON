@@ -1,0 +1,18 @@
+{
+  "apiName": "EscalateSignal",
+  "displayName": "Escalate Signal",
+  "requiredRoles": [
+    "analyst",
+    "lead"
+  ],
+  "parameters": [
+    {
+      "id": "signalId",
+      "type": "string"
+    },
+    {
+      "id": "severity",
+      "type": "string"
+    }
+  ]
+}

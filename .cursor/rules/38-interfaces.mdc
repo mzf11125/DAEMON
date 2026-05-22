@@ -1,0 +1,10 @@
+---
+description: Ontology and interfaces
+globs:
+  - "ontology/**"
+  - "interfaces/**"
+---
+
+# Interfaces
+
+Declarative JSON only under ontology/ — no executable code.

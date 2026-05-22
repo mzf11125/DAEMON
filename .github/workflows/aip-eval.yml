@@ -1,0 +1,28 @@
+name: AIP eval
+
+on:
+  pull_request:
+    paths:
+      - "aip/**"
+      - "packages/aip-agent/**"
+  workflow_dispatch:
+
+jobs:
+  aip-eval:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile || pnpm install
+      - run: make aip-build
+      - name: Run golden eval (requires ontology on localhost:8081)
+        run: make aip-eval
+        env:
+          ONTOLOGY_SERVICE_URL: http://localhost:8081

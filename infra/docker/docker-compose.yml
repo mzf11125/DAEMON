@@ -1,0 +1,187 @@
+# Default `make up`: ClickHouse + Neo4j only (Postgres/Auth via Supabase CLI on host :54332/:54331).
+# Legacy Keycloak + Docker Postgres: `docker compose --profile legacy-keycloak up -d`
+# App containers: `docker compose --profile apps up -d --build`
+
+x-supabase-oidc-env: &supabase-oidc-env
+  OIDC_REQUIRED: "true"
+  OIDC_ISSUER: http://host.docker.internal:54331/auth/v1
+  OIDC_AUDIENCE: authenticated
+  SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters-long}
+
+x-legacy-oidc-env: &legacy-oidc-env
+  OIDC_REQUIRED: "false"
+  OIDC_ISSUER: http://keycloak:8080/realms/daemon-demo
+  OIDC_AUDIENCE: console-web
+
+services:
+  postgres:
+    profiles: ["legacy-keycloak"]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: daemon
+      POSTGRES_PASSWORD: daemon
+      POSTGRES_DB: daemon
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daemon -d daemon"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    environment:
+      CLICKHOUSE_USER: daemon
+      CLICKHOUSE_PASSWORD: daemon
+      CLICKHOUSE_DB: daemon
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8123/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    profiles: ["legacy-keycloak"]
+    image: quay.io/keycloak/keycloak:26.0.7
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: "8080"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+    ports:
+      - "8180:8080"
+    volumes:
+      - ../keycloak:/opt/keycloak/data/import:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  neo4j:
+    image: neo4j:5.26-community
+    environment:
+      NEO4J_AUTH: neo4j/daemonneo4j
+      NEO4J_PLUGINS: '["apoc"]'
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  platform-api:
+    profiles: ["apps"]
+    build:
+      context: ../..
+      dockerfile: services/platform-api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *supabase-oidc-env
+      HTTP_PORT: "8080"
+      DATABASE_URL: postgresql://daemon_runtime:daemon_runtime_local@host.docker.internal:54332/postgres?sslmode=disable
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  ontology-service:
+    profiles: ["apps"]
+    build:
+      context: ../..
+      dockerfile: services/ontology-service/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      <<: *supabase-oidc-env
+      HTTP_PORT: "8081"
+      DATABASE_URL: postgresql://daemon_runtime:daemon_runtime_local@host.docker.internal:54332/postgres?sslmode=disable
+      CLICKHOUSE_DSN: clickhouse://daemon:daemon@clickhouse:9000/daemon
+      NEO4J_URI: neo4j://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: daemonneo4j
+      ONTOLOGY_ROOT: /ontology/v2
+    volumes:
+      - ../../ontology/v2:/ontology/v2:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+
+  ingestion-service:
+    profiles: ["apps"]
+    build:
+      context: ../..
+      dockerfile: services/ingestion-service/Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      <<: *supabase-oidc-env
+      HTTP_PORT: "8082"
+      DATABASE_URL: postgresql://daemon_runtime:daemon_runtime_local@host.docker.internal:54332/postgres?sslmode=disable
+      CLICKHOUSE_DSN: clickhouse://daemon:daemon@clickhouse:9000/daemon
+      REPO_ROOT: /repo
+    volumes:
+      - ../..:/repo:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+  rules-engine:
+    profiles: ["apps"]
+    build:
+      context: ../..
+      dockerfile: services/rules-engine/Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      <<: *supabase-oidc-env
+      HTTP_PORT: "8083"
+      DATABASE_URL: postgresql://daemon_runtime:daemon_runtime_local@host.docker.internal:54332/postgres?sslmode=disable
+      CLICKHOUSE_DSN: clickhouse://daemon:daemon@clickhouse:9000/daemon
+      RULES_ROOT: /ontology/v2/rules
+    volumes:
+      - ../../ontology/v2:/ontology/v2:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+  case-service:
+    profiles: ["apps"]
+    build:
+      context: ../..
+      dockerfile: services/case-service/Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      <<: *supabase-oidc-env
+      HTTP_PORT: "8084"
+      DATABASE_URL: postgresql://daemon_runtime:daemon_runtime_local@host.docker.internal:54332/postgres?sslmode=disable
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  postgres_data:
+  clickhouse_data:
+  neo4j_data:

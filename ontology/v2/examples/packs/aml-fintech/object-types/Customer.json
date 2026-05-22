@@ -1,0 +1,11 @@
+{
+  "apiName": "Customer",
+  "displayName": "Customer",
+  "primaryKey": "customerId",
+  "properties": {
+    "customerId": { "type": "string" },
+    "legalName": { "type": "string" },
+    "riskTier": { "type": "string" }
+  },
+  "implements": ["operational-entity"]
+}

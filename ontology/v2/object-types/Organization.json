@@ -1,0 +1,44 @@
+{
+  "apiName": "Organization",
+  "displayName": "Organization",
+  "primaryKey": "organizationId",
+  "titleProperty": "name",
+  "backingDataset": "dataset_organizations",
+  "implements": [
+    "OperationalEntity",
+    "Timestamped"
+  ],
+  "properties": [
+    {
+      "id": "organizationId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "tenantId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "status",
+      "type": "string"
+    },
+    {
+      "id": "externalId",
+      "type": "string"
+    },
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

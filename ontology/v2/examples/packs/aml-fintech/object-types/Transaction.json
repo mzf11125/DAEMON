@@ -1,0 +1,12 @@
+{
+  "apiName": "Transaction",
+  "displayName": "Transaction",
+  "primaryKey": "transactionId",
+  "properties": {
+    "transactionId": { "type": "string" },
+    "accountId": { "type": "string" },
+    "amount": { "type": "number" },
+    "direction": { "type": "string" }
+  },
+  "implements": ["timestamped"]
+}

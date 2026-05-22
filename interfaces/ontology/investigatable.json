@@ -1,0 +1,21 @@
+{
+  "apiName": "Investigatable",
+  "properties": [
+    {
+      "id": "ownerId",
+      "type": "string"
+    },
+    {
+      "id": "priority",
+      "type": "string"
+    },
+    {
+      "id": "status",
+      "type": "string"
+    },
+    {
+      "id": "openedAt",
+      "type": "datetime"
+    }
+  ]
+}

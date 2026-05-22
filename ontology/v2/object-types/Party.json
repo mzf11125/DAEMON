@@ -1,0 +1,34 @@
+{
+  "apiName": "Party",
+  "displayName": "Party",
+  "primaryKey": "partyId",
+  "titleProperty": "displayName",
+  "backingDataset": "dataset_parties",
+  "implements": [
+    "Timestamped"
+  ],
+  "properties": [
+    {
+      "id": "partyId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "displayName",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "email",
+      "type": "string"
+    },
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

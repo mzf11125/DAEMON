@@ -1,0 +1,6 @@
+# Copy to clickhouse-api-key-daemon-admin.txt (gitignored) after creating a key in ClickHouse Cloud.
+# Console: left menu → API Keys → New API Key
+# Docs: https://clickhouse.com/docs/cloud/manage/openapi
+
+Key ID: <your-key-id>
+Key Secret: <your-key-secret>

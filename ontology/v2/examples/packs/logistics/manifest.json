@@ -1,0 +1,7 @@
+{
+  "packId": "logistics",
+  "version": "0.1.0",
+  "description": "Sector stub — shipment delay, route exceptions, carrier events",
+  "status": "stub",
+  "extends": "enterprise-operations"
+}

@@ -1,0 +1,12 @@
+---
+description: Production quality charter
+globs: []
+alwaysApply: true
+---
+
+# Production quality
+
+- No mocks/stubs in runtime API paths
+- One concern per top-level folder
+- Data from migrations + seed + real queries
+- Unimplemented routes return 501 or are omitted

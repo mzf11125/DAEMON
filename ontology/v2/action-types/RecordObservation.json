@@ -1,0 +1,22 @@
+{
+  "apiName": "RecordObservation",
+  "displayName": "Record Observation",
+  "requiredRoles": [
+    "operator",
+    "system"
+  ],
+  "parameters": [
+    {
+      "id": "assetId",
+      "type": "string"
+    },
+    {
+      "id": "label",
+      "type": "string"
+    },
+    {
+      "id": "value",
+      "type": "double"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "apiName": "PartyAssignedToCase",
+  "sourceType": "Party",
+  "targetType": "Case",
+  "cardinality": "many-to-one"
+}

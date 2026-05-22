@@ -1,0 +1,7 @@
+{
+  "packId": "web3-intel",
+  "displayName": "Web3 intelligence",
+  "status": "stub",
+  "sector": "web3",
+  "connectorProfiles": ["dune-sim", "solana-rpc"]
+}

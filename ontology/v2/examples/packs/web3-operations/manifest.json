@@ -1,0 +1,7 @@
+{
+  "packId": "web3-operations",
+  "version": "0.1.0",
+  "description": "Sector stub — on-chain risk and treasury ops overlays (Solana + EVM)",
+  "status": "stub",
+  "extends": "enterprise-operations"
+}

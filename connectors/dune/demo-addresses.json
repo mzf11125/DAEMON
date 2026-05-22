@@ -1,0 +1,13 @@
+{
+  "description": "Demo addresses for console Sim ingest panel — public examples only, no secrets.",
+  "evm": {
+    "addresses": ["0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"],
+    "chain_ids": [1, 8453, 137],
+    "sources": ["balances", "activity"]
+  },
+  "svm": {
+    "addresses": [],
+    "svm_chain": "solana",
+    "sources": ["balances"]
+  }
+}

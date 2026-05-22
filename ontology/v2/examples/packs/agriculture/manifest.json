@@ -1,0 +1,7 @@
+{
+  "packId": "agriculture",
+  "version": "0.1.0",
+  "description": "Sector stub — crop, weather, and supply chain observations",
+  "status": "stub",
+  "extends": "enterprise-operations"
+}

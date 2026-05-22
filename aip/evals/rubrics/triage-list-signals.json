@@ -1,0 +1,8 @@
+{
+  "caseId": "triage-list-signals",
+  "criteria": [
+    { "id": "toolsCalled", "weight": 0.5, "description": "Expected tool invoked" },
+    { "id": "minHighSeveritySignals", "weight": 0.3, "description": "Tool result parseable" },
+    { "id": "forbiddenTools", "weight": 0.2, "description": "No mutating tools" }
+  ]
+}

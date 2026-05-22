@@ -1,0 +1,12 @@
+{
+  "recordedAt": null,
+  "goldenPassRate": null,
+  "cases": {
+    "triage-list-signals": {
+      "status": "pending_first_green",
+      "durationMs": null,
+      "model": null
+    }
+  },
+  "flakeWaivers7d": 0
+}

@@ -1,0 +1,6 @@
+{
+  "apiName": "AssetEmitsObservation",
+  "sourceType": "Asset",
+  "targetType": "Observation",
+  "cardinality": "one-to-many"
+}

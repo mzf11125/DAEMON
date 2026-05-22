@@ -1,0 +1,19 @@
+{
+  "caseId": "triage-list-signals",
+  "version": 1,
+  "agentId": "triage-analyst",
+  "promptVersion": "v1",
+  "input": {
+    "userMessage": "List high-severity open signals for my tenant."
+  },
+  "expect": {
+    "toolsCalled": ["ontology_list_objects"],
+    "minHighSeveritySignals": 0,
+    "forbiddenTools": ["ontology_execute_action", "OpenCase"]
+  },
+  "providers": {
+    "prefer": ["lmstudio", "ollama", "openrouter"]
+  },
+  "expectedTool": "ontology_list_objects",
+  "expectedObjectType": "Signal"
+}

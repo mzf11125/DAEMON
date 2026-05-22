@@ -1,0 +1,13 @@
+{
+  "apiName": "Timestamped",
+  "properties": [
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

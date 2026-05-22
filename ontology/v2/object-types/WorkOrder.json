@@ -1,0 +1,47 @@
+{
+  "apiName": "WorkOrder",
+  "displayName": "Work Order",
+  "primaryKey": "workOrderId",
+  "titleProperty": "title",
+  "backingDataset": "dataset_work_orders",
+  "implements": [
+    "Investigatable",
+    "Timestamped"
+  ],
+  "properties": [
+    {
+      "id": "workOrderId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "title",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "ownerId",
+      "type": "string"
+    },
+    {
+      "id": "priority",
+      "type": "string"
+    },
+    {
+      "id": "status",
+      "type": "string"
+    },
+    {
+      "id": "openedAt",
+      "type": "datetime"
+    },
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

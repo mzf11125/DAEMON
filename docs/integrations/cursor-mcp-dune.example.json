@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "dune-official": {
+      "url": "https://api.dune.com/mcp/v1",
+      "headers": {
+        "x-dune-api-key": "SET_VIA_CURSOR_SECRETS_OR_ENV_DO_NOT_COMMIT"
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "apiName": "SiteHostsAsset",
+  "sourceType": "Site",
+  "targetType": "Asset",
+  "cardinality": "one-to-many"
+}

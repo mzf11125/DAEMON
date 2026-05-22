@@ -1,0 +1,6 @@
+{
+  "apiName": "CaseTargetsOrganization",
+  "sourceType": "Case",
+  "targetType": "Organization",
+  "cardinality": "many-to-one"
+}

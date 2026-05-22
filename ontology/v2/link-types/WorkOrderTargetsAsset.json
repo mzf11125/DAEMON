@@ -1,0 +1,6 @@
+{
+  "apiName": "WorkOrderTargetsAsset",
+  "sourceType": "WorkOrder",
+  "targetType": "Asset",
+  "cardinality": "many-to-one"
+}

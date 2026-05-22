@@ -1,0 +1,44 @@
+{
+  "apiName": "Asset",
+  "displayName": "Asset",
+  "primaryKey": "assetId",
+  "titleProperty": "name",
+  "backingDataset": "dataset_assets",
+  "implements": [
+    "OperationalEntity",
+    "Timestamped"
+  ],
+  "properties": [
+    {
+      "id": "assetId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "tenantId",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "status",
+      "type": "string"
+    },
+    {
+      "id": "externalId",
+      "type": "string"
+    },
+    {
+      "id": "createdAt",
+      "type": "datetime"
+    },
+    {
+      "id": "updatedAt",
+      "type": "datetime"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "id": "dataset-observations-nonempty",
+  "description": "dataset_observations must have at least one row after transforms",
+  "sql": "SELECT count() FROM daemon.dataset_observations",
+  "minRows": 1
+}

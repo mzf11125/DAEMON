@@ -1,0 +1,18 @@
+{
+  "apiName": "ExecuteWorkOrder",
+  "displayName": "Execute Work Order",
+  "requiredRoles": [
+    "operator",
+    "lead"
+  ],
+  "parameters": [
+    {
+      "id": "workOrderId",
+      "type": "string"
+    },
+    {
+      "id": "status",
+      "type": "string"
+    }
+  ]
+}

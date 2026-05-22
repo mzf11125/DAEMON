@@ -1,0 +1,6 @@
+{
+  "apiName": "ObservationRaisedSignal",
+  "sourceType": "Observation",
+  "targetType": "Signal",
+  "cardinality": "one-to-many"
+}

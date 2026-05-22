@@ -1,0 +1,7 @@
+{
+  "packId": "banking-core",
+  "displayName": "Banking core",
+  "status": "stub",
+  "sector": "banking",
+  "connectorProfiles": ["core-banking", "payments"]
+}

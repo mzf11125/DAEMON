@@ -1,0 +1,6 @@
+{
+  "apiName": "OrganizationOperatesSite",
+  "sourceType": "Organization",
+  "targetType": "Site",
+  "cardinality": "one-to-many"
+}

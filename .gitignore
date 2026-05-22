@@ -1,0 +1,15 @@
+.env
+.env.local
+node_modules/
+.cursor/plans/
+.turbo/
+dist/
+.next/
+*.log
+.DS_Store
+coverage/
+bin/
+tmp/
+.idea/
+.vscode/
+clickhouse-api-key-daemon-admin.txt

@@ -1,0 +1,7 @@
+{
+  "packId": "public-sector",
+  "version": "0.1.0",
+  "description": "Sector stub — citizen service and program delivery signals",
+  "status": "stub",
+  "extends": "enterprise-operations"
+}

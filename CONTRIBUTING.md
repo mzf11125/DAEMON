@@ -76,6 +76,9 @@ See [docs/developer-tools/api.md](docs/developer-tools/api.md).
 - Orchestrator CLI: `make aip-orchestrator` (optional `CASE=investigate-case-readonly`)
 - LLM gateway (OpenAI-compatible proxy on `:8092`): `make aip-llm-build` then `pnpm --filter @daemon/llm-gateway start` — requires `pnpm install` at repo root (Makefile runs it via `pnpm-workspace`)
 - Details: [aip/evals/README.md](aip/evals/README.md), [docs/traceability/aip-phase-2.md](docs/traceability/aip-phase-2.md)
+- **Eval baseline:** update `aip/evals/baseline.json` only after a local green run: `EVAL_RECORD_BASELINE=true make aip-eval` (see [docs/governance/daemon-maturation-gates-v1.md](docs/governance/daemon-maturation-gates-v1.md)).
+- **Agent service (Merge Phase 2):** default DAEMON path is HTTP bridge to Go — `AGENT_DAEMON_BRIDGE=true`, `ONTOLOGY_SERVICE_URL=http://localhost:8081`. Smoke: `make agent-bridge-smoke` with stack up. Do not claim production-grade autonomous agents until maturation gates are met.
+- **CLI (Merge Phase 1):** `pnpm run daemon-cli -- <command>` or `make cli-test` — env from `.env.example`; migrations path is vendored under `packages/ontology-engine`.
 
 ## Checks before PR
 
@@ -85,6 +88,8 @@ Minimum (matches CI `validate` job):
 make test
 make validate-ontology
 ./scripts/check-no-stub-handlers.sh
+./scripts/check-maturation-policy.sh
+make cli-test
 ```
 
 With Docker and Supabase CLI available, also run:

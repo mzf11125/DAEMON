@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -39,7 +40,33 @@ func applyClickHouseMigration(ctx context.Context, dsn, sqlPath string) error {
 		return err
 	}
 	defer conn.Close()
-	return conn.Exec(ctx, string(b))
+	for _, stmt := range splitClickHouseStatements(string(b)) {
+		if err := conn.Exec(ctx, stmt); err != nil {
+			return fmt.Errorf("%w\nstatement: %s", err, truncateStmt(stmt))
+		}
+	}
+	return nil
+}
+
+// splitClickHouseStatements splits migration files; ClickHouse HTTP/native drivers reject multi-statement Exec.
+func splitClickHouseStatements(sql string) []string {
+	var out []string
+	for _, part := range strings.Split(sql, ";") {
+		stmt := strings.TrimSpace(part)
+		if stmt == "" || strings.HasPrefix(stmt, "--") {
+			continue
+		}
+		out = append(out, stmt)
+	}
+	return out
+}
+
+func truncateStmt(s string) string {
+	const max = 120
+	if len(s) <= max {
+		return s
+	}
+	return s[:max] + "..."
 }
 
 // RunSeed executes infra/seed against the given env.

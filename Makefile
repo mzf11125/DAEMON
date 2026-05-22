@@ -132,6 +132,21 @@ aip-orchestrator: aip-build
 prove-aip-eval: aip-build
 	./scripts/prove-aip-eval.sh
 
+cli-test: pnpm-workspace
+	pnpm --filter @daemon/cli test
+
+cli-build: pnpm-workspace
+	pnpm --filter @daemon/cli build
+
+agent-bridge-smoke:
+	./scripts/smoke-agent-bridge.sh
+
+cp-test: pnpm-workspace
+	pnpm --filter @daemon/control-plane test
+
+maturation-policy:
+	./scripts/check-maturation-policy.sh
+
 ontology-sync:
 	./scripts/ontology-sync.sh
 

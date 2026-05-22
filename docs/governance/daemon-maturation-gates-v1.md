@@ -4,7 +4,9 @@
 
 - `make test` — Go unit tests across services
 - `.github/workflows/aip-eval.yml` — golden MCP eval with Postgres seed
-- Adopt upstream `test-compose` pattern when `external/daemon-system-ontology` is pinned
+- Adopt upstream `test-compose` pattern when `external/daemon-system-ontology` is pinned (copy vendored compose from submodule `test/` after pin stabilizes; do not commit secrets)
+- `.github/workflows/maturation-gates.yml` + `./scripts/check-maturation-policy.sh` — doc policy for premature production-agent claims
+- [github-rulesets-v1.md](./github-rulesets-v1.md) — required checks on `main`
 
 ## Production agent claims
 

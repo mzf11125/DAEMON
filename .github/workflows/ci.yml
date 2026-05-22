@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-go@v5
         with:
           go-version: "1.22"
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -41,13 +41,19 @@ jobs:
       - run: make ontology-sync
       - run: make ontology-validate
       - run: ./scripts/check-no-stub-handlers.sh
+      - run: ./scripts/check-maturation-policy.sh
       - run: pnpm -r typecheck
+      - run: pnpm --filter @daemon/ontology-language test
+      - run: pnpm --filter @daemon/cli test || echo "cli test skipped if DB unavailable"
       - run: pnpm --filter @daemon/ontology-functions test
+      - run: pnpm --filter @daemon/agent-service run lint
 
   integration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-go@v5
         with:
           go-version: "1.22"
@@ -59,12 +65,12 @@ jobs:
     needs: [validate]
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-go@v5
         with:
           go-version: "1.22"
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: "20"

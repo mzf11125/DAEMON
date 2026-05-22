@@ -8,7 +8,9 @@
     "typecheck": "turbo run typecheck",
     "dev": "turbo run dev",
     "ontology:port-v3": "tsx scripts/ontology-v3-port.ts",
-    "ontology:compile": "pnpm --filter @daemon/ontology-language build && tsx scripts/compile-schemas.ts"
+    "ontology:compile": "pnpm --filter @daemon/ontology-language build && tsx scripts/compile-schemas.ts",
+    "daemon-cli": "pnpm --filter @daemon/cli",
+    "control-plane": "pnpm --filter @daemon/control-plane"
   },
   "devDependencies": {
     "@daemon/ontology-language": "workspace:*",

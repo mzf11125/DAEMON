@@ -1,0 +1,6 @@
+linkType:
+  apiName: OrganizationOperatesSite
+  displayName: Organization Operates Site
+  fromObjectType: Organization
+  toObjectType: Site
+  cardinality: ONE_TO_MANY

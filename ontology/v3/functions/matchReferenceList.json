@@ -1,0 +1,8 @@
+{
+  "apiName": "matchReferenceList",
+  "inputs": [
+    "partyId"
+  ],
+  "outputType": "array",
+  "editsOntology": true
+}

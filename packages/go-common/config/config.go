@@ -42,6 +42,6 @@ func LoadBase(defaultPort int) Base {
 		Neo4jURI:        getenv("NEO4J_URI", "neo4j://localhost:7687"),
 		Neo4jUser:       getenv("NEO4J_USER", "neo4j"),
 		Neo4jPassword:   getenv("NEO4J_PASSWORD", "daemonneo4j"),
-		OntologyRoot:    getenv("ONTOLOGY_ROOT", "../../ontology/v2"),
+		OntologyRoot:    getenv("ONTOLOGY_ROOT", "../../ontology/v2-compiled"),
 	}
 }

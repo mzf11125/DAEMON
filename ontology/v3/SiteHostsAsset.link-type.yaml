@@ -1,0 +1,6 @@
+linkType:
+  apiName: SiteHostsAsset
+  displayName: Site Hosts Asset
+  fromObjectType: Site
+  toObjectType: Asset
+  cardinality: ONE_TO_MANY

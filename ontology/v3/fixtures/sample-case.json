@@ -1,0 +1,7 @@
+{
+  "caseId": "case-001",
+  "title": "Investigate Line A temperature",
+  "status": "open",
+  "ownerId": "party-001",
+  "priority": "P1"
+}

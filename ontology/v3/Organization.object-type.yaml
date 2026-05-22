@@ -1,0 +1,27 @@
+objectType:
+  apiName: Organization
+  displayName: Organization
+  primaryKey: organizationId
+  titleProperty: name
+  properties:
+    - name: organizationId
+      type: string
+      required: true
+    - name: name
+      type: string
+      required: true
+    - name: tenantId
+      type: string
+      required: true
+    - name: status
+      type: string
+      required: false
+    - name: externalId
+      type: string
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

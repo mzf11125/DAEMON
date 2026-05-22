@@ -1,0 +1,21 @@
+objectType:
+  apiName: Decision
+  displayName: Decision
+  primaryKey: decisionId
+  titleProperty: outcome
+  properties:
+    - name: decisionId
+      type: string
+      required: true
+    - name: outcome
+      type: string
+      required: true
+    - name: caseId
+      type: string
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

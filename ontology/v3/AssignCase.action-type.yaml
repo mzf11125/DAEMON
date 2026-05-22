@@ -1,0 +1,12 @@
+actionType:
+  apiName: AssignCase
+  displayName: Assign Case
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: false
+    - name: partyId
+      type: string
+      required: false
+  requiresApproval: true

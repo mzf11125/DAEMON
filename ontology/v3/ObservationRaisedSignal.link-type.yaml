@@ -1,0 +1,6 @@
+linkType:
+  apiName: ObservationRaisedSignal
+  displayName: Observation Raised Signal
+  fromObjectType: Observation
+  toObjectType: Signal
+  cardinality: ONE_TO_MANY

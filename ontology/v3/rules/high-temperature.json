@@ -1,0 +1,7 @@
+{
+  "id": "high-temperature",
+  "description": "Observation value above threshold creates signal",
+  "sql": "SELECT observation_id, asset_id, value FROM dataset_observations WHERE value > {threshold:Float64}",
+  "threshold": 85.0,
+  "signalSeverity": "high"
+}

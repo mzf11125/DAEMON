@@ -1,0 +1,33 @@
+objectType:
+  apiName: Signal
+  displayName: Signal
+  primaryKey: signalId
+  titleProperty: summary
+  properties:
+    - name: signalId
+      type: string
+      required: true
+    - name: summary
+      type: string
+      required: true
+    - name: severity
+      type: string
+      required: false
+    - name: ownerId
+      type: string
+      required: false
+    - name: priority
+      type: string
+      required: false
+    - name: status
+      type: string
+      required: false
+    - name: openedAt
+      type: timestamp
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

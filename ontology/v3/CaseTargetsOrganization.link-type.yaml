@@ -1,0 +1,6 @@
+linkType:
+  apiName: CaseTargetsOrganization
+  displayName: Case Targets Organization
+  fromObjectType: Case
+  toObjectType: Organization
+  cardinality: MANY_TO_ONE

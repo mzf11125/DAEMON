@@ -37,9 +37,10 @@ jobs:
             infra/seed; do
             (cd "$dir" && go test ./...) || exit 1
           done
-      - run: ./scripts/validate-ontology.sh
-      - run: ./scripts/check-no-stub-handlers.sh
       - run: pnpm install --frozen-lockfile || pnpm install
+      - run: make ontology-sync
+      - run: make ontology-validate
+      - run: ./scripts/check-no-stub-handlers.sh
       - run: pnpm -r typecheck
       - run: pnpm --filter @daemon/ontology-functions test
 

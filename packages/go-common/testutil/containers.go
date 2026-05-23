@@ -118,6 +118,7 @@ func SetupDataStores(ctx context.Context, t *testing.T) *Env {
 	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/002_indexes_fk.sql"))
 	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/003_ingestion_params.sql"))
 	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/004_supabase_compat_roles.sql"))
+	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/005_authenticated_grants.sql"))
 	if err := applyClickHouseMigration(ctx, chDSN, filepath.Join(repoRoot, "infra/migrations/clickhouse/001_init.sql")); err != nil {
 		t.Fatalf("clickhouse migration: %v", err)
 	}

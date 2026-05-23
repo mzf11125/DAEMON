@@ -23,7 +23,7 @@ func main() {
 	defer conn.Close()
 
 	q := `INSERT INTO dataset_observations
-	SELECT observation_id, label, value, unit, observed_at, asset_id, observed_at, observed_at
+	SELECT observation_id, label, value, unit, observed_at, asset_id, observed_at, observed_at, tenant_id
 	FROM raw_observations`
 	if err := conn.Exec(ctx, q); err != nil {
 		log.Fatal(err)

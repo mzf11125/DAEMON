@@ -7,6 +7,9 @@
 | Analyst OpenCase | `AuthorizeAction` | `auth_test.go` |
 | Read-only agent eval | forbidden tools in case | `aip/evals/cases/` |
 | Ingestion observability | job status in console | e2e-smoke E2E_FULL |
+| L3 operational loop | OpenCase → RecordDecision → audit | [operational-proof-l3-v1.md](./operational-proof-l3-v1.md); `prove-operational-loop.sh` |
+| Merge-track agent bridge | `AGENT_DAEMON_BRIDGE` → :8081 | `smoke-agent-bridge.sh`; compose profile `merge-track` |
+| Control-plane tenant registry | D-TENANT-01 seed | `seed-control-plane-demo-tenant.sh` |
 | External chain data ingest | `sim-dune`, `dune-sql` connectors; `packages/dune-ingest` | `ingestparams` tests; `ingestion_dune_params_test` |
 | Dune agent tooling (Layer A) | `docs/integrations/dune-agent-tooling-v1.md`, `dune-docs-index.md` | `make dune-dev-setup`; `scripts/dune-smoke-cli.sh` (manual) |
 | Local IdP = Supabase Auth | `@supabase/ssr`, `custom_access_token_hook` | console sign-in; RSC loads without manual refresh |

@@ -46,7 +46,7 @@ func TestRulesEvaluateCreatesSignal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	port := "38185"
+	port := testutil.FreeTCPPort(t)
 	rulesRoot := filepath.Join(env.RepoRoot, "ontology", "v2-compiled", "rules")
 	if _, err := os.Stat(rulesRoot); err != nil {
 		sync := exec.CommandContext(ctx, "make", "ontology-sync")
@@ -55,20 +55,17 @@ func TestRulesEvaluateCreatesSignal(t *testing.T) {
 			t.Fatalf("ontology-sync: %v: %s", err, out)
 		}
 	}
-	cmd := testutil.BuildAndStart(ctx, t, filepath.Join(env.RepoRoot, "services", "rules-engine"), "rules-engine",
+	proc := testutil.BuildAndStart(ctx, t, filepath.Join(env.RepoRoot, "services", "rules-engine"), "rules-engine",
 		"DATABASE_URL="+env.PostgresURL,
 		"CLICKHOUSE_DSN="+env.ClickHouseDSN,
 		"HTTP_PORT="+port,
 		"RULES_ROOT="+rulesRoot,
 		"OIDC_REQUIRED=false",
 	)
-	defer func() {
-		_ = cmd.Process.Kill()
-		_, _ = cmd.Process.Wait()
-	}()
+	defer stopService(proc)
 
 	base := "http://localhost:" + port
-	waitServiceHealth(t, base+"/health", "rules-engine", 90*time.Second)
+	waitServiceHealth(t, base+"/health", "rules-engine", proc, 90*time.Second)
 
 	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, base+"/v1/evaluate", bytes.NewReader([]byte("{}")))
 	req.Header.Set("Content-Type", "application/json")
@@ -82,14 +79,16 @@ func TestRulesEvaluateCreatesSignal(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("evaluate: %d %s", resp.StatusCode, string(body))
 	}
-	var evalBody struct {
-		Count int `json:"count"`
+	var evalEnvelope struct {
+		Data struct {
+			Count int `json:"count"`
+		} `json:"data"`
 	}
-	if err := json.Unmarshal(body, &evalBody); err != nil {
+	if err := json.Unmarshal(body, &evalEnvelope); err != nil {
 		t.Fatalf("decode evaluate: %v", err)
 	}
-	if evalBody.Count < 1 {
-		t.Fatalf("evaluate returned count=%d (expected >=1); check RULES_ROOT and ClickHouse seed", evalBody.Count)
+	if evalEnvelope.Data.Count < 1 {
+		t.Fatalf("evaluate returned count=%d (expected >=1); check RULES_ROOT and ClickHouse seed\nservice logs:\n%s", evalEnvelope.Data.Count, proc.Logs())
 	}
 
 	pool, err := pgxpool.New(ctx, env.PostgresURL)

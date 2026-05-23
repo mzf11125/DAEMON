@@ -4,6 +4,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 export E2E_FULL=1
+export E2E_FORCE_RESTART=1
 echo "prove-operational-loop: running e2e-smoke with E2E_FULL=1"
 ./scripts/e2e-smoke.sh
 echo "prove-operational-loop: running integration operational loop test"

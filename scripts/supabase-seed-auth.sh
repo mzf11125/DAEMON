@@ -39,6 +39,22 @@ create_user() {
       '{email: $email, password: $password, email_confirm: true, app_metadata: {tenant_id: $tenant, roles: $roles}}')"
 }
 
+update_user_metadata() {
+  local user_id="$1"
+  local tenant_id="$2"
+  local roles_json="$3"
+  local password="$4"
+  curl -sf -X PUT "${SUPABASE_URL}/auth/v1/admin/users/${user_id}" \
+    -H "apikey: ${SERVICE_KEY}" \
+    -H "Authorization: Bearer ${SERVICE_KEY}" \
+    -H "Content-Type: application/json" \
+    -d "$(jq -n \
+      --arg tenant "$tenant_id" \
+      --arg password "$password" \
+      --argjson roles "$roles_json" \
+      '{password: $password, app_metadata: {tenant_id: $tenant, roles: $roles}}')"
+}
+
 roles_json='["analyst","lead"]'
 resp="$(create_user "analyst@demo.local" "analyst" "tenant-demo" "$roles_json")" || {
   echo "supabase-seed-auth: failed to create analyst@demo.local (user may already exist)" >&2
@@ -53,6 +69,11 @@ if [[ -z "$user_id" || "$user_id" == "null" ]]; then
   echo "$resp" >&2
   exit 1
 fi
+
+update_user_metadata "$user_id" "tenant-demo" "$roles_json" "analyst" >/dev/null || {
+  echo "supabase-seed-auth: failed to update app_metadata for $user_id" >&2
+  exit 1
+}
 
 echo "SUPABASE_DEMO_USER_ID=$user_id"
 echo "Export before seed: export SUPABASE_DEMO_USER_ID=$user_id"

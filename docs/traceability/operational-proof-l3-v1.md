@@ -18,10 +18,11 @@ Evidence for [technical proof ladder v1](../gtm/technical-proof-ladder-v1.md) ru
 | Integration test | `TestOperationalLoopHTTP` in `tests/integration/` |
 | Prerequisites | `make up`, `make supabase-up`, `make migrate`, Go services on :8080–:8084 |
 | ClickHouse | `scripts/apply-clickhouse-migrations.sh` (via `make migrate`) |
-| Status | **Verified locally** after migrate + seed + 5-service start |
-| CI | `ci.yml` job `integration` — `TestOperationalLoopHTTP` (testcontainers) |
-| Gate 1 commit | `326e5a7` — green validate, integration, aip-eval, L1-L3 proof |
-| Date | 2026-05-22 |
+| Status | **Verified locally** — ES256 JWT + `OIDC_ISSUER` from `SUPABASE_URL`; `case_signals` verified via case-service API (RLS-safe); re-run: `make up && make supabase-up && make migrate && ./scripts/prove-operational-loop.sh` |
+| CI | `ci.yml` job `integration` — other integration tests via testcontainers; `TestOperationalLoopHTTP` skips when services/signals unavailable |
+| Gate 0 fix | `005_authenticated_grants.sql` required for `aip-eval` (`SET LOCAL role authenticated`); `load_supabase_env` + ES256 JWKS in `go-common/auth` |
+| Gate 1 commit | `326e5a7` — prior green run; `ccb72b0` docs-only follow-up |
+| Date | 2026-05-23 |
 
 ## Related
 

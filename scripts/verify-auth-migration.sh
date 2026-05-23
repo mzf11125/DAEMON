@@ -22,14 +22,26 @@ else
   echo "WARN: supabase CLI not installed; skipping health check"
 fi
 
-if [[ -z "$ANON_KEY" ]] && command -v supabase >/dev/null 2>&1; then
-  ANON_KEY="$(supabase status -o env 2>/dev/null | grep -E '^ANON_KEY=' | cut -d= -f2- | tr -d \"' || true)"
+if command -v supabase >/dev/null 2>&1; then
+  while IFS= read -r line; do
+    case "$line" in
+      ANON_KEY=*)
+        if [[ -z "$ANON_KEY" ]]; then
+          ANON_KEY="${line#ANON_KEY=}"
+        fi
+        ;;
+      JWT_SECRET=*) JWT_SECRET="${line#JWT_SECRET=}" ;;
+      SERVICE_ROLE_KEY=*) SERVICE_KEY="${line#SERVICE_ROLE_KEY=}" ;;
+    esac
+  done < <(supabase status -o env 2>/dev/null | tr -d '"')
 fi
-if [[ -z "$SERVICE_KEY" ]] && command -v supabase >/dev/null 2>&1; then
-  SERVICE_KEY="$(supabase status -o env 2>/dev/null | grep -E '^SERVICE_ROLE_KEY=' | cut -d= -f2- | tr -d \"' || true)"
+export SUPABASE_JWT_SECRET="$JWT_SECRET"
+
+# Password grant (demo user) — ensure demo user has tenant_id in app_metadata
+if [ -x ./scripts/supabase-seed-auth.sh ]; then
+  ./scripts/supabase-seed-auth.sh >/dev/null || true
 fi
 
-# Password grant (demo user)
 token_resp="$(curl -sf "${SUPABASE_URL}/auth/v1/token?grant_type=password" \
   -H "apikey: ${ANON_KEY}" \
   -H "Content-Type: application/json" \
@@ -47,7 +59,7 @@ echo "OK: password grant token"
 payload="$(echo "$ACCESS_TOKEN" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | jq . 2>/dev/null || true)"
 tenant="$(echo "$payload" | jq -r '.app_metadata.tenant_id // .tenant_id // empty')"
 if [[ "$tenant" != "tenant-demo" ]]; then
-  echo "WARN: expected tenant_id tenant-demo in JWT, got: ${tenant:-<empty>}"
+  echo "WARN: expected tenant_id tenant-demo in JWT (app_metadata or top-level), got: ${tenant:-<empty>}"
 else
   echo "OK: JWT tenant_id claim"
 fi
@@ -62,7 +74,7 @@ fi
 
 # RLS enabled on tenant tables
 if command -v psql >/dev/null 2>&1; then
-  rls_count="$(psql "$DB_URL" -tAc "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relrowsecurity AND n.nspname='public' AND c.relname IN ('cases','signals','users','ingestion_jobs')")"
+  rls_count="$(psql "$DB_URL" -tAc "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relrowsecurity AND n.nspname='public' AND c.relname IN ('cases','case_signals','users','ingestion_jobs')")"
   if [[ "${rls_count:-0}" -lt 4 ]]; then
     fail "RLS not enabled on all core tables (count=${rls_count})"
   fi

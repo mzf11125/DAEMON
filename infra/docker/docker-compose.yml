@@ -193,8 +193,82 @@ services:
       timeout: 3s
       retries: 10
 
+  # Merge-track: control-plane registry + agent HTTP bridge (ADR D-TENANT-01).
+  cp-postgres:
+    profiles: ["merge-track"]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: daemon
+      POSTGRES_PASSWORD: daemon
+      POSTGRES_DB: control_plane
+    ports:
+      - "5433:5432"
+    volumes:
+      - cp_postgres_data:/var/lib/postgresql/data
+      - ../../apps/control-plane/src/db/migrations/0001_initial.sql:/docker-entrypoint-initdb.d/01_initial.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daemon -d control_plane"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  control-plane:
+    profiles: ["merge-track"]
+    image: node:20-alpine
+    working_dir: /repo
+    command:
+      - sh
+      - -c
+      - |
+        corepack enable
+        pnpm install --frozen-lockfile || pnpm install
+        pnpm --filter @daemon/control-plane build
+        node apps/control-plane/dist/index.js
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: "4000"
+      DB_HOST: cp-postgres
+      DB_PORT: "5432"
+      DB_USER: daemon
+      DB_PASSWORD: daemon
+      DB_NAME: control_plane
+      INTERNAL_SECRET: ${CP_INTERNAL_SECRET:-local-dev-internal-secret}
+    volumes:
+      - ../..:/repo
+    depends_on:
+      cp-postgres:
+        condition: service_healthy
+
+  agent-bridge:
+    profiles: ["merge-track"]
+    image: node:20-alpine
+    working_dir: /repo
+    command:
+      - sh
+      - -c
+      - |
+        corepack enable
+        pnpm install --frozen-lockfile || pnpm install
+        pnpm --filter @daemon/agent-service exec tsx src/bridge-main.ts
+    ports:
+      - "3001:3001"
+    environment:
+      AGENT_DAEMON_BRIDGE: "true"
+      PORT: "3001"
+      ONTOLOGY_SERVICE_URL: http://ontology-service:8081
+      PLATFORM_API_URL: http://platform-api:8080
+    volumes:
+      - ../..:/repo
+    depends_on:
+      ontology-service:
+        condition: service_started
+      platform-api:
+        condition: service_started
+
 volumes:
   postgres_data:
   clickhouse_data:
   neo4j_data:
   redis_data:
+  cp_postgres_data:

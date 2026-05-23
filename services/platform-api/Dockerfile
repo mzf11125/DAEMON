@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine AS build
+FROM golang:1.25-alpine AS build
 WORKDIR /src
 COPY packages/go-common /src/packages/go-common
 COPY services/platform-api /src/services/platform-api

@@ -7,27 +7,47 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/daemon-platform/daemon/packages/go-common/testutil"
 )
 
-func waitServiceHealth(t *testing.T, url, wantService string, timeout time.Duration) {
+func waitServiceHealth(t *testing.T, url, wantService string, proc *testutil.ServiceProcess, timeout time.Duration) {
 	t.Helper()
 	deadline := time.Now().Add(timeout)
 	for time.Now().Before(deadline) {
+		if proc != nil && !proc.Alive() {
+			t.Fatalf("service exited before healthy; logs:\n%s", proc.Logs())
+		}
 		resp, err := http.Get(url)
 		if err != nil {
 			time.Sleep(500 * time.Millisecond)
 			continue
 		}
-		var body struct {
-			Status  string `json:"status"`
-			Service string `json:"service"`
+		var envelope struct {
+			Data struct {
+				Status  string `json:"status"`
+				Service string `json:"service"`
+			} `json:"data"`
 		}
-		_ = json.NewDecoder(resp.Body).Decode(&body)
+		_ = json.NewDecoder(resp.Body).Decode(&envelope)
 		resp.Body.Close()
+		body := envelope.Data
 		if resp.StatusCode == http.StatusOK && body.Status == "ok" && body.Service == wantService {
 			return
 		}
 		time.Sleep(500 * time.Millisecond)
 	}
-	t.Fatalf("timeout waiting for %s (want service=%s)", url, wantService)
+	logs := ""
+	if proc != nil {
+		logs = proc.Logs()
+	}
+	t.Fatalf("timeout waiting for %s (want service=%s)\nlogs:\n%s", url, wantService, logs)
+}
+
+func stopService(proc *testutil.ServiceProcess) {
+	if proc == nil || proc.Cmd == nil || proc.Cmd.Process == nil {
+		return
+	}
+	_ = proc.Cmd.Process.Kill()
+	_, _ = proc.Cmd.Process.Wait()
 }

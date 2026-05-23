@@ -24,22 +24,19 @@ func TestIngestionJobSeedCSV(t *testing.T) {
 	env := testutil.SetupDataStores(ctx, t)
 	defer env.Cleanup(ctx)
 
-	port := "38182"
+	port := testutil.FreeTCPPort(t)
 	svcDir := filepath.Join(env.RepoRoot, "services", "ingestion-service")
-	cmd := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
+	proc := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
 		"DATABASE_URL="+env.PostgresURL,
 		"CLICKHOUSE_DSN="+env.ClickHouseDSN,
 		"HTTP_PORT="+port,
 		"REPO_ROOT="+env.RepoRoot,
 		"OIDC_REQUIRED=false",
 	)
-	defer func() {
-		_ = cmd.Process.Kill()
-		_, _ = cmd.Process.Wait()
-	}()
+	defer stopService(proc)
 
 	base := "http://localhost:" + port
-	waitServiceHealth(t, base+"/health", "ingestion-service", 90*time.Second)
+	waitServiceHealth(t, base+"/health", "ingestion-service", proc, 90*time.Second)
 
 	body, _ := json.Marshal(map[string]string{"connector": "seed-csv"})
 	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, base+"/v1/jobs", bytes.NewReader(body))
@@ -54,26 +51,35 @@ func TestIngestionJobSeedCSV(t *testing.T) {
 		b, _ := io.ReadAll(resp.Body)
 		t.Fatalf("create job: %d %s", resp.StatusCode, string(b))
 	}
-	var created struct {
-		JobID string `json:"jobId"`
+	var createdEnvelope struct {
+		Data struct {
+			JobID string `json:"jobId"`
+		} `json:"data"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&created); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&createdEnvelope); err != nil {
 		t.Fatal(err)
+	}
+	jobID := createdEnvelope.Data.JobID
+	if jobID == "" {
+		t.Fatal("empty jobId in create response")
 	}
 
 	deadline := time.Now().Add(4 * time.Minute)
 	for time.Now().Before(deadline) {
-		getReq, _ := http.NewRequestWithContext(ctx, http.MethodGet, base+"/v1/jobs/"+created.JobID, nil)
+		getReq, _ := http.NewRequestWithContext(ctx, http.MethodGet, base+"/v1/jobs/"+jobID, nil)
 		getReq.Header.Set("X-Tenant-Id", "tenant-demo")
 		getResp, err := http.DefaultClient.Do(getReq)
 		if err != nil {
 			time.Sleep(2 * time.Second)
 			continue
 		}
-		var st struct {
-			Status string `json:"status"`
+		var stEnvelope struct {
+			Data struct {
+				Status string `json:"status"`
+			} `json:"data"`
 		}
-		_ = json.NewDecoder(getResp.Body).Decode(&st)
+		_ = json.NewDecoder(getResp.Body).Decode(&stEnvelope)
+		st := stEnvelope.Data
 		getResp.Body.Close()
 		if st.Status == "completed" {
 			return
@@ -116,22 +122,19 @@ func TestIngestionJobTenantIsolation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	port := "38183"
+	port := testutil.FreeTCPPort(t)
 	svcDir := filepath.Join(env.RepoRoot, "services", "ingestion-service")
-	cmd := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
+	proc := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
 		"DATABASE_URL="+env.PostgresURL,
 		"CLICKHOUSE_DSN="+env.ClickHouseDSN,
 		"HTTP_PORT="+port,
 		"REPO_ROOT="+env.RepoRoot,
 		"OIDC_REQUIRED=false",
 	)
-	defer func() {
-		_ = cmd.Process.Kill()
-		_, _ = cmd.Process.Wait()
-	}()
+	defer stopService(proc)
 
 	base := fmt.Sprintf("http://localhost:%s", port)
-	waitServiceHealth(t, base+"/health", "ingestion-service", 90*time.Second)
+	waitServiceHealth(t, base+"/health", "ingestion-service", proc, 90*time.Second)
 
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, base+"/v1/jobs/"+jobID, nil)
 	req.Header.Set("X-Tenant-Id", "tenant-b")

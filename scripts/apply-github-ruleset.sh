@@ -35,7 +35,8 @@ PAYLOAD=$(cat <<'JSON'
         "required_approving_review_count": 0,
         "dismiss_stale_reviews_on_push": true,
         "require_code_owner_review": false,
-        "require_last_push_approval": false
+        "require_last_push_approval": false,
+        "required_review_thread_resolution": false
       }
     },
     {
@@ -43,10 +44,10 @@ PAYLOAD=$(cat <<'JSON'
       "parameters": {
         "strict_required_status_checks_policy": true,
         "required_status_checks": [
-          { "context": "validate", "integration_id": null },
-          { "context": "integration", "integration_id": null },
-          { "context": "aip-eval", "integration_id": null },
-          { "context": "policy", "integration_id": null }
+          { "context": "validate" },
+          { "context": "integration" },
+          { "context": "aip-eval" },
+          { "context": "policy" }
         ]
       }
     },

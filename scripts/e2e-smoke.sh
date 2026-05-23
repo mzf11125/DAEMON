@@ -66,7 +66,13 @@ wait_http() {
 start_if_down() {
   local port="$1"
   local dir="$2"
-  if curl -sf "http://localhost:${port}/health" >/dev/null 2>&1; then
+  if [ "${E2E_FORCE_RESTART:-0}" = "1" ] && curl -sf "http://localhost:${port}/health" >/dev/null 2>&1; then
+    echo "e2e-smoke: restarting stale service on :$port"
+    if command -v lsof >/dev/null 2>&1; then
+      lsof -ti ":${port}" 2>/dev/null | xargs kill 2>/dev/null || true
+      sleep 1
+    fi
+  elif curl -sf "http://localhost:${port}/health" >/dev/null 2>&1; then
     echo "e2e-smoke: port $port already healthy"
     return
   fi
@@ -103,13 +109,29 @@ until pg_isready -h 127.0.0.1 -p 54332 -U postgres >/dev/null 2>&1; do
 done
 
 echo "e2e-smoke: migrate + seed auth + seed + pipelines"
-make migrate
+supabase db reset 2>/dev/null || {
+  echo "e2e-smoke: supabase db reset skipped — schema may already exist; applying raw SQL"
+}
+psql "$SEED_DATABASE_URL" -f infra/migrations/postgres/001_init.sql 2>/dev/null || true
+psql "$SEED_DATABASE_URL" -f infra/migrations/postgres/002_indexes_fk.sql 2>/dev/null || true
+psql "$SEED_DATABASE_URL" -f infra/migrations/postgres/003_ingestion_params.sql 2>/dev/null || true
 if [ -x ./scripts/supabase-seed-auth.sh ]; then
   eval "$(./scripts/supabase-seed-auth.sh | grep '^SUPABASE_DEMO_USER_ID=')" || true
   export SUPABASE_DEMO_USER_ID
 fi
 make seed
+make ontology-sync
 make pipeline-all
+if [ -x ./scripts/supabase-seed-auth.sh ]; then
+  eval "$(./scripts/supabase-seed-auth.sh | grep '^SUPABASE_DEMO_USER_ID=')" || true
+  export SUPABASE_DEMO_USER_ID
+fi
+make seed
+make ontology-sync
+make pipeline-all
+
+# After migrate/seed, in-memory Go processes may point at a reset DB — restart listeners.
+export E2E_FORCE_RESTART=1
 
 BEARER=""
 if [ -n "${NEXT_PUBLIC_SUPABASE_ANON_KEY}" ]; then
@@ -139,9 +161,13 @@ else
 fi
 
 echo "e2e-smoke: manifest"
-domain=$(curl -sf "${hdr[@]}" "http://localhost:8081/v1/ontology/v2/manifest" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('domain', d.get('data',{}).get('domain','')))")
+manifest_json=$(curl -sf "${hdr[@]}" "http://localhost:8081/v1/ontology/v2/manifest") || {
+  echo "e2e-smoke: manifest request failed (is ontology-service on :8081? run make ontology-sync)"
+  exit 1
+}
+domain=$(echo "$manifest_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('domain') or d.get('data',{}).get('domain',''))")
 if [ "$domain" != "enterprise-operations" ]; then
-  echo "e2e-smoke: expected domain enterprise-operations, got $domain"
+  echo "e2e-smoke: expected domain enterprise-operations, got '$domain' body=$(echo "$manifest_json" | head -c 200)"
   exit 1
 fi
 

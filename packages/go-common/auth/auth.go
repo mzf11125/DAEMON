@@ -195,12 +195,23 @@ func ClaimsFromContext(ctx context.Context) (*Claims, bool) {
 
 func validateToken(ctx context.Context, cfg Config, tokenStr string) (*Claims, error) {
 	_ = ctx
+	var lastErr error
 	if cfg.JWTSecret != "" {
 		if claims, err := validateHS256(cfg, tokenStr); err == nil {
 			return claims, nil
+		} else {
+			lastErr = err
 		}
 	}
-	return validateRS256(cfg, tokenStr)
+	if claims, err := validateRS256(cfg, tokenStr); err == nil {
+		return claims, nil
+	} else if err != nil {
+		lastErr = err
+	}
+	if lastErr != nil {
+		return nil, lastErr
+	}
+	return nil, fmt.Errorf("token validation failed")
 }
 
 func validateHS256(cfg Config, tokenStr string) (*Claims, error) {

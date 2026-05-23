@@ -72,10 +72,14 @@ func listCases(pool *pgxpool.Pool) http.HandlerFunc {
 			}
 			defer rows.Close()
 			for rows.Next() {
-				var id, title, status, owner, priority string
+				var id, title, status string
+				var owner, priority *string
 				var opened *time.Time
 				_ = rows.Scan(&id, &title, &status, &owner, &priority, &opened)
-				cases = append(cases, map[string]any{"caseId": id, "title": title, "status": status, "ownerId": owner, "priority": priority})
+				cases = append(cases, map[string]any{
+					"caseId": id, "title": title, "status": status,
+					"ownerId": nullStr(owner), "priority": nullStr(priority),
+				})
 			}
 			return rows.Err()
 		})
@@ -96,7 +100,8 @@ func listCases(pool *pgxpool.Pool) http.HandlerFunc {
 func getCase(pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		caseID := chi.URLParam(r, "caseId")
-		var title, status, owner, priority string
+		var title, status string
+		var owner, priority *string
 		var opened *time.Time
 		var signals []string
 		err := db.WithRLSTx(r.Context(), pool, func(tx pgx.Tx) error {
@@ -126,7 +131,17 @@ func getCase(pool *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 		dhttp.WriteJSON(w, http.StatusOK, map[string]any{
-			"caseId": caseID, "title": title, "status": status, "ownerId": owner, "priority": priority, "signalIds": signals,
+			"caseId": caseID, "title": title, "status": status,
+			"ownerId":   nullStr(owner),
+			"priority":  nullStr(priority),
+			"signalIds": signals,
 		})
 	}
+}
+
+func nullStr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }

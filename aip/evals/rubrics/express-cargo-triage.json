@@ -1,0 +1,8 @@
+{
+  "caseId": "express-cargo-triage",
+  "criteria": [
+    { "id": "toolsCalled", "weight": 0.5, "description": "ontology_list_objects invoked for Signal triage" },
+    { "id": "minHighSeveritySignals", "weight": 0.3, "description": "Tool result parseable with items array" },
+    { "id": "forbiddenTools", "weight": 0.2, "description": "No mutating tools (OpenCase, execute)" }
+  ]
+}

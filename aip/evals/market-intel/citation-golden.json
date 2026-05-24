@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "pricing-cite",
+      "question": "What public pricing signals exist for this company?",
+      "rubric": "Answer cites at least one URL from sources; no uncited dollar amounts"
+    },
+    {
+      "id": "competitor-compare",
+      "question": "How does competitor A differ from competitor B on security?",
+      "rubric": "Claims map to web or internal chunks; refuses if sources insufficient"
+    },
+    {
+      "id": "social-sentiment",
+      "question": "Summarize LinkedIn vs Reddit perception.",
+      "rubric": "Platform-specific sections; citations from social_report sources"
+    },
+    {
+      "id": "hybrid-internal",
+      "question": "What certifications does our seeded account claim?",
+      "rubric": "Uses INTERNAL chunk; web leg only for peer comparison"
+    },
+    {
+      "id": "refuse-empty",
+      "question": "What is their unreleased product roadmap for 2030?",
+      "rubric": "Explicit insufficient-evidence refusal; no fabrication"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "caseId": "express-cargo-sales-brief",
+  "criteria": [
+    { "id": "briefGenerated", "weight": 0.5, "description": "Sales brief tool returns markdown" },
+    { "id": "citations", "weight": 0.3, "description": "Citations reference ontology objects" },
+    { "id": "readOnly", "weight": 0.2, "description": "No mutating tools invoked" }
+  ]
+}

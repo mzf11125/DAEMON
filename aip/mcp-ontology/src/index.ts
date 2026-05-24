@@ -11,6 +11,19 @@ import {
   caseFetch,
 } from "./services.js";
 import { rangeGetTransfers, rangeScreenAddress } from "./range.js";
+import {
+  buildIntakeProposal,
+  buildSalesBrief,
+  loadIntakeFixture,
+} from "./express-cargo.js";
+
+function expressCargoIntakeDisabled(): boolean {
+  return process.env.AIP_EXPRESS_CARGO_INTAKE_DISABLED === "1";
+}
+
+function expressCargoSalesDisabled(): boolean {
+  return process.env.AIP_EXPRESS_CARGO_SALES_DISABLED === "1";
+}
 
 function buildServer(getAuth?: () => string | undefined) {
   const server = new McpServer({
@@ -72,7 +85,16 @@ function buildServer(getAuth?: () => string | undefined) {
     "ontology_list_objects",
     "List ontology objects by type (read-only). Returns JSON items. Use when triaging signals or cases.",
     {
-      objectType: z.enum(["Signal", "Case", "Asset"]).describe("Ontology object type"),
+      objectType: z.enum([
+        "Signal",
+        "Case",
+        "Asset",
+        "CustomerAccount",
+        "Activity",
+        "AccountHealthScore",
+        "Shipment",
+        "ShipmentLeg",
+      ]).describe("Ontology object type"),
       limit: z.number().int().min(1).max(50).optional().describe("Max items (default 50)"),
     },
     async ({ objectType, limit }) => {
@@ -168,6 +190,95 @@ function buildServer(getAuth?: () => string | undefined) {
       checkRateLimit(auth ?? "anonymous");
       const data = await rangeGetTransfers(address, limit);
       return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "extract_express_cargo_intake",
+    "Extract structured fields from a synthetic BAST/SPK intake fixture (read-only). Use before HITL propose.",
+    {
+      fixtureId: z.string().describe("Fixture id under aip/evals/fixtures/intake/"),
+    },
+    async ({ fixtureId }) => {
+      if (expressCargoIntakeDisabled()) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ status: "disabled", reason: "AIP_EXPRESS_CARGO_INTAKE_DISABLED" }),
+            },
+          ],
+        };
+      }
+      const auth = getAuth?.();
+      checkRateLimit(auth ?? "anonymous");
+      const fixture = loadIntakeFixture(fixtureId);
+      return { content: [{ type: "text", text: JSON.stringify(fixture, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "propose_express_cargo_draft",
+    "Propose CreateShipmentDraft for human approval (does not execute). Returns proposal payload only.",
+    {
+      fixtureId: z.string().describe("Intake fixture used for extraction"),
+    },
+    async ({ fixtureId }) => {
+      if (expressCargoIntakeDisabled()) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ status: "disabled", reason: "AIP_EXPRESS_CARGO_INTAKE_DISABLED" }),
+            },
+          ],
+        };
+      }
+      const auth = getAuth?.();
+      checkRateLimit(auth ?? "anonymous");
+      const fixture = loadIntakeFixture(fixtureId);
+      const minConf = Math.min(...Object.values(fixture.confidence));
+      if (minConf < 0.5) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                status: "manual_queue",
+                reason: "unreadable_or_low_confidence",
+                fixtureId,
+              }),
+            },
+          ],
+        };
+      }
+      const proposal = buildIntakeProposal(fixture);
+      return { content: [{ type: "text", text: JSON.stringify(proposal, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "generate_express_cargo_sales_brief",
+    "Read-only pre-meeting brief for a customer account (no mutations).",
+    {
+      customerAccountId: z.string(),
+      meetingDate: z.string().optional(),
+    },
+    async ({ customerAccountId, meetingDate }) => {
+      if (expressCargoSalesDisabled()) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ status: "disabled", reason: "AIP_EXPRESS_CARGO_SALES_DISABLED" }),
+            },
+          ],
+        };
+      }
+      const auth = getAuth?.();
+      checkRateLimit(auth ?? "anonymous");
+      const brief = await buildSalesBrief(auth, customerAccountId, meetingDate);
+      return { content: [{ type: "text", text: JSON.stringify(brief, null, 2) }] };
     },
   );
 

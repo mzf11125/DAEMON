@@ -72,8 +72,24 @@ function toolArgsForCase(c: EvalCaseFile, toolName: string): Record<string, unkn
       limit: 10,
     };
   }
+  if (toolName === "range_get_transfers") {
+    return { address: wallet, limit: 10 };
+  }
   if (toolName.startsWith("range_")) {
     return { address: wallet, limit: 10 };
+  }
+  if (toolName === "extract_express_cargo_intake") {
+    return { fixtureId: (input?.fixtureId as string | undefined) ?? "bast-sim-001" };
+  }
+  if (toolName === "propose_express_cargo_draft") {
+    return { fixtureId: (input?.fixtureId as string | undefined) ?? "bast-sim-001" };
+  }
+  if (toolName === "generate_express_cargo_sales_brief") {
+    return {
+      customerAccountId:
+        (input?.customerAccountId as string | undefined) ?? "account-tier-b-silent-001",
+      meetingDate: input?.meetingDate as string | undefined,
+    };
   }
   return {};
 }
@@ -181,13 +197,29 @@ function assertCaseExpectations(
   ) {
     throw new Error("expected items in ontology_list_objects output");
   }
+  if (toolsCalled.includes("propose_express_cargo_draft") && !text.includes("CreateShipmentDraft")) {
+    throw new Error("expected CreateShipmentDraft in propose_express_cargo_draft output");
+  }
+  if (toolsCalled.includes("generate_express_cargo_sales_brief") && !text.includes("markdown")) {
+    throw new Error("expected markdown in generate_express_cargo_sales_brief output");
+  }
+  if (toolsCalled.includes("extract_express_cargo_intake") && !text.includes("customerAccountId")) {
+    throw new Error("expected customerAccountId in extract_express_cargo_intake output");
+  }
 }
 
 async function healthCheck(): Promise<void> {
   const base = process.env.ONTOLOGY_SERVICE_URL ?? "http://localhost:8081";
-  const res = await fetch(`${base}/health`);
-  if (!res.ok) {
-    throw new Error(`ontology health failed: ${res.status}`);
+  try {
+    const res = await fetch(`${base}/health`);
+    if (!res.ok) {
+      throw new Error(`ontology health failed: ${res.status}`);
+    }
+  } catch (err) {
+    const hint =
+      "Start the eval stack: ./scripts/ensure-aip-eval-stack.sh (or ./scripts/prove-aip-eval.sh). " +
+      "Set EVAL_SKIP_STACK_BOOTSTRAP=1 if you manage services yourself.";
+    throw new Error(`${hint} (${String(err)})`);
   }
 }
 

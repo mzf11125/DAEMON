@@ -26,6 +26,7 @@ export async function withMcpClient<T>(
       PLATFORM_API_URL: process.env.PLATFORM_API_URL ?? "http://localhost:8080",
       CASE_SERVICE_URL: process.env.CASE_SERVICE_URL ?? "http://localhost:8084",
       TENANT_ID: process.env.TENANT_ID ?? "tenant-demo",
+      OIDC_REQUIRED: process.env.OIDC_REQUIRED ?? "false",
       MCP_TOOL_SCHEMA_VERSION: process.env.MCP_TOOL_SCHEMA_VERSION ?? "0.2.0",
     },
   });

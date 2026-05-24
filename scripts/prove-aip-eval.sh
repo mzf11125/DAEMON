@@ -8,6 +8,9 @@ ONTOLOGY_URL="${ONTOLOGY_SERVICE_URL:-http://localhost:8081}"
 echo "== AIP eval proof =="
 make aip-build
 
+echo "== eval stack =="
+./scripts/ensure-aip-eval-stack.sh
+
 echo "== ontology health =="
 curl -sf "${ONTOLOGY_URL}/health" >/dev/null
 curl -sf "${ONTOLOGY_URL}/internal/health" >/dev/null 2>/dev/null || curl -sf "${ONTOLOGY_URL}/health" >/dev/null

@@ -13,6 +13,14 @@
 - Continue working through all to-dos until completion when directed. Confidence: 0.85
 
 # Architecture & Domain
-- Project involves Palantir Foundry concepts: ontology, AIP, rules SQL, OSDK integration. Confidence: 0.70
 - Security framework integration includes MITRE ATT&CK coverage mapping. Confidence: 0.65
 - Multi-domain system spanning geospatial, ML/AI, security, and enterprise data platforms. Confidence: 0.70
+
+# Codebase Governance
+- Maintain vendor-neutral language throughout documentation and source code; no references to Palantir, Anduril, Foundry, Gotham, Apollo, or Lattice. Confidence: 0.85
+- Include geospatial coordinates (latitude/longitude) on all synthetic seed data Sites for geo-map visualization. Confidence: 0.75
+
+# LangSmith Tracing
+- Use `traceable` from `langsmith/traceable` to wrap agent loop steps (prompt formatting, LLM calls, output parsing) for per-step observability. Confidence: 0.70
+- Use `run_type: "llm"` on `traceable` wrappers that make LLM calls to auto-categorize them as LLM spans. Confidence: 0.70
+- `traceable`-wrapped functions always return Promises — always `await` them even if the inner function is synchronous. Confidence: 0.70

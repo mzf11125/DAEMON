@@ -79,7 +79,7 @@ start_if_down() {
     return
   fi
   echo "e2e-smoke: starting service on :$port"
-  (cd "$dir" && go run ./cmd) &
+  (cd "$dir" && ONTOLOGY_ROOT="$root/ontology/v2-compiled" DATABASE_URL="${DATABASE_URL:-postgresql://daemon_runtime:daemon_runtime_local@127.0.0.1:54332/postgres?sslmode=disable}" go run ./cmd) &
   PIDS+=($!)
   wait_http "http://localhost:${port}/health"
 }
@@ -90,6 +90,19 @@ if ! compose_up_datastores; then
   echo "e2e-smoke: run: make down  (removes legacy postgres/keycloak); or stop other postgres on :5432" >&2
   exit 1
 fi
+
+echo "e2e-smoke: waiting for Neo4j Bolt auth (:7687)"
+sleep 3
+n=0
+until docker exec docker-neo4j-1 bin/cypher-shell -u "${NEO4J_USER}" -p "${NEO4J_PASSWORD}" "RETURN 1" >/dev/null 2>&1; do
+  n=$((n + 1))
+  if [ "$n" -gt 30 ]; then
+    echo "e2e-smoke: timeout waiting for Neo4j Bolt auth" >&2
+    exit 1
+  fi
+  sleep 2
+done
+echo "e2e-smoke: Neo4j Bolt ready"
 
 load_supabase_env || true
 if command -v supabase >/dev/null 2>&1; then
@@ -184,7 +197,12 @@ if [ "$domain" != "enterprise-operations" ]; then
 fi
 
 echo "e2e-smoke: ontology objects"
-signals=$(curl -sf "${hdr[@]}" "http://localhost:8081/v1/objects/Signal" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('data',d).get('items',[])))")
+obj_resp=$(curl -sf "${hdr[@]}" "http://localhost:8081/v1/objects/Signal")
+if [ -z "$obj_resp" ]; then
+  echo "e2e-smoke: empty Signal response (token expired?)" >&2
+  exit 1
+fi
+signals=$(echo "$obj_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('data',d).get('items',[])))")
 assets=$(curl -sf "${hdr[@]}" "http://localhost:8081/v1/objects/Asset" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('data',d).get('items',[])))")
 if [ "${signals:-0}" -lt 1 ] || [ "${assets:-0}" -lt 1 ]; then
   echo "e2e-smoke: expected seeded Signal and Asset objects"

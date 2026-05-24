@@ -28,7 +28,7 @@ DAEMON (Go operational services, console, ClickHouse/Neo4j ingestion, AIP MCP br
 
 | Option | Summary | Why rejected |
 |--------|---------|------------|
-| **B — Upstream repo as sole host** | Move DAEMON Go services into daemon-system-ontology | Loses mature data plane, Foundry parity loop, and existing console integration; high migration risk |
+| **B — Upstream repo as sole host** | Move DAEMON Go services into daemon-system-ontology | Loses mature data plane, Operational parity loop, and existing console integration; high migration risk |
 | **C — Permanent two-repo bridge** | Indefinite cross-repo HTTP without convergence | Duplicates agent/MCP/schema ownership; no single CI/release train |
 
 ## Migration phases (merge track)

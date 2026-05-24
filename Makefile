@@ -1,4 +1,4 @@
-.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track migrate migrate-legacy seed test test-integration validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke
+.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track migrate migrate-legacy seed seed-sandbox test test-integration validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop prove-p3-geo prove-sandbox-sectors ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke
 
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
@@ -65,6 +65,14 @@ migrate-legacy:
 
 seed:
 	cd infra/seed && go run .
+
+seed-sandbox: seed
+
+prove-p3-geo:
+	./scripts/prove-p3-geo.sh
+
+prove-sandbox-sectors:
+	./scripts/prove-sandbox-sectors.sh
 
 pipeline-raw:
 	cd pipelines/raw-ingest && go run ./cmd

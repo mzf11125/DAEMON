@@ -125,6 +125,10 @@ func main() {
 		_ = batch.Send()
 	}
 
+	seedP3Verticals(ctx, pg, ch, driver, tenant, now)
+	seedRemainingSectors(ctx, pg, ch, driver, tenant, now)
+	seedSyntheticSectors(ctx, pg, ch, driver, tenant, now)
+
 	fmt.Println("seed completed")
 }
 

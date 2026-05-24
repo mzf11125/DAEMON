@@ -174,6 +174,10 @@ func fetchJWKS(issuer string) (map[string]jwkVerifyKey, error) {
 func Middleware(cfg Config) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/health" || r.URL.Path == "/internal/health" {
+				next.ServeHTTP(w, r)
+				return
+			}
 			authz := r.Header.Get("Authorization")
 			if strings.HasPrefix(authz, "Bearer ") {
 				tokenStr := strings.TrimPrefix(authz, "Bearer ")

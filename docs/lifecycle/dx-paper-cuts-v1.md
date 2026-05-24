@@ -29,7 +29,7 @@ Internal backlog for local Supabase + Go service friction. Not a public roadmap.
 
 - Go: per-module `go test ./...` in CI (no single workspace module yet).
 - Ontology: `./scripts/validate-ontology.sh` on every PR.
-- Optional future: unify on `golangci-lint` vs Palantir-style linters — see ADR when adopted.
+- Optional future: unify on `golangci-lint` vs vendor-style linters — see ADR when adopted.
 
 ## Seed and demo user
 

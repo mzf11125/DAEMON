@@ -1,7 +1,7 @@
 # AIP Phase 2 traceability
 
 **Status:** Implemented (baseline recording optional via `EVAL_RECORD_BASELINE=true`)  
-**Related:** [Foundry parity v1](./foundry-parity-v1.md), [AIP roadmap](../aip/roadmap.md)
+**Related:** [Operational parity v1](./operational-parity-v1.md), [AIP roadmap](../aip/roadmap.md)
 
 ## Capabilities delivered
 

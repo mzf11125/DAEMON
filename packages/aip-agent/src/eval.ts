@@ -10,6 +10,11 @@ import {
 import { runAgentLoop, type AgentRunResult } from "./agent.js";
 import { redactForLog } from "./redact.js";
 import { traceEvalRun } from "./tracing.js";
+import {
+  langsmithEvalEnabled,
+  runLangSmithEval,
+  preloadCases,
+} from "./langsmith-eval.js";
 
 type CaseResult = {
   caseId: string;
@@ -207,6 +212,13 @@ async function main() {
   const cases = loadEvalCases();
   if (!cases.length) {
     throw new Error("no eval cases found");
+  }
+
+  if (langsmithEvalEnabled()) {
+    preloadCases(cases);
+    console.log(`langsmith-eval: running ${cases.length} cases via LangSmith datasets`);
+    await runLangSmithEval(cases);
+    return;
   }
 
   const results: CaseResult[] = [];

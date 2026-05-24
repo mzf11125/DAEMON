@@ -32,7 +32,7 @@ func main() {
 	if v := os.Getenv("ONTOLOGY_ROOT"); v != "" {
 		cfg.OntologyRoot = v
 	} else {
-		cfg.OntologyRoot = filepath.Join("..", "..", "ontology", "v2")
+		cfg.OntologyRoot = filepath.Join("..", "..", "ontology", "v2-compiled")
 	}
 	ctx := context.Background()
 	pool, err := db.NewPostgres(ctx, cfg.DatabaseURL)
@@ -349,8 +349,10 @@ func executeAction(pool *pgxpool.Pool, driver neo4j.DriverWithContext, cfg confi
 			}
 			sess := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 			defer sess.Close(ctx)
-			_, _ = sess.Run(ctx, `MERGE (a:Entity {id: $asset}) MERGE (b:Entity {id: $obs}) MERGE (a)-[:LINK {type: 'AssetEmitsObservation'}]->(b)`,
-				map[string]any{"asset": assetID, "obs": obsID})
+			if _, err := sess.Run(ctx, `MERGE (a:Entity {id: $asset}) MERGE (b:Entity {id: $obs}) MERGE (a)-[:LINK {type: 'AssetEmitsObservation'}]->(b)`,
+				map[string]any{"asset": assetID, "obs": obsID}); err != nil {
+				log.Warn().Err(err).Str("action", actionType).Msg("neo4j link")
+			}
 			recordAudit(pool, ctx, tenant, actionType, "Observation", obsID, params)
 			dhttp.WriteJSON(w, http.StatusOK, map[string]any{"observationId": obsID})
 		case "RecordDecision":
@@ -398,6 +400,44 @@ func executeAction(pool *pgxpool.Pool, driver neo4j.DriverWithContext, cfg confi
 			}
 			recordAudit(pool, ctx, tenant, actionType, "WorkOrder", workOrderID, params)
 			dhttp.WriteJSON(w, http.StatusOK, map[string]any{"workOrderId": workOrderID, "status": status})
+		case "CreateWorkOrder":
+			title, _ := params["title"].(string)
+			assetID, _ := params["assetId"].(string)
+			caseID, _ := params["caseId"].(string)
+			if title == "" {
+				dhttp.WriteErrorRequest(w, r, dhttp.StatusUnprocessable, "MISSING_PARAM", "title required")
+				return
+			}
+			woID := "wo-" + strconv.FormatInt(time.Now().UnixNano(), 10)
+			propsMap := map[string]any{"workOrderId": woID, "title": title, "status": "open"}
+			if assetID != "" {
+				propsMap["assetId"] = assetID
+			}
+			if caseID != "" {
+				propsMap["caseId"] = caseID
+			}
+			props, _ := json.Marshal(propsMap)
+			rid := "ri." + tenant + ".workorder." + woID
+			err := db.ExecRLS(ctx, pool, `INSERT INTO ontology_objects (object_rid, tenant_id, object_type, primary_key_value, properties, created_at, updated_at)
+				VALUES ($1,$2,'WorkOrder',$3,$4,NOW(),NOW())`, rid, tenant, woID, props)
+			if err != nil {
+				dhttp.WriteErrorRequest(w, r, http.StatusInternalServerError, "ACTION_FAILED", err.Error())
+				return
+			}
+			if assetID != "" {
+				sess := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+				defer sess.Close(ctx)
+				_, _ = sess.Run(ctx, `MERGE (w:Entity {id: $wo}) MERGE (a:Entity {id: $asset}) MERGE (w)-[:LINK {type: 'WorkOrderTargetsAsset'}]->(a)`,
+					map[string]any{"wo": woID, "asset": assetID})
+			}
+			if caseID != "" {
+				sess := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+				defer sess.Close(ctx)
+				_, _ = sess.Run(ctx, `MERGE (c:Entity {id: $case}) MERGE (w:Entity {id: $wo}) MERGE (c)-[:LINK {type: 'CaseLinkedToWorkOrder'}]->(w)`,
+					map[string]any{"case": caseID, "wo": woID})
+			}
+			recordAudit(pool, ctx, tenant, actionType, "WorkOrder", woID, params)
+			dhttp.WriteJSON(w, http.StatusCreated, map[string]any{"workOrderId": woID, "title": title, "status": "open"})
 		default:
 			dhttp.WriteErrorRequest(w, r, http.StatusNotImplemented, "NOT_IMPLEMENTED", "action type not implemented: "+actionType)
 		}
@@ -431,9 +471,11 @@ func linkSignalsToCaseNeo4j(ctx context.Context, driver neo4j.DriverWithContext,
 	sess := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer sess.Close(ctx)
 	for _, sid := range signalIDs {
-		_, _ = sess.Run(ctx,
+		if _, err := sess.Run(ctx,
 			`MERGE (s:Entity {id: $signal}) MERGE (c:Entity {id: $case}) MERGE (s)-[:LINK {type: 'SignalLinkedToCase'}]->(c)`,
-			map[string]any{"signal": sid, "case": caseID})
+			map[string]any{"signal": sid, "case": caseID}); err != nil {
+			log.Warn().Err(err).Str("caseId", caseID).Str("signalId", sid).Msg("neo4j linkSignalToCase")
+		}
 	}
 }
 

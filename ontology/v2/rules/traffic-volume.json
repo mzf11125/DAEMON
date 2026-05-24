@@ -1,0 +1,7 @@
+{
+  "id": "traffic-volume",
+  "description": "Loop detector vehicle count above threshold creates congestion signal",
+  "sql": "SELECT observation_id, asset_id, value FROM dataset_observations WHERE label = 'vehicle_count_15m' AND value > {threshold:Float64}",
+  "threshold": 450.0,
+  "signalSeverity": "high"
+}

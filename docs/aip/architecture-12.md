@@ -1,3 +1,3 @@
 # AIP 12 capabilities
 
-See Palantir AIP architecture center for full taxonomy.
+See upstream AI platform architecture docs for taxonomy.

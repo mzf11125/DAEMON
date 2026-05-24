@@ -9,7 +9,7 @@ Thank you for helping improve the platform. This document covers expectations fo
 3. **Production quality** — validated inputs, structured errors (`packages/go-common/http`), versioned migrations, `GET /health` on every service.
 4. **Directory discipline** — one concern per top-level folder; no Go under `ontology/`; no deployable apps under `packages/`.
 5. **No AI slop** — minimal abstractions; match existing patterns; every file belongs in its owner folder.
-6. **Traceability** — user-visible behavior changes should update [docs/traceability/foundry-parity-v1.md](docs/traceability/foundry-parity-v1.md) or the relevant UX/governance doc when they affect the operational loop or public API.
+6. **Traceability** — user-visible behavior changes should update [docs/traceability/operational-parity-v1.md](docs/traceability/operational-parity-v1.md) or the relevant UX/governance doc when they affect the operational loop or public API.
 
 ## Folder rules
 

@@ -1,0 +1,18 @@
+[
+  {
+    "assetId": "asset-vessel-001",
+    "mmsi": "636019825",
+    "latitude": 33.752,
+    "longitude": -118.265,
+    "label": "ais_position",
+    "observedAt": "2026-05-23T12:00:00Z"
+  },
+  {
+    "assetId": "asset-vessel-001",
+    "mmsi": "636019825",
+    "latitude": 33.758,
+    "longitude": -118.258,
+    "label": "ais_position",
+    "observedAt": "2026-05-23T12:15:00Z"
+  }
+]

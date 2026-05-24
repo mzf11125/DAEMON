@@ -150,7 +150,7 @@ paths:
       servers: [{ url: http://127.0.0.1:8081 }]
   /v1/actions/{actionType}:
     post:
-      summary: Execute ontology action (Foundry-style RPC)
+      summary: Execute ontology action (declarative RPC)
       description: |
         Semantic validation failures return HTTP 422 (`MISSING_PARAM`, `SIGNAL_NOT_FOUND`).
         Malformed JSON returns 400 (`INVALID_JSON`).

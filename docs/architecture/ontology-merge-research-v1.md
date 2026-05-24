@@ -48,7 +48,7 @@ Scripts:
 | Area | DAEMON | Notes |
 |------|--------|-------|
 | Data plane / RLS | Strong | Postgres + tenant middleware |
-| Operational loop | Strong | Foundry parity v1 path |
+| Operational loop | Strong | Operational parity v1 path |
 | Agent production | Maturing | Phase 2: eval green + MCP ≥6 read tools |
 | Schema single source | Improving | v3 YAML + compile to v2-compiled |
 | Control plane | Early | Vendored in Phase 3 |

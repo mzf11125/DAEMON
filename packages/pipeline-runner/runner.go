@@ -31,6 +31,8 @@ func RunConnector(ctx context.Context, cfg Config, connector string, params json
 	switch connector {
 	case "seed-csv", "":
 		return RunSeedCSV(ctx, cfg)
+	case "ais-demo":
+		return RunAISDemo(ctx, cfg, params)
 	case "sim-dune", "dune-sql":
 		duneCfg := ingestparams.RunConfigFromEnv(cfg.ClickHouseDSN)
 		var err error

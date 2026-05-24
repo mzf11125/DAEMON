@@ -1,6 +1,6 @@
 # Daemon documentation
 
-Operational intelligence platform scaffold aligned with Foundry-style architecture.
+Operational intelligence platform scaffold aligned with data-plane architecture.
 
 ## Sections
 
@@ -15,7 +15,7 @@ Operational intelligence platform scaffold aligned with Foundry-style architectu
 - [Developer tools](developer-tools/overview.md)
 - [Observability](observability/overview.md)
 - [Security](security/overview.md)
-- [Glossary](foundry-glossary.md)
+- [Glossary](operational-glossary.md)
 
 ## Repo map
 

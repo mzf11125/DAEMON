@@ -3,3 +3,5 @@ obs-001,asset-001,temperature_c,92.5,C
 obs-002,asset-001,temperature_c,88.0,C
 obs-003,asset-002,vibration_mm,4.2,mm
 obs-004,asset-003,temperature_c,95.0,C
+obs-traffic-001,asset-loop-001,vehicle_count_15m,512,vehicles
+obs-traffic-002,asset-loop-002,vehicle_count_15m,380,vehicles

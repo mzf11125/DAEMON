@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { ChatOpenAI } from "@langchain/openai";
+import { traceable } from "langsmith/traceable";
 import { withMcpClient, repoRoot, toolResultText } from "./mcp-client.js";
 import { resolveAPIKey, resolveBaseURL, resolveProvider } from "./providers.js";
 import { redactForLog } from "./redact.js";
@@ -41,6 +42,40 @@ function buildModel() {
   });
 }
 
+const formatAgentPrompt = traceable(
+  (system: string, userMessage: string, tools: string[]) => {
+    return `System:\n${system}\n\nUser:\n${userMessage}\n\nAvailable tools: ${tools.join(", ")}`;
+  },
+  { name: "formatAgentPrompt" },
+);
+
+const invokeLLMStep = traceable(
+  async (model: ChatOpenAI, prompt: string) => {
+    const reply = await model.invoke(
+      `${prompt}\n\nReply with JSON only: {"tool":"<name>","arguments":{...}} to call one read-only tool, or {"done":true,"answer":"..."} when finished. Never use OpenCase or ontology_execute_action.`,
+    );
+    const text = String(reply.content);
+    return { text, usage: reply.usage_metadata };
+  },
+  { run_type: "llm", name: "agentDecisionStep" },
+);
+
+const parseAgentOutput = traceable(
+  (text: string) => {
+    try {
+      return JSON.parse(text) as {
+        tool?: string;
+        arguments?: Record<string, unknown>;
+        done?: boolean;
+        answer?: string;
+      };
+    } catch {
+      return null;
+    }
+  },
+  { name: "parseAgentOutput" },
+);
+
 const READ_ONLY_TOOLS = [
   "ontology_manifest",
   "ontology_list_objects",
@@ -51,7 +86,7 @@ const READ_ONLY_TOOLS = [
 ];
 
 export async function runAgentLoop(opts: AgentLoopOptions): Promise<AgentRunResult> {
-  return traceAgentRun(opts.agentId, async () => {
+  return traceAgentRun(opts.agentId, opts.promptVersion, async () => {
     const maxSteps = opts.maxSteps ?? Number(process.env.AGENT_MAX_STEPS ?? 3);
     const system = loadSystemPrompt(opts.agentId, opts.promptVersion);
     const userMessage = opts.userMessage.slice(0, maxPromptChars());
@@ -67,19 +102,15 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<AgentRunResu
       const steps: AgentRunResult["steps"] = [];
       const model = buildModel();
 
-      let context = `System:\n${system}\n\nUser:\n${userMessage}\n\nAvailable tools: ${toolNames.join(", ")}`;
+      let context = await formatAgentPrompt(system, userMessage, toolNames);
       let finalText = "";
 
       for (let step = 0; step < maxSteps; step++) {
-        const reply = await model.invoke(
-          `${context}\n\nReply with JSON only: {"tool":"<name>","arguments":{...}} to call one read-only tool, or {"done":true,"answer":"..."} when finished. Never use OpenCase or ontology_execute_action.`,
-        );
-        const text = String(reply.content);
+        const raw = await invokeLLMStep(model, context);
+        const text = raw.text;
         finalText = text;
-        let parsed: { tool?: string; arguments?: Record<string, unknown>; done?: boolean; answer?: string };
-        try {
-          parsed = JSON.parse(text) as typeof parsed;
-        } catch {
+        const parsed = await parseAgentOutput(text);
+        if (!parsed) {
           steps.push({ summary: redactForLog(text.slice(0, 500)) });
           break;
         }

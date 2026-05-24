@@ -1,0 +1,12 @@
+{
+  "connectorId": "synthetic-finance-risk",
+  "displayName": "Synthetic sandbox — finance-risk",
+  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/finance-risk/",
+  "version": "1.0.0",
+  "paramsSchema": {
+    "type": "object",
+    "properties": {
+      "fixturePath": { "type": "string", "default": "fixtures/sample.json" }
+    }
+  }
+}

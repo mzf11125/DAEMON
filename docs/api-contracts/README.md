@@ -31,7 +31,7 @@ Authenticated routes require:
 | **Actions** | `POST /v1/actions/{actionType}` | Mutating ontology operations (OpenCase, RecordDecision, …). Role-gated via ontology manifest. |
 | **Functions** | `POST /v1/functions/{name}` | Read-only or side-effect-free helpers (e.g. `summarizeCaseContext`). |
 
-This mirrors Foundry-style RPC naming; REST aliases for cases are not required for v1 parity.
+This mirrors declarative RPC naming; REST aliases for cases are not required for v1 parity.
 
 ## Pagination
 

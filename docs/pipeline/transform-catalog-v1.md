@@ -1,6 +1,6 @@
 # Transform catalog v1
 
-Harmonized pipeline transforms for medallion silver/gold (Foundry-class **patterns**, DAEMON **Go** runner today).
+Harmonized pipeline transforms for medallion silver/gold (operational-class **patterns**, DAEMON **Go** runner today).
 
 | Function | Input | Output | Notes |
 |----------|-------|--------|-------|

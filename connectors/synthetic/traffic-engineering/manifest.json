@@ -1,0 +1,12 @@
+{
+  "connectorId": "synthetic-traffic-engineering",
+  "displayName": "Synthetic sandbox — traffic-engineering",
+  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/traffic-engineering/",
+  "version": "1.0.0",
+  "paramsSchema": {
+    "type": "object",
+    "properties": {
+      "fixturePath": { "type": "string", "default": "fixtures/sample.json" }
+    }
+  }
+}

@@ -1,25 +1,25 @@
 {
-  "recordedAt": "2026-05-22T11:18:18.732Z",
+  "recordedAt": "2026-05-23T15:14:04.627Z",
   "goldenPassRate": 1,
   "cases": {
     "investigate-case-readonly": {
       "status": "pass",
-      "durationMs": 218,
+      "durationMs": 344,
       "model": null
     },
     "ontology-manifest": {
       "status": "pass",
-      "durationMs": 203,
+      "durationMs": 222,
       "model": null
     },
     "triage-list-signals-agent": {
       "status": "pass",
-      "durationMs": 323,
+      "durationMs": 290,
       "model": null
     },
     "triage-list-signals": {
       "status": "pass",
-      "durationMs": 230,
+      "durationMs": 222,
       "model": null
     }
   },

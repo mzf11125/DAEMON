@@ -24,3 +24,4 @@ make agent-bridge-smoke
 - Full `ontology-sdk` + built `ontology-engine` as primary write path (violates MERGE-STRATEGY-01)
 - `ontology_execute_action` MCP tool without sign-off
 - Marketing "production autonomous agent" before eval stability window
+- **Listen-as-agent** task SSE/WebSocket stream (`p3-listen-as-agent`) — deferred until merge-track smoke green 7d and eval baseline stable; agents remain PROPOSE-only with human `executeAction`

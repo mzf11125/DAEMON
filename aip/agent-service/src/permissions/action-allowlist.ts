@@ -1,3 +1,12 @@
+// Daemon ops core actions — propose→HITL path (P3 task-asset)
+const DAEMON_OPS_ALLOWLIST: readonly string[] = [
+  'OpenCase',
+  'CreateWorkOrder',
+  'ExecuteWorkOrder',
+  'RecordDecision',
+  'EscalateSignal',
+] as const;
+
 // Default Wave 1 allowlist — ops domain core actions
 // Diperluas setelah Object Catalog v0.2 selesai
 const DEFAULT_WAVE1_ALLOWLIST: readonly string[] = [
@@ -11,6 +20,7 @@ const DEFAULT_WAVE1_ALLOWLIST: readonly string[] = [
   // Interco (Wave 2 — listed for readiness)
   // 'markIntercoEliminated',
   // 'postIntercoAdjustment',
+  ...DAEMON_OPS_ALLOWLIST,
 ] as const;
 
 export function getDefaultAllowlist(): string[] {

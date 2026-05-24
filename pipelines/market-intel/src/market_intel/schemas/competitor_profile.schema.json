@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "competitor_profile",
+  "type": "object",
+  "required": ["company"],
+  "properties": {
+    "company": { "type": "string" },
+    "domain": { "type": ["string", "null"] },
+    "web_search": { "type": "object" },
+    "site_extract": { "type": "object" },
+    "ai_visibility": { "type": "object" }
+  },
+  "additionalProperties": true
+}

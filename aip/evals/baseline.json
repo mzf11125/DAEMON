@@ -21,6 +21,11 @@
       "status": "pass",
       "durationMs": 222,
       "model": null
+    },
+    "investigate-wallet-readonly": {
+      "status": "pass",
+      "durationMs": 300,
+      "model": null
     }
   },
   "flakeWaivers7d": 0

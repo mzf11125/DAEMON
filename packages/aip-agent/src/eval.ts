@@ -43,32 +43,63 @@ function parseToolContent(result: unknown): string {
   return toolResultText(result);
 }
 
+function toolArgsForCase(c: EvalCaseFile, toolName: string): Record<string, unknown> {
+  const input = c.input as Record<string, unknown> | undefined;
+  const wallet =
+    (typeof input?.wallet === "string" && input.wallet) ||
+    (typeof input?.address === "string" && input.address) ||
+    "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0";
+
+  if (toolName === "ontology_list_objects") {
+    return { objectType: c.expectedObjectType ?? "Signal" };
+  }
+  if (toolName === "investigate_case") {
+    return {
+      caseId: (input?.caseId as string | undefined) ?? "case-001",
+      signalLimit: 5,
+    };
+  }
+  if (toolName === "summarize_case_context") {
+    return { caseId: (input?.caseId as string | undefined) ?? "case-001" };
+  }
+  if (toolName === "get_case") {
+    return { caseId: (input?.caseId as string | undefined) ?? "case-001" };
+  }
+  if (toolName === "list_audit_events") {
+    return {
+      resourceType: "Case",
+      resourceId: (input?.caseId as string | undefined) ?? "case-001",
+      limit: 10,
+    };
+  }
+  if (toolName.startsWith("range_")) {
+    return { address: wallet, limit: 10 };
+  }
+  return {};
+}
+
+function toolsToRunForCase(c: EvalCaseFile): string[] {
+  const listed = c.expect?.toolsCalled;
+  if (listed?.length) {
+    return listed;
+  }
+  return [c.expectedTool ?? "ontology_list_objects"];
+}
+
 async function runToolCase(c: EvalCaseFile): Promise<CaseResult> {
   const start = Date.now();
   const toolsCalled: string[] = [];
-  const toolName =
-    c.expectedTool ?? c.expect?.toolsCalled?.[0] ?? "ontology_list_objects";
-  const args: Record<string, unknown> = {};
-  if (toolName === "ontology_list_objects") {
-    args.objectType = c.expectedObjectType ?? "Signal";
-  } else if (toolName === "investigate_case") {
-    args.caseId = (c.input as { caseId?: string })?.caseId ?? "case-001";
-    args.signalLimit = 5;
-  } else if (toolName === "summarize_case_context") {
-    args.caseId = (c.input as { caseId?: string })?.caseId ?? "case-001";
-  } else if (toolName === "get_case") {
-    args.caseId = (c.input as { caseId?: string })?.caseId ?? "case-001";
-  } else if (toolName === "list_audit_events") {
-    args.resourceType = "Case";
-    args.resourceId = (c.input as { caseId?: string })?.caseId ?? "case-001";
-    args.limit = 10;
-  }
+  const toolNames = toolsToRunForCase(c);
 
   try {
     await withMcpClient(async (client) => {
-      const result = await client.callTool({ name: toolName, arguments: args });
-      toolsCalled.push(toolName);
-      const text = parseToolContent(result);
+      let text = "";
+      for (const toolName of toolNames) {
+        const args = toolArgsForCase(c, toolName);
+        const result = await client.callTool({ name: toolName, arguments: args });
+        toolsCalled.push(toolName);
+        text += parseToolContent(result);
+      }
       assertCaseExpectations(c, text, toolsCalled);
     });
     return { caseId: c.caseId, ok: true, durationMs: Date.now() - start, toolsCalled };

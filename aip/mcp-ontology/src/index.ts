@@ -10,6 +10,7 @@ import {
   platformFetch,
   caseFetch,
 } from "./services.js";
+import { rangeGetTransfers, rangeScreenAddress } from "./range.js";
 
 function buildServer(getAuth?: () => string | undefined) {
   const server = new McpServer({
@@ -137,6 +138,35 @@ function buildServer(getAuth?: () => string | undefined) {
       const auth = getAuth?.();
       checkRateLimit(auth ?? "anonymous");
       const data = await caseFetch(`/v1/cases/${encodeURIComponent(caseId)}`, auth);
+      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "range_screen_address",
+    "Screen wallet address for sanctions and risk (read-only). Layer A investigation; no ontology mutations.",
+    {
+      address: z.string().describe("EVM or SVM address"),
+    },
+    async ({ address }) => {
+      const auth = getAuth?.();
+      checkRateLimit(auth ?? "anonymous");
+      const data = await rangeScreenAddress(address);
+      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+    },
+  );
+
+  server.tool(
+    "range_get_transfers",
+    "List recent transfers for an address (read-only). Layer A investigation.",
+    {
+      address: z.string().describe("EVM or SVM address"),
+      limit: z.number().int().min(1).max(50).optional(),
+    },
+    async ({ address, limit }) => {
+      const auth = getAuth?.();
+      checkRateLimit(auth ?? "anonymous");
+      const data = await rangeGetTransfers(address, limit);
       return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
     },
   );

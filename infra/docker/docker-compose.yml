@@ -269,7 +269,7 @@ services:
       - -c
       - |
         corepack enable
-        pnpm install --frozen-lockfile || pnpm install
+        pnpm install --filter @daemon/agent-service... --frozen-lockfile || pnpm install --filter @daemon/agent-service...
         pnpm --filter @daemon/agent-service exec tsx src/bridge-main.ts
     ports:
       - "3001:3001"
@@ -283,6 +283,8 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ../..:/repo
+      # Shadow host (darwin) node_modules so pnpm installs linux esbuild inside the container.
+      - agent_bridge_node_modules:/repo/node_modules
 
   # ============================================================
   # Gateway — Caddy reverse proxy (memory-safe, Go-based)
@@ -314,3 +316,4 @@ volumes:
   cp_postgres_data:
   caddy_data:
   caddy_config:
+  agent_bridge_node_modules:

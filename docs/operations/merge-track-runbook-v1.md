@@ -30,6 +30,8 @@ make up-apps              # Go services in containers
 make up-merge-track       # + control-plane + agent-bridge
 ```
 
+**First cold start:** `agent-bridge` uses a dedicated Docker volume for `/repo/node_modules` (linux esbuild; do not reuse macOS host modules). Initial `pnpm install --filter @daemon/agent-service...` can take several minutes; poll `curl -sf http://localhost:3001/health` before `./scripts/smoke-agent-bridge.sh`. Host bridge via `make agent-bridge-smoke` remains valid when the container is not up.
+
 ## Control plane + D-TENANT-01
 
 ```bash

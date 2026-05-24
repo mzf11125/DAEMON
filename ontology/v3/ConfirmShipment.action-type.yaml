@@ -1,0 +1,12 @@
+actionType:
+  apiName: ConfirmShipment
+  displayName: Confirm Shipment Draft
+  targetObjectType: WorkOrder
+  parameters:
+    - name: shipmentId
+      type: string
+      required: true
+    - name: confirmedBy
+      type: string
+      required: false
+  requiresApproval: true

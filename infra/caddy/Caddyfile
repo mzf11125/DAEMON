@@ -1,0 +1,106 @@
+# DAEMON Gateway — Caddy reverse proxy
+#
+# Development: tls internal (auto self-signed certs via Caddy's local CA)
+# Production:  replace "tls internal" with "tls ops@your-domain.tld"
+#
+# Access:
+#   https://daemon.localhost/api       → platform-api:8080
+#   https://daemon.localhost/ontology   → ontology-service:8081
+#   https://daemon.localhost/ingest     → ingestion-service:8082
+#   https://daemon.localhost/rules      → rules-engine:8083
+#   https://daemon.localhost/cases      → case-service:8084
+#   https://daemon.localhost/bridge     → agent-service:3001
+#
+# For local dev, add to /etc/hosts:
+#   127.0.0.1  daemon.localhost
+{
+	# Privacy: no telemetry, no admin API exposed
+	admin off
+
+	# Graceful shutdown window
+	grace_period 10s
+
+	# Log to stdout (JSON for structured logging)
+	log {
+		output stdout
+		format json
+		level info
+	}
+}
+
+daemon.localhost {
+	# Dev: auto self-signed (Caddy manages its own CA in /data/caddy)
+	# Prod: tls ops@your-domain.tld
+	tls internal
+
+	# Compress responses (zstd preferred, fallback gzip)
+	encode zstd gzip
+
+	# ---- Security headers (all responses) ----
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		X-XSS-Protection "0"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'"
+		# Strip server header to avoid fingerprinting
+		-Server
+	}
+
+	# ---- Global request limits ----
+	request_body {
+		max_size 10MB
+	}
+
+	# ---- Rate limiting (requires: xcaddy build --with github.com/mholt/caddy-ratelimit) ----
+	# Uncomment for production:
+	# rate_limit {
+	# 	zone dynamic {
+	# 		key {remote_host}
+	# 		events 100
+	# 		window 10s
+	# 	}
+	# }
+
+	# ---- Health check ----
+	handle /health {
+		respond "gateway ok" 200
+	}
+
+	# ---- Platform API (audit, users) ----
+	handle /api/* {
+		reverse_proxy host.docker.internal:8080
+	}
+
+	# ---- Ontology Service (manifest, objects, actions, functions) ----
+	handle /ontology/* {
+		reverse_proxy host.docker.internal:8081
+	}
+
+	# ---- Ingestion Service (jobs) ----
+	handle /ingest/* {
+		reverse_proxy host.docker.internal:8082
+	}
+
+	# ---- Rules Engine (evaluate) ----
+	handle /rules/* {
+		reverse_proxy host.docker.internal:8083
+	}
+
+	# ---- Case Service (cases CRUD) ----
+	handle /cases/* {
+		reverse_proxy host.docker.internal:8084
+	}
+
+	# ---- Agent Bridge (AI agent access) ----
+	handle /bridge/* {
+		reverse_proxy host.docker.internal:3001
+	}
+
+	# ---- Default: 404 ----
+	handle {
+		respond "DAEMON Gateway — route not found" 404
+	}
+}

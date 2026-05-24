@@ -1,0 +1,22 @@
+{
+  "fixtureId": "bast-sim-001",
+  "documentType": "BAST",
+  "customerAccountId": "account-tier-a-001",
+  "origin": "Hub Midwest",
+  "destination": "East Coast DC",
+  "items": [
+    { "description": "Industrial spare parts pallet", "quantity": 2 }
+  ],
+  "weight": 840.5,
+  "references": {
+    "bastNumber": "BAST-SIM-2026-001",
+    "spkNumber": "SPK-SIM-2026-001"
+  },
+  "confidence": {
+    "customerAccountId": 0.95,
+    "origin": 0.92,
+    "destination": 0.88,
+    "weight": 0.91,
+    "references.bastNumber": 0.97
+  }
+}

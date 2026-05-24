@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-government-finance",
+  "packId": "government-finance",
   "displayName": "Synthetic sandbox — government-finance",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/government-finance/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/government-finance/",
   "version": "1.0.0",
+  "geoEnabled": false,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

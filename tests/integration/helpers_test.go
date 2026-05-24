@@ -9,7 +9,46 @@ import (
 	"time"
 
 	"github.com/daemon-platform/daemon/packages/go-common/testutil"
+	"github.com/golang-jwt/jwt/v5"
 )
+
+const (
+	testJWTSecret   = "super-secret-jwt-for-tests-only-32bytes!"
+	testSupabaseURL = "http://127.0.0.1:54331"
+)
+
+// testJWTEnv returns env vars so ontology-service validates HS256 planner/analyst tokens in integration tests.
+func testJWTEnv() []string {
+	return []string{
+		"SUPABASE_JWT_SECRET=" + testJWTSecret,
+		"SUPABASE_URL=" + testSupabaseURL,
+		"OIDC_AUDIENCE=authenticated",
+	}
+}
+
+func testBearerToken(t *testing.T, roles []string, tenantID string) string {
+	t.Helper()
+	if tenantID == "" {
+		tenantID = "tenant-demo"
+	}
+	tok := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub":       "integration-planner",
+		"aud":       "authenticated",
+		"tenant_id": tenantID,
+		"roles":     roles,
+		"exp":       time.Now().Add(time.Hour).Unix(),
+	})
+	signed, err := tok.SignedString([]byte(testJWTSecret))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return signed
+}
+
+func setPlannerAuthT(t *testing.T, req *http.Request) {
+	t.Helper()
+	req.Header.Set("Authorization", "Bearer "+testBearerToken(t, []string{"operations_planner"}, "tenant-demo"))
+}
 
 func waitServiceHealth(t *testing.T, url, wantService string, proc *testutil.ServiceProcess, timeout time.Duration) {
 	t.Helper()

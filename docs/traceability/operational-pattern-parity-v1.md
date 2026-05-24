@@ -25,7 +25,7 @@ Daemon-native equivalents for common **reference sample application** patterns (
 
 ## Pattern map (status)
 
-See [operational-sample-apps-parity-v1.md](./operational-sample-apps-parity-v1.md) for CAP-* rows and proof commands. [matrix-v1.md](./matrix-v1.md) tracks requirement → test evidence.
+See [operational-sample-patterns-v1.md](../research/operational-sample-patterns-v1.md) for the five CAP-* operational patterns and proof commands. [matrix-v1.md](./matrix-v1.md) tracks requirement → test evidence.
 
 ## Not in scope
 
@@ -35,6 +35,6 @@ See [operational-sample-apps-parity-v1.md](./operational-sample-apps-parity-v1.m
 
 ## Cross-links
 
-- [operational-sample-patterns-v1.md](./operational-sample-patterns-v1.md)
+- [operational-sample-patterns-v1.md](../research/operational-sample-patterns-v1.md)
 - [operational-platform-parity-v1.md](./operational-platform-parity-v1.md)
 - [ADR MERGE-STRATEGY-01](../architecture/adr-merge-strategy-01.md)

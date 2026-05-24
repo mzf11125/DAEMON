@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-intelligence-ops",
+  "packId": "intelligence-ops",
   "displayName": "Synthetic sandbox — intelligence-ops",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/intelligence-ops/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/intelligence-ops/",
   "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

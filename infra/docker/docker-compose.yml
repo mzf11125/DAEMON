@@ -261,7 +261,8 @@ services:
 
   agent-bridge:
     profiles: ["merge-track"]
-    image: node:20-alpine
+    # bookworm-slim (not alpine): tsx/esbuild native bindings need glibc
+    image: node:20-bookworm-slim
     working_dir: /repo
     command:
       - sh
@@ -283,6 +284,27 @@ services:
     volumes:
       - ../..:/repo
 
+  # ============================================================
+  # Gateway — Caddy reverse proxy (memory-safe, Go-based)
+  # ============================================================
+  caddy:
+    profiles: ["gateway"]
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "80:80"
+    environment:
+      CADDY_ADMIN: off
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - default
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 volumes:
   postgres_data:
   clickhouse_data:
@@ -290,3 +312,5 @@ volumes:
   minio_data:
   redis_data:
   cp_postgres_data:
+  caddy_data:
+  caddy_config:

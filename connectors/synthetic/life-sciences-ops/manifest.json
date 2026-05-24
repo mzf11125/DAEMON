@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-life-sciences-ops",
+  "packId": "life-sciences-ops",
   "displayName": "Synthetic sandbox — life-sciences-ops",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/life-sciences-ops/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/life-sciences-ops/",
   "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

@@ -5,7 +5,7 @@ Public artifacts in this repository must describe **Daemon-native** capabilities
 ## Allowed
 
 - Neutral architecture terms: ontology, dataset plane, operational loop, attachment plane, geo read model, action types, HITL, RLS, MCP tools.
-- Internal capability IDs: `CAP-01` … `CAP-26` (see [capability-pattern-index-v1.md](../traceability/capability-pattern-index-v1.md)).
+- Internal capability IDs: semantic `CAP-*` slugs (see [capability-pattern-index-v1.md](../research/capability-pattern-index-v1.md)).
 - Generic pattern names: entity visualizer, objects/file plane, periodic publish, thumbnail link, task lifecycle, listen-as-agent (as **patterns**, not product names).
 
 ## Disallowed in committed docs, README, agents, services, and apps
@@ -16,7 +16,7 @@ Public artifacts in this repository must describe **Daemon-native** capabilities
 
 ## Scope
 
-- **In scope:** `docs/`, `README.md`, `.cursor/agents/`, `services/`, `apps/`, `scripts/check-vendor-neutral-language.sh`, CI workflow gates.
+- **In scope:** `docs/`, `README.md`, `.cursor/agents/`, `services/`, `apps/`, `packages/`, `scripts/check-vendor-neutral-language.sh`, CI workflow gates.
 - **Out of scope:** `external/` subtrees (separate repos or reference mirrors); scrub those only when promoting content into `main`.
 
 ## Enforcement

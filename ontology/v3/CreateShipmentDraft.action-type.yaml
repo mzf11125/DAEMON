@@ -1,0 +1,27 @@
+actionType:
+  apiName: CreateShipmentDraft
+  displayName: Create Shipment Draft
+  targetObjectType: WorkOrder
+  parameters:
+    - name: customerAccountId
+      type: string
+      required: true
+    - name: origin
+      type: string
+      required: true
+    - name: destination
+      type: string
+      required: true
+    - name: items
+      type: string
+      required: false
+    - name: weight
+      type: number
+      required: false
+    - name: references
+      type: string
+      required: false
+    - name: confidence
+      type: string
+      required: false
+  requiresApproval: true

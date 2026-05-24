@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "account_brief",
+  "type": "object",
+  "required": ["company", "sources"],
+  "properties": {
+    "company": { "type": "string" },
+    "domain": { "type": ["string", "null"] },
+    "industry": { "type": ["string", "null"] },
+    "summary_markdown": { "type": "string" },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "url"],
+        "properties": {
+          "source_id": { "type": "string" },
+          "title": { "type": "string" },
+          "url": { "type": "string" },
+          "score": { "type": "number" }
+        }
+      }
+    },
+    "market_signals": { "type": "array" },
+    "ai_visibility": {
+      "type": "object",
+      "properties": {
+        "geo": { "type": "object" },
+        "aio": { "type": "object" },
+        "eeat": { "type": "object" }
+      }
+    }
+  },
+  "additionalProperties": true
+}

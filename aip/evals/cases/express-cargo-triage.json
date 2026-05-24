@@ -1,0 +1,21 @@
+{
+  "caseId": "express-cargo-triage",
+  "version": 1,
+  "agentId": "triage-analyst",
+  "promptVersion": "v1",
+  "input": {
+    "userMessage": "List open express-cargo SLA breach items for tenant-demo. Read-only — do not open cases or execute actions."
+  },
+  "expect": {
+    "toolsCalled": ["ontology_list_objects"],
+    "minHighSeveritySignals": 0,
+    "forbiddenTools": ["ontology_execute_action", "OpenCase", "ExecuteWorkOrder"]
+  },
+  "providers": {
+    "prefer": ["lmstudio", "ollama", "openrouter"]
+  },
+  "expectedTool": "ontology_list_objects",
+  "expectedObjectType": "Signal",
+  "packId": "logistics-express-cargo",
+  "lifecycleGate": "G-EC-06"
+}

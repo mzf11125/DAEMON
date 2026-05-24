@@ -16,7 +16,9 @@
 | TENANT_ID | no | MCP, pipelines | default `tenant-demo` |
 | RULES_ROOT | no | rules-engine | ontology rules path |
 | ONTOLOGY_SERVICE_URL | AIP | MCP, agent | `:8081` |
-| OPENROUTER_API_KEY | AIP optional | aip-agent | never commit |
+| OPENROUTER_API_KEY | AIP optional | aip-agent, market-intel | never commit; chat + embeddings when `MARKET_INTEL_MODEL=openrouter:*` |
+| TAVILY_API_KEY | market-intel | pipelines/market-intel | Tavily search/crawl/research |
+| MARKET_INTEL_MODEL | no | market-intel | default `openrouter:openai/gpt-4o-mini` |
 | AGENT_MAX_STEPS | no | aip-agent | default 8 |
 | MCP_SSE_PORT | no | mcp-ontology | default 8090 |
 | SIM_API_KEY | for `sim-dune` | dune-ingest/sim | Sim by Dune; never commit |

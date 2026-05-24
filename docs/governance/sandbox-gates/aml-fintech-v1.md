@@ -1,11 +1,42 @@
 # Sandbox gate — aml-fintech v1
 
-| Check | Command / artifact | Expected |
-|-------|-------------------|----------|
-| Pack manifest | `ontology/v2/examples/packs/aml-fintech/manifest.json` | valid JSON |
-| Synthetic connector | `connectors/synthetic/aml-fintech/manifest.json` | present |
-| Seed objects | `make seed-sandbox` then query `ontology_objects` where properties->>'vertical' = 'aml-fintech' | ≥1 Site |
-| Integration | `go test -tags=integration ./tests/integration/ -run TestSandboxSector_aml-fintech` | PASS |
-| Traceability | `docs/traceability/matrix-v1.md` row for aml-fintech | linked |
+**Owner:** vertical pack owner (placeholder)  
+**Review:** platform engineering
 
-Stop-the-line: seed drift without updating this gate packet and integration test.
+## Entry criteria
+
+- `connectors/synthetic/aml-fintech/manifest.json` present with `fixtureVersion` set
+- Ontology pack at `ontology/v2/examples/packs/aml-fintech/`
+- Seed function registered in `infra/seed/synthetic_sectors.go` or `infra/seed/p3_verticals.go`
+- Gate packet (this file) and integration subtest registered before merge
+
+## Exit criteria
+
+- `make seed-sandbox` loads ≥1 `Site` with `properties->>'vertical' = 'aml-fintech'`
+- Open `Signal` `signal-aml-001` present for tenant `tenant-demo`
+- `go test -tags=integration ./tests/integration/ -run TestSandboxSectorsSeeded/aml-fintech` — PASS
+- `./scripts/prove-sandbox-sectors.sh` — exit 0
+- Traceability row in `docs/traceability/matrix-v1.md` for `aml-fintech`
+
+## FMEA-lite
+
+| Failure mode | Effect | Mitigation |
+|--------------|--------|------------|
+| Missing tenant | Seed skipped; smoke fails | `tenant-demo` in seed; integration test fails closed |
+| Fixture/registry drift | Wrong counts or missing pack | `scripts/check-sandbox-registry-drift.sh`; bump `fixtureVersion` in manifest |
+| Geo flag off (geo packs) | Empty map for sector | Tenant `geoMapEnabled`; `TestSandboxGeoMapGeoEnabledPacks` |
+
+## Evidence
+
+| Artifact | Expected |
+|----------|----------|
+| Connector manifest | `connectors/synthetic/aml-fintech/manifest.json` |
+| Signal PK | `signal-aml-001` |
+| Integration test | `TestSandboxSectorsSeeded/aml-fintech` |
+| Smoke | `prove-sandbox-sectors.sh` line for `aml-fintech` |
+
+Non-geo pack: Site rows seeded; map pins optional.
+
+## Stop-the-line
+
+Changing `connectors/synthetic/aml-fintech/*` without bumping `fixtureVersion`, updating this packet, and keeping the integration test table in sync **blocks merge** (Tier 1).

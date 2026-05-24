@@ -9,11 +9,19 @@ dist/
 *.log
 .DS_Store
 coverage/
+.venv/
+pipelines/market-intel/.venv/
 bin/
 tmp/
 .idea/
 .vscode/
-clickhouse-api-key-daemon-admin.txt
+clickhouse-api-key*.txt
+Neo4j-*.txt
+# Local Go build artifacts (do not commit)
+/cmd
+/seed
+infra/seed/seed
+artifacts/
 ontology/v2-compiled/
 packages/ontology-language/dist/
 **/*.tsbuildinfo

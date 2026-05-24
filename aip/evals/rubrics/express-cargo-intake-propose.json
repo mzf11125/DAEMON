@@ -1,0 +1,8 @@
+{
+  "caseId": "express-cargo-intake-propose",
+  "criteria": [
+    { "id": "extractThenPropose", "weight": 0.5, "description": "Intake extraction followed by draft proposal" },
+    { "id": "proposalPayload", "weight": 0.3, "description": "Response includes CreateShipmentDraft proposal" },
+    { "id": "noExecute", "weight": 0.2, "description": "No direct action execution" }
+  ]
+}

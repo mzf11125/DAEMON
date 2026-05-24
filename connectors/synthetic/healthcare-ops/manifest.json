@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-healthcare-ops",
+  "packId": "healthcare-ops",
   "displayName": "Synthetic sandbox — healthcare-ops",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/healthcare-ops/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/healthcare-ops/",
   "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

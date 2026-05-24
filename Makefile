@@ -1,4 +1,4 @@
-.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track migrate migrate-legacy seed seed-sandbox test test-integration validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop prove-p3-geo prove-sandbox-sectors ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke
+.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track up-gateway down-gateway migrate migrate-legacy seed seed-sandbox seed-express-cargo test test-integration bootstrap-integration-local validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop prove-p3-geo prove-sandbox-sectors prove-traffic-engineering prove-logistics-nvocc prove-express-cargo-sim prove-market-intel prove-market-intel-social prove-market-intel-rag prove-market-intel-hybrid prove-market-intel-research prove-market-intel-shodan prove-market-intel-security check-vendor-neutral check-sandbox-registry check-express-cargo-catalog ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke market-intel-install
 
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
@@ -37,6 +37,12 @@ up-merge-track:
 down-merge-track:
 	$(COMPOSE) --profile merge-track down
 
+up-gateway:
+	$(COMPOSE) --profile gateway up -d
+
+down-gateway:
+	$(COMPOSE) --profile gateway down
+
 seed-control-plane:
 	./scripts/seed-control-plane-demo-tenant.sh
 
@@ -62,17 +68,73 @@ migrate-legacy:
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/003_ingestion_params.sql || true
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/004_supabase_compat_roles.sql
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/005_authenticated_grants.sql
+	psql "$(DATABASE_URL)" -f infra/migrations/postgres/006_p3_geo_attachments.sql
+	psql "$(DATABASE_URL)" -f infra/migrations/postgres/007_market_intel_pgvector.sql
+	psql "$(DATABASE_URL)" -f infra/migrations/postgres/008_action_proposals.sql
+
+market-intel-install:
+	@ROOT="$(CURDIR)"; \
+	PY=$$(for c in python3.12 python3.11 python3.10 python3; do \
+	  command -v $$c >/dev/null 2>&1 && $$c -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,10) else 1)' && echo $$c && break; \
+	done); \
+	test -n "$$PY" || (echo "Python 3.10+ required" && exit 1); \
+	$$PY -m venv pipelines/market-intel/.venv; \
+	pipelines/market-intel/.venv/bin/pip install -e pipelines/market-intel
+
+prove-market-intel:
+	./scripts/prove-market-intel.sh
+
+prove-market-intel-social:
+	./scripts/prove-market-intel-social.sh
+
+prove-market-intel-rag:
+	./scripts/prove-market-intel-rag.sh
+
+prove-market-intel-hybrid:
+	./scripts/prove-market-intel-hybrid.sh
+
+prove-market-intel-research:
+	./scripts/prove-market-intel-research.sh
+
+prove-market-intel-shodan:
+	./scripts/prove-market-intel-shodan.sh
+
+prove-market-intel-security:
+	./scripts/prove-market-intel-security.sh
 
 seed:
 	cd infra/seed && go run .
 
 seed-sandbox: seed
 
+seed-express-cargo: seed
+
 prove-p3-geo:
 	./scripts/prove-p3-geo.sh
 
 prove-sandbox-sectors:
 	./scripts/prove-sandbox-sectors.sh
+
+prove-traffic-engineering:
+	./scripts/prove-traffic-engineering.sh
+
+prove-logistics-nvocc:
+	./scripts/prove-logistics-nvocc.sh
+
+prove-express-cargo-sim:
+	./scripts/prove-express-cargo-sim.sh
+
+bootstrap-integration-local:
+	./scripts/bootstrap-integration-local.sh
+
+check-vendor-neutral:
+	./scripts/check-vendor-neutral-language.sh
+
+check-sandbox-registry:
+	./scripts/check-sandbox-registry-drift.sh
+
+check-express-cargo-catalog:
+	./scripts/check-express-cargo-catalog.sh
 
 pipeline-raw:
 	cd pipelines/raw-ingest && go run ./cmd
@@ -89,6 +151,9 @@ pipeline-quality:
 pipeline-all: pipeline-raw pipeline-transforms pipeline-features pipeline-quality
 
 test-integration:
+	@if docker info >/dev/null 2>&1; then \
+		unset INTEGRATION_USE_LOCAL; \
+	fi; \
 	cd tests/integration && go test -tags=integration -count=1 -timeout=15m ./...
 
 test:
@@ -139,7 +204,8 @@ aip-llm-build: pnpm-workspace
 	pnpm --filter @daemon/llm-gateway build
 
 aip-eval: aip-build
-	pnpm --filter @daemon/aip-agent eval
+	./scripts/ensure-aip-eval-stack.sh
+	OIDC_REQUIRED=false TENANT_ID=tenant-demo pnpm --filter @daemon/aip-agent eval
 
 # Override: make aip-orchestrator CASE=investigate-case-readonly
 CASE ?= triage-list-signals

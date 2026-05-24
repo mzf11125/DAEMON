@@ -1,0 +1,3830 @@
+Source URL: https://developer.shodan.io/api/openapi-trends.json
+Title: openapi-trends.json
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Trends API Documentation",
+    "description": "The Trends API which used by Shodan Trends provides a month-to-month breakdown of Shodan historical results.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://trends.shodan.io"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Historical Data (Enterprise)"
+    }
+  ],
+  "paths": {
+    "/api/v1/search": {
+      "get": {
+        "operationId": "searchTrends",
+        "tags": [
+          "Historical Data (Enterprise)"
+        ],
+        "summary": "Search Trends",
+        "description": "Get breakdown of historical results aggregate by facet field.",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search query used to search the historical database",
+            "example": "product:nginx"
+          },
+          {
+            "name": "facets",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "A comma-separated list of properties to get summary information on",
+            "example": "country"
+          },
+          {
+            "name": "key",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "To use the API you need to have an API key, which you can get for free by creating a Shodan account.",
+            "example": "YOUR_API_KEY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "total": 1464808820,
+                  "matches": [
+                    {
+                      "month": "2017-06",
+                      "count": 9038297
+                    },
+                    {
+                      "month": "2017-07",
+                      "count": 9622979
+                    },
+                    {
+                      "month": "2017-08",
+                      "count": 9567365
+                    },
+                    {
+                      "month": "2017-09",
+                      "count": 9336625
+                    },
+                    {
+                      "month": "2017-10",
+                      "count": 9980807
+                    },
+                    {
+                      "month": "2017-11",
+                      "count": 10304751
+                    },
+                    {
+                      "month": "2017-12",
+                      "count": 10588246
+                    },
+                    {
+                      "month": "2018-01",
+                      "count": 10869472
+                    },
+                    {
+                      "month": "2018-02",
+                      "count": 10761630
+                    },
+                    {
+                      "month": "2018-03",
+                      "count": 11029917
+                    },
+                    {
+                      "month": "2018-04",
+                      "count": 11720458
+                    },
+                    {
+                      "month": "2018-05",
+                      "count": 12290757
+                    },
+                    {
+                      "month": "2018-06",
+                      "count": 12486140
+                    },
+                    {
+                      "month": "2018-07",
+                      "count": 12716243
+                    },
+                    {
+                      "month": "2018-08",
+                      "count": 13264770
+                    },
+                    {
+                      "month": "2018-09",
+                      "count": 13628101
+                    },
+                    {
+                      "month": "2018-10",
+                      "count": 14120929
+                    },
+                    {
+                      "month": "2018-11",
+                      "count": 14490904
+                    },
+                    {
+                      "month": "2018-12",
+                      "count": 14941899
+                    },
+                    {
+                      "month": "2019-01",
+                      "count": 15198471
+                    },
+                    {
+                      "month": "2019-02",
+                      "count": 15516717
+                    },
+                    {
+                      "month": "2019-03",
+                      "count": 15873412
+                    },
+                    {
+                      "month": "2019-04",
+                      "count": 16240612
+                    },
+                    {
+                      "month": "2019-05",
+                      "count": 16907413
+                    },
+                    {
+                      "month": "2019-06",
+                      "count": 16725925
+                    },
+                    {
+                      "month": "2019-07",
+                      "count": 17162899
+                    },
+                    {
+                      "month": "2019-08",
+                      "count": 17825397
+                    },
+                    {
+                      "month": "2019-09",
+                      "count": 18199228
+                    },
+                    {
+                      "month": "2019-10",
+                      "count": 18747143
+                    },
+                    {
+                      "month": "2019-11",
+                      "count": 19265986
+                    },
+                    {
+                      "month": "2019-12",
+                      "count": 19904296
+                    },
+                    {
+                      "month": "2020-01",
+                      "count": 19972114
+                    },
+                    {
+                      "month": "2020-02",
+                      "count": 20669843
+                    },
+                    {
+                      "month": "2020-03",
+                      "count": 22023516
+                    },
+                    {
+                      "month": "2020-04",
+                      "count": 21957936
+                    },
+                    {
+                      "month": "2020-05",
+                      "count": 21342924
+                    },
+                    {
+                      "month": "2020-06",
+                      "count": 21120320
+                    },
+                    {
+                      "month": "2020-07",
+                      "count": 22127722
+                    },
+                    {
+                      "month": "2020-08",
+                      "count": 22681946
+                    },
+                    {
+                      "month": "2020-09",
+                      "count": 22644841
+                    },
+                    {
+                      "month": "2020-10",
+                      "count": 22567317
+                    },
+                    {
+                      "month": "2020-11",
+                      "count": 22809743
+                    },
+                    {
+                      "month": "2020-12",
+                      "count": 23112365
+                    },
+                    {
+                      "month": "2021-01",
+                      "count": 23352274
+                    },
+                    {
+                      "month": "2021-02",
+                      "count": 22511781
+                    },
+                    {
+                      "month": "2021-03",
+                      "count": 23287526
+                    },
+                    {
+                      "month": "2021-04",
+                      "count": 23631594
+                    },
+                    {
+                      "month": "2021-05",
+                      "count": 24017127
+                    },
+                    {
+                      "month": "2021-06",
+                      "count": 24225740
+                    },
+                    {
+                      "month": "2021-07",
+                      "count": 24691114
+                    },
+                    {
+                      "month": "2021-08",
+                      "count": 24945559
+                    },
+                    {
+                      "month": "2021-09",
+                      "count": 25244005
+                    },
+                    {
+                      "month": "2021-10",
+                      "count": 25523330
+                    },
+                    {
+                      "month": "2021-11",
+                      "count": 25672889
+                    },
+                    {
+                      "month": "2021-12",
+                      "count": 26201167
+                    },
+                    {
+                      "month": "2022-01",
+                      "count": 26589219
+                    },
+                    {
+                      "month": "2022-02",
+                      "count": 26533100
+                    },
+                    {
+                      "month": "2022-03",
+                      "count": 27588784
+                    },
+                    {
+                      "month": "2022-04",
+                      "count": 27378939
+                    },
+                    {
+                      "month": "2022-05",
+                      "count": 27411974
+                    },
+                    {
+                      "month": "2022-06",
+                      "count": 27251911
+                    },
+                    {
+                      "month": "2022-07",
+                      "count": 27531147
+                    },
+                    {
+                      "month": "2022-08",
+                      "count": 27437822
+                    },
+                    {
+                      "month": "2022-09",
+                      "count": 26997984
+                    },
+                    {
+                      "month": "2022-10",
+                      "count": 26459164
+                    },
+                    {
+                      "month": "2022-11",
+                      "count": 26505647
+                    },
+                    {
+                      "month": "2022-12",
+                      "count": 27028252
+                    },
+                    {
+                      "month": "2023-01",
+                      "count": 26411568
+                    },
+                    {
+                      "month": "2023-02",
+                      "count": 25070023
+                    },
+                    {
+                      "month": "2023-03",
+                      "count": 25733428
+                    },
+                    {
+                      "month": "2023-04",
+                      "count": 25428367
+                    },
+                    {
+                      "month": "2023-05",
+                      "count": 36164482
+                    },
+                    {
+                      "month": "2023-06",
+                      "count": 16624527
+                    }
+                  ],
+                  "facets": {
+                    "country": [
+                      {
+                        "key": "2017-06",
+                        "values": [
+                          {
+                            "count": 3050586,
+                            "value": "US"
+                          },
+                          {
+                            "count": 977320,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 780431,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 572521,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 420314,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 331331,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 302899,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 194184,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 179499,
+                            "value": "IE"
+                          },
+                          {
+                            "count": 173166,
+                            "value": "HK"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2017-07",
+                        "values": [
+                          {
+                            "count": 3212240,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1111340,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 842439,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 593350,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 438983,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 345139,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 324624,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 205120,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 192695,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 187919,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2017-08",
+                        "values": [
+                          {
+                            "count": 3240638,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1098987,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 828453,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 583432,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 391038,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 345197,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 324335,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 203638,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 196578,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 187529,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2017-09",
+                        "values": [
+                          {
+                            "count": 3189853,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1065540,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 796529,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 583445,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 385482,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 345160,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 294485,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 206418,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 200695,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 187044,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2017-10",
+                        "values": [
+                          {
+                            "count": 3514906,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1070632,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 858516,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 615056,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 404242,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 361080,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 313330,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 218864,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 218684,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 194867,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2017-11",
+                        "values": [
+                          {
+                            "count": 3652666,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1141820,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 862161,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 620593,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 440130,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 364814,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 317462,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 231706,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 227484,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 200426,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2017-12",
+                        "values": [
+                          {
+                            "count": 3738143,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1215129,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 903019,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 636506,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 424603,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 366994,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 323643,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 230824,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 226367,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 205024,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-01",
+                        "values": [
+                          {
+                            "count": 3861672,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1281415,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 908437,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 642109,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 428831,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 374396,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 330122,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 244976,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 230880,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 205999,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-02",
+                        "values": [
+                          {
+                            "count": 3827102,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1226215,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 896637,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 640314,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 425552,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 370944,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 323073,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 241976,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 235821,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 207621,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-03",
+                        "values": [
+                          {
+                            "count": 3925628,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1267901,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 916694,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 647998,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 439599,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 374738,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 326288,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 246910,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 237306,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 214476,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-04",
+                        "values": [
+                          {
+                            "count": 4073656,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1397472,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 999349,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 672516,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 480599,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 396119,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 347135,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 280729,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 259366,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 220981,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-05",
+                        "values": [
+                          {
+                            "count": 4293839,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1494306,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1015577,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 683767,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 501699,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 407596,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 357045,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 290926,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 256114,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 234072,
+                            "value": "VN"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-06",
+                        "values": [
+                          {
+                            "count": 4368791,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1565342,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1019682,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 692723,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 503521,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 404879,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 355990,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 298404,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 294777,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 249868,
+                            "value": "VN"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-07",
+                        "values": [
+                          {
+                            "count": 4484383,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1560523,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1042289,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 692151,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 512872,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 408121,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 359108,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 308425,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 303178,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 251805,
+                            "value": "VN"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-08",
+                        "values": [
+                          {
+                            "count": 4636336,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1646708,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1073007,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 682793,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 521107,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 412708,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 364834,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 323305,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 317330,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 293598,
+                            "value": "VN"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-09",
+                        "values": [
+                          {
+                            "count": 4786179,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1702605,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1042671,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 687910,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 528417,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 424443,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 379318,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 341409,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 325258,
+                            "value": "VN"
+                          },
+                          {
+                            "count": 319061,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-10",
+                        "values": [
+                          {
+                            "count": 5087425,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1774711,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1091509,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 709686,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 526380,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 436821,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 393559,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 363196,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 334500,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 251641,
+                            "value": "ZA"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-11",
+                        "values": [
+                          {
+                            "count": 5277809,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1735645,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1180170,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 743253,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 546464,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 452861,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 409807,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 350845,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 340691,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 245437,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2018-12",
+                        "values": [
+                          {
+                            "count": 5361042,
+                            "value": "US"
+                          },
+                          {
+                            "count": 1862368,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1203923,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 744990,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 553490,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 461710,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 409236,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 365875,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 347999,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 287186,
+                            "value": "VN"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-01",
+                        "values": [
+                          {
+                            "count": 5498756,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2004928,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1200364,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 748100,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 541899,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 459659,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 407115,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 366968,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 348713,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 264409,
+                            "value": "VN"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-02",
+                        "values": [
+                          {
+                            "count": 5669749,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2015687,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1223231,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 754624,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 561708,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 464200,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 412617,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 362027,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 355711,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 257220,
+                            "value": "VN"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-03",
+                        "values": [
+                          {
+                            "count": 5904610,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2186025,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1228333,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 753927,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 546782,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 469225,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 413096,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 384812,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 359253,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 250195,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-04",
+                        "values": [
+                          {
+                            "count": 6109769,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2338975,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1203252,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 753299,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 546801,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 467556,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 414264,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 384128,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 362579,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 245557,
+                            "value": "IE"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-05",
+                        "values": [
+                          {
+                            "count": 6374597,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2462819,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1229066,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 761255,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 564888,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 475207,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 420594,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 394061,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 367622,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 253440,
+                            "value": "IN"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-06",
+                        "values": [
+                          {
+                            "count": 6280709,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2276476,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1196272,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 763656,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 574488,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 476243,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 419785,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 399110,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 364594,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 314042,
+                            "value": "ZA"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-07",
+                        "values": [
+                          {
+                            "count": 6280356,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2380660,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1234898,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 773293,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 579773,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 478250,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 429342,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 417483,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 416924,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 374017,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-08",
+                        "values": [
+                          {
+                            "count": 6043360,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2848665,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1336811,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 757440,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 614848,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 540934,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 516530,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 476113,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 451293,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 390397,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-09",
+                        "values": [
+                          {
+                            "count": 6021273,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3109097,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1293971,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 794551,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 662941,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 618445,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 580178,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 464429,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 451993,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 391482,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-10",
+                        "values": [
+                          {
+                            "count": 6255133,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3142858,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1326684,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 804943,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 764824,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 617602,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 594214,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 475566,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 462042,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 398314,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-11",
+                        "values": [
+                          {
+                            "count": 6727457,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3121426,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1319932,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 841116,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 766034,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 612775,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 612604,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 474582,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 469480,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 397482,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2019-12",
+                        "values": [
+                          {
+                            "count": 6889177,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3317695,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1326099,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1023921,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 744518,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 638086,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 617314,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 473999,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 467989,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 399329,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-01",
+                        "values": [
+                          {
+                            "count": 6884546,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3255345,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1315178,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1136135,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 741716,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 635266,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 600410,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 479234,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 467116,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 397921,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-02",
+                        "values": [
+                          {
+                            "count": 7475515,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3187150,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1341747,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1143111,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 761579,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 631529,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 602020,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 487723,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 468750,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 406400,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-03",
+                        "values": [
+                          {
+                            "count": 8050115,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3454490,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1452193,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1185622,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 793177,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 660782,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 632884,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 516855,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 486978,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 425567,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-04",
+                        "values": [
+                          {
+                            "count": 8274558,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3298127,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1555430,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 945107,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 840086,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 699342,
+                            "value": "ZA"
+                          },
+                          {
+                            "count": 691188,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 532020,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 528488,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 458011,
+                            "value": "JP"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-05",
+                        "values": [
+                          {
+                            "count": 8021952,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3100526,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1523207,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1205361,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 832986,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 679149,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 541815,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 537833,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 456446,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 379888,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-06",
+                        "values": [
+                          {
+                            "count": 7832719,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3156624,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1509173,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1162273,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 824920,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 672055,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 550332,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 538574,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 460209,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 383257,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-07",
+                        "values": [
+                          {
+                            "count": 8107446,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3392420,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1635129,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1186628,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 850571,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 699360,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 587086,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 559087,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 485753,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 415843,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-08",
+                        "values": [
+                          {
+                            "count": 8087567,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3459264,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1717733,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1224390,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 870345,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 728713,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 610581,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 584754,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 510021,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 456066,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-09",
+                        "values": [
+                          {
+                            "count": 7971991,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3424262,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1750637,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1197963,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 886566,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 736560,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 628815,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 598498,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 514848,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 473774,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-10",
+                        "values": [
+                          {
+                            "count": 7892122,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3231179,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1803579,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1290093,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 895681,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 733504,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 635628,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 607060,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 518597,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 483299,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-11",
+                        "values": [
+                          {
+                            "count": 7884790,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3132291,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1799488,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1635656,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 905679,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 734442,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 633970,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 606874,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 516459,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 485677,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2020-12",
+                        "values": [
+                          {
+                            "count": 7903236,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2939801,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1912513,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1770469,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 943264,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 745976,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 643121,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 623126,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 516471,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 504976,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-01",
+                        "values": [
+                          {
+                            "count": 7983171,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3011184,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2004196,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1697084,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 947215,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 742940,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 653585,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 611650,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 527379,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 502152,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-02",
+                        "values": [
+                          {
+                            "count": 7708495,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2859368,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1945876,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1508050,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 944804,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 740926,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 640081,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 603521,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 528165,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 505943,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-03",
+                        "values": [
+                          {
+                            "count": 7630210,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2812504,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2286695,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2082998,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 907172,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 757673,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 670143,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 643005,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 597939,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 485762,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-04",
+                        "values": [
+                          {
+                            "count": 7807820,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2772019,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2469773,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2117202,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 774279,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 717466,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 698911,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 638738,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 593185,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 491501,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-05",
+                        "values": [
+                          {
+                            "count": 7966005,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2845406,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2575747,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2114948,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 865473,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 776948,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 693525,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 634506,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 572596,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 476360,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-06",
+                        "values": [
+                          {
+                            "count": 7919726,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3024772,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2547344,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2135776,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 872853,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 768666,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 676067,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 625278,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 569287,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 469076,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-07",
+                        "values": [
+                          {
+                            "count": 8206940,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3005242,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2655712,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2143096,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 843381,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 778677,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 680726,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 628531,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 616193,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 501406,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-08",
+                        "values": [
+                          {
+                            "count": 8247896,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3052351,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2712821,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2142934,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 842832,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 793292,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 713524,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 648939,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 636958,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 515606,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-09",
+                        "values": [
+                          {
+                            "count": 8178225,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3112008,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2842380,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2201122,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 872510,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 801369,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 687876,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 661463,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 641623,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 526307,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-10",
+                        "values": [
+                          {
+                            "count": 8233903,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3200392,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2783334,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2206270,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 858972,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 802824,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 685397,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 679273,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 643753,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 510727,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-11",
+                        "values": [
+                          {
+                            "count": 8185476,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3405539,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2954825,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2213089,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 846683,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 801821,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 692263,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 690559,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 641495,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 543230,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2021-12",
+                        "values": [
+                          {
+                            "count": 8505195,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3432428,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2975159,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2237776,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 857796,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 804941,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 718103,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 698351,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 656866,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 557580,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-01",
+                        "values": [
+                          {
+                            "count": 8618233,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3512542,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2919276,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2304980,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 884273,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 816021,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 726609,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 705368,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 668269,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 580822,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-02",
+                        "values": [
+                          {
+                            "count": 8780379,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3450254,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2882163,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2283078,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 862501,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 798990,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 722443,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 710385,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 670082,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 574664,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-03",
+                        "values": [
+                          {
+                            "count": 9157770,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3569479,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 3107503,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2323422,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 874413,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 822468,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 745009,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 732740,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 693676,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 591958,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-04",
+                        "values": [
+                          {
+                            "count": 9014523,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3542052,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 3191589,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2294526,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 841047,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 813662,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 780950,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 724050,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 690278,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 623720,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-05",
+                        "values": [
+                          {
+                            "count": 8925134,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3562358,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 3194015,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2295253,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 842567,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 819042,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 776267,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 720592,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 701723,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 628504,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-06",
+                        "values": [
+                          {
+                            "count": 9003862,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3633414,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 3031289,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2235243,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 856429,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 798364,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 785679,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 712332,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 689760,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 626394,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-07",
+                        "values": [
+                          {
+                            "count": 9052786,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3703914,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2964913,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2294334,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 860906,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 802756,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 794979,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 739510,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 704568,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 636669,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-08",
+                        "values": [
+                          {
+                            "count": 9029120,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3615406,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2899078,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2273969,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 842145,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 813699,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 810402,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 741605,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 708525,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 655388,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-09",
+                        "values": [
+                          {
+                            "count": 8738658,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3580990,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2858085,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2218715,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 860269,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 808995,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 799835,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 738421,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 683597,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 634799,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-10",
+                        "values": [
+                          {
+                            "count": 8444678,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3527650,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2871371,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2199075,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 861246,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 811757,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 807936,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 721670,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 674542,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 642547,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-11",
+                        "values": [
+                          {
+                            "count": 8366581,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3621566,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2993512,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2173666,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 845704,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 805183,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 802826,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 716129,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 659536,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 644204,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2022-12",
+                        "values": [
+                          {
+                            "count": 8366345,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3834305,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 3189882,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2186270,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 815628,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 806829,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 731139,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 720143,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 695829,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 647306,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2023-01",
+                        "values": [
+                          {
+                            "count": 7971216,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3655723,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 3195539,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2181171,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 827645,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 814161,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 803636,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 731403,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 674526,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 641548,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2023-02",
+                        "values": [
+                          {
+                            "count": 7517417,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3445323,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 2999832,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2069510,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 793056,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 792405,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 788631,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 703665,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 643075,
+                            "value": "GB"
+                          },
+                          {
+                            "count": 635976,
+                            "value": "SG"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2023-03",
+                        "values": [
+                          {
+                            "count": 7594501,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3654450,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 3202689,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2101095,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 813291,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 808025,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 801658,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 709502,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 660476,
+                            "value": "SG"
+                          },
+                          {
+                            "count": 637092,
+                            "value": "GB"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2023-04",
+                        "values": [
+                          {
+                            "count": 7458199,
+                            "value": "US"
+                          },
+                          {
+                            "count": 3686191,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 3204505,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2070362,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 801620,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 782797,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 781625,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 697022,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 654356,
+                            "value": "SG"
+                          },
+                          {
+                            "count": 617204,
+                            "value": "GB"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2023-05",
+                        "values": [
+                          {
+                            "count": 9206970,
+                            "value": "US"
+                          },
+                          {
+                            "count": 7554422,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 4191755,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 2472756,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 1606691,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 1080430,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 980460,
+                            "value": "SG"
+                          },
+                          {
+                            "count": 979048,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 857580,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 741169,
+                            "value": "GB"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "2023-06",
+                        "values": [
+                          {
+                            "count": 4551750,
+                            "value": "US"
+                          },
+                          {
+                            "count": 2907689,
+                            "value": "CN"
+                          },
+                          {
+                            "count": 1853804,
+                            "value": "HK"
+                          },
+                          {
+                            "count": 1229259,
+                            "value": "DE"
+                          },
+                          {
+                            "count": 702268,
+                            "value": "JP"
+                          },
+                          {
+                            "count": 547271,
+                            "value": "RU"
+                          },
+                          {
+                            "count": 514044,
+                            "value": "FR"
+                          },
+                          {
+                            "count": 449945,
+                            "value": "SG"
+                          },
+                          {
+                            "count": 443064,
+                            "value": "NL"
+                          },
+                          {
+                            "count": 384831,
+                            "value": "GB"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "error": "Invalid search query"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/search/filters": {
+      "get": {
+        "operationId": "listFilters",
+        "tags": [
+          "Historical Data (Enterprise)"
+        ],
+        "summary": "List all filters that can be used when searching",
+        "description": "This method returns a list of search filters that can be used in the search query.",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "To use the API you need to have an API key, which you can get for free by creating a Shodan account.",
+            "example": "YOUR_API_KEY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": [
+                  "all",
+                  "asn",
+                  "city",
+                  "country",
+                  "cpe",
+                  "has_ipv6",
+                  "has_screenshot",
+                  "has_ssl",
+                  "has_vuln",
+                  "hash",
+                  "hostname",
+                  "http.component",
+                  "http.component_category",
+                  "http.favicon.hash",
+                  "http.html_hash",
+                  "http.robots_hash",
+                  "http.securitytxt",
+                  "http.status",
+                  "http.title",
+                  "http.waf",
+                  "ip",
+                  "isp",
+                  "net",
+                  "org",
+                  "os",
+                  "port",
+                  "product",
+                  "region",
+                  "screenshot.label",
+                  "ssh.fingerprint",
+                  "ssl",
+                  "ssl.alpn",
+                  "ssl.cert.fingerprint",
+                  "ssl.cert.issuer.cn",
+                  "ssl.cert.serial",
+                  "ssl.cert.subject.cn",
+                  "ssl.ja3s",
+                  "ssl.jarm",
+                  "ssl.version",
+                  "state",
+                  "tag",
+                  "title",
+                  "version",
+                  "vuln"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/search/facets": {
+      "get": {
+        "operationId": "listFacets",
+        "tags": [
+          "Historical Data (Enterprise)"
+        ],
+        "summary": "List all search facets",
+        "description": "This method returns a list of facets that can be used to get a breakdown of the top values for a property.",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "To use the API you need to have an API key, which you can get for free by creating a Shodan account.",
+            "example": "YOUR_API_KEY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": [
+                  "asn",
+                  "city",
+                  "country",
+                  "domain",
+                  "has_screenshot",
+                  "hash",
+                  "http.component",
+                  "http.component_category",
+                  "http.favicon.hash",
+                  "http.html_hash",
+                  "http.robots_hash",
+                  "http.status",
+                  "http.title",
+                  "http.waf",
+                  "ip",
+                  "isp",
+                  "mongodb.database.name",
+                  "org",
+                  "os",
+                  "port",
+                  "product",
+                  "redis.key",
+                  "region",
+                  "rsync.module",
+                  "screenshot.label",
+                  "ssh.fingerprint",
+                  "ssl.alpn",
+                  "ssl.cert.fingerprint",
+                  "ssl.cert.issuer.cn",
+                  "ssl.cert.serial",
+                  "ssl.cert.subject.cn",
+                  "ssl.ja3s",
+                  "ssl.jarm",
+                  "ssl.version",
+                  "state",
+                  "tag",
+                  "version",
+                  "vuln",
+                  "vuln.verified"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

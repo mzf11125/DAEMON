@@ -1,0 +1,15 @@
+{
+  "caseId": "express-cargo-sales-brief",
+  "version": 1,
+  "mode": "tool",
+  "input": {
+    "customerAccountId": "account-tier-b-silent-001",
+    "meetingDate": "2026-05-23"
+  },
+  "expect": {
+    "toolsCalled": ["generate_express_cargo_sales_brief"],
+    "forbiddenTools": ["propose_express_cargo_draft", "propose_action", "CreateShipmentDraft"]
+  },
+  "packId": "logistics-express-cargo",
+  "lifecycleGate": "G-EC-08"
+}

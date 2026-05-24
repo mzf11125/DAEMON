@@ -1,14 +1,8 @@
 -- P3: attachment plane, links, tenant feature flags (geo map). Mirror of supabase migration 20260101000006.
-
--- JWT claim helpers for RLS (compatible with db.WithRLSTx request.jwt.claims).
-CREATE SCHEMA IF NOT EXISTS auth;
-
-CREATE OR REPLACE FUNCTION auth.jwt() RETURNS jsonb AS $$
-  SELECT COALESCE(NULLIF(current_setting('request.jwt.claims', true), ''), '{}')::jsonb;
-$$ LANGUAGE sql STABLE;
+-- JWT helpers use request.jwt.claims (db.WithRLSTx) — no auth schema (Supabase locks auth; testcontainers has none).
 
 CREATE OR REPLACE FUNCTION public.jwt_tenant_id() RETURNS text AS $$
-  SELECT COALESCE(auth.jwt() ->> 'tenant_id', '');
+  SELECT COALESCE(NULLIF(current_setting('request.jwt.claims', true), ''), '{}')::jsonb ->> 'tenant_id';
 $$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public;
 
 CREATE TABLE IF NOT EXISTS attachments (
@@ -48,11 +42,14 @@ ALTER TABLE attachments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE attachment_links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_settings ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation_attachments ON attachments;
 CREATE POLICY tenant_isolation_attachments ON attachments
   FOR ALL USING (tenant_id = public.jwt_tenant_id());
 
+DROP POLICY IF EXISTS tenant_isolation_attachment_links ON attachment_links;
 CREATE POLICY tenant_isolation_attachment_links ON attachment_links
   FOR ALL USING (tenant_id = public.jwt_tenant_id());
 
+DROP POLICY IF EXISTS tenant_isolation_tenant_settings ON tenant_settings;
 CREATE POLICY tenant_isolation_tenant_settings ON tenant_settings
   FOR ALL USING (tenant_id = public.jwt_tenant_id());

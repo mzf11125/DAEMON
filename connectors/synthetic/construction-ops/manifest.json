@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-construction-ops",
+  "packId": "construction-ops",
   "displayName": "Synthetic sandbox — construction-ops",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/construction-ops/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/construction-ops/",
   "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

@@ -438,6 +438,94 @@ func executeAction(pool *pgxpool.Pool, driver neo4j.DriverWithContext, cfg confi
 			}
 			recordAudit(pool, ctx, tenant, actionType, "WorkOrder", woID, params)
 			dhttp.WriteJSON(w, http.StatusCreated, map[string]any{"workOrderId": woID, "title": title, "status": "open"})
+		case "CreateShipmentDraft":
+			customerAccountID, _ := params["customerAccountId"].(string)
+			origin, _ := params["origin"].(string)
+			destination, _ := params["destination"].(string)
+			if customerAccountID == "" || origin == "" || destination == "" {
+				dhttp.WriteErrorRequest(w, r, dhttp.StatusUnprocessable, "MISSING_PARAM", "customerAccountId, origin, and destination required")
+				return
+			}
+			shipmentID := "shipment-draft-" + strconv.FormatInt(time.Now().UnixNano(), 10)
+			orderID := "order-draft-" + strconv.FormatInt(time.Now().UnixNano(), 10)
+			propsMap := map[string]any{
+				"shipmentId": shipmentID, "commercialOrderId": orderID, "status": "draft",
+				"origin": origin, "destination": destination, "vertical": "logistics-express-cargo",
+			}
+			if weight, ok := params["weight"].(float64); ok {
+				propsMap["weight"] = weight
+			}
+			if refs, ok := params["references"].(map[string]any); ok {
+				propsMap["references"] = refs
+			}
+			if conf, ok := params["confidence"].(map[string]any); ok {
+				propsMap["confidence"] = conf
+			}
+			if items, ok := params["items"].([]any); ok {
+				propsMap["items"] = items
+			}
+			orderProps, _ := json.Marshal(map[string]any{
+				"commercialOrderId": orderID, "customerAccountId": customerAccountID, "status": "draft",
+			})
+			shipProps, _ := json.Marshal(propsMap)
+			orderRID := "ri." + tenant + ".order." + orderID
+			shipRID := "ri." + tenant + ".shipment." + shipmentID
+			err := db.ExecRLS(ctx, pool, `INSERT INTO ontology_objects (object_rid, tenant_id, object_type, primary_key_value, properties, created_at, updated_at)
+				VALUES ($1,$2,'CommercialOrder',$3,$4,NOW(),NOW())`, orderRID, tenant, orderID, orderProps)
+			if err != nil {
+				dhttp.WriteErrorRequest(w, r, http.StatusInternalServerError, "ACTION_FAILED", err.Error())
+				return
+			}
+			err = db.ExecRLS(ctx, pool, `INSERT INTO ontology_objects (object_rid, tenant_id, object_type, primary_key_value, properties, created_at, updated_at)
+				VALUES ($1,$2,'Shipment',$3,$4,NOW(),NOW())`, shipRID, tenant, shipmentID, shipProps)
+			if err != nil {
+				dhttp.WriteErrorRequest(w, r, http.StatusInternalServerError, "ACTION_FAILED", err.Error())
+				return
+			}
+			if driver != nil {
+				sess := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+				defer sess.Close(ctx)
+				_, _ = sess.Run(ctx, `MERGE (a:Entity {id: $acct}) MERGE (o:Entity {id: $order}) MERGE (a)-[:LINK {type: 'CustomerAccountToCommercialOrder'}]->(o)`,
+					map[string]any{"acct": customerAccountID, "order": orderID})
+				_, _ = sess.Run(ctx, `MERGE (o:Entity {id: $order}) MERGE (s:Entity {id: $ship}) MERGE (o)-[:LINK {type: 'CommercialOrderToShipment'}]->(s)`,
+					map[string]any{"order": orderID, "ship": shipmentID})
+			}
+			recordAudit(pool, ctx, tenant, actionType, "Shipment", shipmentID, params)
+			dhttp.WriteJSON(w, http.StatusCreated, map[string]any{
+				"shipmentId": shipmentID, "commercialOrderId": orderID, "status": "draft",
+			})
+		case "ConfirmShipment":
+			shipmentID, _ := params["shipmentId"].(string)
+			if shipmentID == "" {
+				dhttp.WriteErrorRequest(w, r, dhttp.StatusUnprocessable, "MISSING_PARAM", "shipmentId required")
+				return
+			}
+			var props []byte
+			err := db.WithRLSTx(ctx, pool, func(tx pgx.Tx) error {
+				return tx.QueryRow(ctx, `SELECT properties FROM ontology_objects WHERE tenant_id = $1 AND object_type = 'Shipment' AND primary_key_value = $2`, tenant, shipmentID).Scan(&props)
+			})
+			if err != nil {
+				dhttp.WriteErrorRequest(w, r, http.StatusNotFound, "NOT_FOUND", "shipment not found")
+				return
+			}
+			var p map[string]any
+			_ = json.Unmarshal(props, &p)
+			if st, _ := p["status"].(string); st != "draft" {
+				dhttp.WriteErrorRequest(w, r, dhttp.StatusUnprocessable, "INVALID_STATE", "only draft shipments can be confirmed")
+				return
+			}
+			p["status"] = "confirmed"
+			if confirmedBy, ok := params["confirmedBy"].(string); ok && confirmedBy != "" {
+				p["confirmedBy"] = confirmedBy
+			}
+			b, _ := json.Marshal(p)
+			err = db.ExecRLS(ctx, pool, `UPDATE ontology_objects SET properties = $1, updated_at = NOW() WHERE tenant_id = $2 AND object_type = 'Shipment' AND primary_key_value = $3`, b, tenant, shipmentID)
+			if err != nil {
+				dhttp.WriteErrorRequest(w, r, http.StatusInternalServerError, "ACTION_FAILED", err.Error())
+				return
+			}
+			recordAudit(pool, ctx, tenant, actionType, "Shipment", shipmentID, params)
+			dhttp.WriteJSON(w, http.StatusOK, map[string]any{"shipmentId": shipmentID, "status": "confirmed"})
 		default:
 			dhttp.WriteErrorRequest(w, r, http.StatusNotImplemented, "NOT_IMPLEMENTED", "action type not implemented: "+actionType)
 		}

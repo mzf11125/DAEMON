@@ -36,6 +36,8 @@ jobs:
       - run: ./scripts/check-no-stub-handlers.sh
       - run: ./scripts/check-maturation-policy.sh
       - run: ./scripts/check-vendor-neutral-language.sh
+      - run: ./scripts/check-sandbox-registry-drift.sh
+      - run: ./scripts/check-express-cargo-catalog.sh
       - run: pnpm -r typecheck
       - run: pnpm --filter @daemon/ontology-language test
       - run: pnpm --filter @daemon/cli test || echo "cli test skipped if DB unavailable"
@@ -59,6 +61,8 @@ jobs:
       - run: make ontology-sync
       - run: go work sync
       - run: make test-integration
+        env:
+          INTEGRATION_WITH_NEO4J: "1"
 
   e2e-full:
     runs-on: ubuntu-latest

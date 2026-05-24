@@ -49,6 +49,13 @@ export default async function HomePage() {
             <Link href="/live">Live map</Link>
           </>
         )}
+        {(me?.features as Record<string, unknown> | undefined)?.packId ===
+          "logistics-express-cargo" && (
+          <>
+            {" · "}
+            <Link href="/express-cargo">Express cargo ops</Link>
+          </>
+        )}
       </p>
 
       <section style={{ marginTop: "2rem" }}>

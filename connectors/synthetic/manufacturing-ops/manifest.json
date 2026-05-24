@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-manufacturing-ops",
+  "packId": "manufacturing-ops",
   "displayName": "Synthetic sandbox — manufacturing-ops",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/manufacturing-ops/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/manufacturing-ops/",
   "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

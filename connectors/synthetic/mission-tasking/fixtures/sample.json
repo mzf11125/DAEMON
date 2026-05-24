@@ -1,1 +1,9 @@
-{"packId":"mission-tasking","records":[{"kind":"Site","name":"Sandbox site","latitude":0,"longitude":0}]}
+{
+  "packId": "mission-tasking",
+  "geoEnabled": true,
+  "records": [
+    {"kind": "Site", "name": "Recon Asset Grid 3", "latitude": 34.0522, "longitude": -118.2437},
+    {"kind": "Asset", "assetId": "asset-friendly-001", "affiliation": "friendly", "latitude": 34.053, "longitude": -118.244},
+    {"kind": "Asset", "assetId": "track-hostile-001", "affiliation": "hostile", "latitude": 34.055, "longitude": -118.246}
+  ]
+}

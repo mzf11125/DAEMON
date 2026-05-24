@@ -12,6 +12,7 @@ PATHS=(
   .cursor/agents
   services
   apps
+  packages
   scripts
   Makefile
 )

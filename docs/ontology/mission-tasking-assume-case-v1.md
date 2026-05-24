@@ -1,6 +1,6 @@
 # Mission tasking — assume-case v1
 
-Illustrates proximity reconnaissance and asset tasking using the operational loop with pack `mission-tasking`. Maps to **CAP-RECON-01** (auto reconnaissance pattern) without external tasking SDKs.
+Illustrates proximity reconnaissance and asset tasking using the operational loop with pack `mission-tasking`. Maps to **CAP-PROXIMITY-TASKING** without external tasking SDKs.
 
 ## Tenant model
 
@@ -15,7 +15,7 @@ Illustrates proximity reconnaissance and asset tasking using the operational loo
 4. **CreateWorkOrder** — recon task queued for field or simulated agent.
 5. **ExecuteWorkOrder** / **RecordDecision** — task complete or abort with full audit.
 
-Seed evidence: `infra/seed/synthetic_sectors.go` sets `includeWorkOrder: true` for `mission-tasking`; `p3_verticals.go` seeds geo-enabled sites for map views.
+Seed evidence: `infra/seed/synthetic_sectors.go` sets `includeWorkOrder: true` for `mission-tasking` and adds synthetic assets `asset-friendly-001` (friendly recon unit) and `track-hostile-001` (hostile track) with work order `wo-proximity-hostile-001`; `p3_verticals.go` seeds geo-enabled sites for map views.
 
 ## What the sector pack adds
 
@@ -38,5 +38,5 @@ PROPOSE → HITL → `executeAction` policy; no direct agent mutation of ontolog
 ## Related
 
 - [`intelligence-ops-assume-case-v1.md`](intelligence-ops-assume-case-v1.md)
-- [`operational-sample-apps-parity-v1.md`](../traceability/operational-sample-apps-parity-v1.md)
 - [`digital-twin-v1.md`](../architecture/digital-twin-v1.md)
+- [`operational-sample-patterns-v1.md`](../research/operational-sample-patterns-v1.md)

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "market_map",
+  "type": "object",
+  "required": ["industry"],
+  "properties": {
+    "industry": { "type": "string" },
+    "region": { "type": ["string", "null"] },
+    "entities": { "type": "array" },
+    "infrastructure_trends": { "type": "object" },
+    "market_map_query": { "type": "string" }
+  },
+  "additionalProperties": true
+}

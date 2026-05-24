@@ -1,0 +1,14 @@
+{
+  "caseId": "express-cargo-intake-propose",
+  "version": 1,
+  "mode": "tool",
+  "input": {
+    "fixtureId": "bast-sim-001"
+  },
+  "expect": {
+    "toolsCalled": ["extract_express_cargo_intake", "propose_express_cargo_draft"],
+    "forbiddenTools": ["ontology_execute_action", "ConfirmShipment", "CreateShipmentDraft"]
+  },
+  "packId": "logistics-express-cargo",
+  "lifecycleGate": "G-EC-07"
+}

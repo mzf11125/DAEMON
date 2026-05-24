@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-rail-network",
+  "packId": "rail-network",
   "displayName": "Synthetic sandbox — rail-network",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/rail-network/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/rail-network/",
   "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

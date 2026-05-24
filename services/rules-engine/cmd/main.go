@@ -123,6 +123,8 @@ func evaluateHandler(pool *pgxpool.Pool, ch clickhouse.Conn, rulesRoot string) h
 				props, _ := json.Marshal(map[string]any{
 					"signalId": signalID, "summary": summary, "severity": severity,
 					"status": "open", "priority": "P2", "assetId": assetID,
+					"provenanceRuleId": rule.ID,
+					"vertical": expressVerticalForRule(rule.ID),
 				})
 				rid := "ri." + tenant + ".signal." + signalID
 				err = db.ExecRLS(r.Context(), pool, `
@@ -139,5 +141,14 @@ func evaluateHandler(pool *pgxpool.Pool, ch clickhouse.Conn, rulesRoot string) h
 				tenant, rule.ID, ruleCreated)
 		}
 		dhttp.WriteJSON(w, http.StatusOK, map[string]any{"signalsCreated": created, "count": len(created)})
+	}
+}
+
+func expressVerticalForRule(ruleID string) string {
+	switch ruleID {
+	case "express-leg-sla-breach", "express-routing-anomaly", "express-champion-idle":
+		return "logistics-express-cargo"
+	default:
+		return ""
 	}
 }

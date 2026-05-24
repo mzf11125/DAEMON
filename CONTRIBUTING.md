@@ -77,6 +77,8 @@ See [docs/developer-tools/api.md](docs/developer-tools/api.md).
 - LLM gateway (OpenAI-compatible proxy on `:8092`): `make aip-llm-build` then `pnpm --filter @daemon/llm-gateway start` — requires `pnpm install` at repo root (Makefile runs it via `pnpm-workspace`)
 - Details: [aip/evals/README.md](aip/evals/README.md), [docs/traceability/aip-phase-2.md](docs/traceability/aip-phase-2.md)
 - **Eval baseline:** update `aip/evals/baseline.json` only after a local green run: `EVAL_RECORD_BASELINE=true make aip-eval` (see [docs/governance/daemon-maturation-gates-v1.md](docs/governance/daemon-maturation-gates-v1.md)).
+- **OIDC split:** golden eval and integration tests run with `OIDC_REQUIRED=false` and `X-Tenant-Id`; local console (`console-web`) expects `OIDC_REQUIRED=true` and Supabase JWT. See [docs/aip/developer-sandbox-v1.md](docs/aip/developer-sandbox-v1.md).
+- **Eval stack bootstrap:** `make aip-eval` invokes `./scripts/ensure-aip-eval-stack.sh` (Neo4j password, `ONTOLOGY_ROOT=ontology/v2-compiled`, `OIDC_REQUIRED=false`). Set `EVAL_SKIP_STACK_BOOTSTRAP=1` when CI already started services.
 - **Agent service (Merge Phase 2):** default DAEMON path is HTTP bridge to Go — `AGENT_DAEMON_BRIDGE=true`, `ONTOLOGY_SERVICE_URL=http://localhost:8081`. Smoke: `make agent-bridge-smoke` with stack up. Do not claim production-grade autonomous agents until maturation gates are met.
 - **CLI (Merge Phase 1):** `pnpm run daemon-cli -- <command>` or `make cli-test` — env from `.env.example`; migrations path is vendored under `packages/ontology-engine`.
 

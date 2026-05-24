@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-logistics-nvocc",
+  "packId": "logistics-nvocc",
   "displayName": "Synthetic sandbox — logistics-nvocc",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/logistics-nvocc/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/logistics-nvocc/",
   "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

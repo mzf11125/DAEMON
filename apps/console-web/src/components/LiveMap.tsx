@@ -1,6 +1,8 @@
 "use client";
 
-type Pin = {
+import type { ReactNode, CSSProperties } from "react";
+
+export type LiveMapPin = {
   id: string;
   objectType: string;
   name?: string;
@@ -29,10 +31,14 @@ export function LiveMap({
   sites,
   assets,
   signals,
+  selectedId,
+  onSelectPin,
 }: {
-  sites: Pin[];
-  assets: Pin[];
+  sites: LiveMapPin[];
+  assets: LiveMapPin[];
   signals: Signal[];
+  selectedId?: string;
+  onSelectPin?: (pin: LiveMapPin) => void;
 }) {
   const pins = [...sites, ...assets];
   if (pins.length === 0) {
@@ -62,23 +68,26 @@ export function LiveMap({
         {pins.map((pin) => {
           const { x, y } = project(pin.latitude, pin.longitude, bounds);
           const color = pin.objectType === "Site" ? "#38bdf8" : "#a78bfa";
+          const selected = selectedId === pin.id;
           return (
             <button
               key={`${pin.objectType}-${pin.id}`}
               type="button"
               title={`${pin.name ?? pin.id} (${pin.latitude.toFixed(4)}, ${pin.longitude.toFixed(4)})`}
+              onClick={() => onSelectPin?.(pin)}
               style={{
                 position: "absolute",
                 left: `${x}%`,
                 top: `${y}%`,
                 transform: "translate(-50%, -50%)",
-                width: 12,
-                height: 12,
+                width: selected ? 16 : 12,
+                height: selected ? 16 : 12,
                 borderRadius: "50%",
-                border: "2px solid #fff",
+                border: selected ? "3px solid #fbbf24" : "2px solid #fff",
                 background: color,
-                cursor: "default",
+                cursor: onSelectPin ? "pointer" : "default",
                 padding: 0,
+                boxShadow: selected ? "0 0 0 2px rgba(251,191,36,0.35)" : undefined,
               }}
             />
           );
@@ -87,8 +96,21 @@ export function LiveMap({
       <ul style={{ marginTop: "1rem", fontSize: "0.875rem" }}>
         {pins.map((pin) => (
           <li key={`legend-${pin.id}`}>
-            <strong>{pin.name ?? pin.id}</strong> · {pin.objectType}
-            {pin.vertical ? ` · ${pin.vertical}` : ""}
+            <button
+              type="button"
+              onClick={() => onSelectPin?.(pin)}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                color: selectedId === pin.id ? "#fbbf24" : "inherit",
+                cursor: onSelectPin ? "pointer" : "default",
+                textAlign: "left",
+              }}
+            >
+              <strong>{pin.name ?? pin.id}</strong> · {pin.objectType}
+              {pin.vertical ? ` · ${pin.vertical}` : ""}
+            </button>
           </li>
         ))}
       </ul>
@@ -114,9 +136,9 @@ function Box({
   style,
   ...rest
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   "aria-label"?: string;
 }) {
   return (

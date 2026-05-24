@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-web3-intel",
+  "packId": "web3-intel",
   "displayName": "Synthetic sandbox — web3-intel",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/web3-intel/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/web3-intel/",
   "version": "1.0.0",
+  "geoEnabled": false,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

@@ -1,0 +1,31 @@
+{
+  "connectorId": "synthetic-logistics-express-cargo",
+  "packId": "logistics-express-cargo",
+  "displayName": "Synthetic sandbox — logistics-express-cargo",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/logistics-express-cargo/",
+  "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "2",
+  "objectTypes": [
+    "Site",
+    "Asset",
+    "Shipment",
+    "ShipmentLeg",
+    "CustomerAccount",
+    "CommercialOrder",
+    "Observation",
+    "Signal",
+    "Case",
+    "TPCalculation",
+    "AllocationRun"
+  ],
+  "paramsSchema": {
+    "type": "object",
+    "properties": {
+      "fixturePath": {
+        "type": "string",
+        "default": "fixtures/end-to-end-story.json"
+      }
+    }
+  }
+}

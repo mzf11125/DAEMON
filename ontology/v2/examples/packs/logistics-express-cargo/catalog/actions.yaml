@@ -1,0 +1,64 @@
+catalogVersion: "2.0.1"
+actions:
+  - apiName: OpenCase
+    displayName: Open case from signal
+    objectType: Signal
+    extendsCore: true
+    governance: analyst
+  - apiName: ExecuteWorkOrder
+    displayName: Execute work order
+    objectType: WorkOrder
+    extendsCore: true
+    governance: analyst
+  - apiName: TransitionShipmentState
+    displayName: Transition shipment lifecycle state
+    objectType: Shipment
+    parameters:
+      - name: targetState
+        type: string
+        required: true
+    governance: analyst
+  - apiName: CreateShipmentDraft
+    displayName: Create shipment draft from intake (HITL)
+    objectType: Shipment
+    parameters:
+      - name: customerAccountId
+        type: string
+        required: true
+      - name: origin
+        type: string
+        required: true
+      - name: destination
+        type: string
+        required: true
+      - name: items
+        type: array
+        required: false
+      - name: weight
+        type: number
+        required: false
+      - name: references
+        type: object
+        required: false
+      - name: confidence
+        type: object
+        required: false
+    governance: operations_planner
+    invariant: draft_only_until_confirm
+  - apiName: ConfirmShipment
+    displayName: Confirm draft shipment for execution
+    objectType: Shipment
+    parameters:
+      - name: shipmentId
+        type: string
+        required: true
+      - name: confirmedBy
+        type: string
+        required: false
+    governance: operations_planner
+  - apiName: AllocateVendorCost
+    displayName: Allocate vendor cost (stub)
+    objectType: VendorCost
+    stub: true
+    returns501: true
+    governance: finance-readonly

@@ -1,0 +1,7 @@
+{
+  "id": "express-leg-sla-breach",
+  "description": "Express cargo shipment leg SLA breach indicator",
+  "sql": "SELECT observation_id, asset_id, value FROM dataset_observations WHERE label = 'express_leg_sla_miss' AND value > {threshold:Float64}",
+  "threshold": 0.5,
+  "signalSeverity": "high"
+}

@@ -1,0 +1,528 @@
+catalogVersion: 2.0.1
+objects:
+- apiName: Organization
+  domain: core
+  displayName: Organization
+  primaryKey: organizationId
+  titleProperty: organizationId
+  properties:
+  - name: organizationId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: Party
+  domain: core
+  displayName: Party
+  primaryKey: partyId
+  titleProperty: partyId
+  properties:
+  - name: partyId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: Site
+  domain: core
+  displayName: Site
+  primaryKey: siteId
+  titleProperty: siteId
+  properties:
+  - name: siteId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: Asset
+  domain: core
+  displayName: Asset
+  primaryKey: assetId
+  titleProperty: assetId
+  properties:
+  - name: assetId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: WorkOrder
+  domain: core
+  displayName: WorkOrder
+  primaryKey: workOrderId
+  titleProperty: workOrderId
+  properties:
+  - name: workOrderId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: Observation
+  domain: core
+  displayName: Observation
+  primaryKey: observationId
+  titleProperty: observationId
+  properties:
+  - name: observationId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: Signal
+  domain: core
+  displayName: Signal
+  primaryKey: signalId
+  titleProperty: signalId
+  properties:
+  - name: signalId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: Case
+  domain: core
+  displayName: Case
+  primaryKey: caseId
+  titleProperty: caseId
+  properties:
+  - name: caseId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: Decision
+  domain: core
+  displayName: Decision
+  primaryKey: decisionId
+  titleProperty: decisionId
+  properties:
+  - name: decisionId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  mapsToCore: true
+- apiName: Shipment
+  domain: core
+  displayName: Shipment
+  primaryKey: shipmentId
+  titleProperty: shipmentId
+  properties:
+  - name: shipmentId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  lifecycle: operational
+- apiName: ShipmentLeg
+  domain: core
+  displayName: ShipmentLeg
+  primaryKey: shipmentLegId
+  titleProperty: shipmentLegId
+  properties:
+  - name: shipmentLegId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  - name: slaStatus
+    type: string
+    required: false
+  lifecycle: operational
+- apiName: Trip
+  domain: core
+  displayName: Trip
+  primaryKey: tripId
+  titleProperty: tripId
+  properties:
+  - name: tripId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  lifecycle: operational
+- apiName: Manifest
+  domain: core
+  displayName: Manifest
+  primaryKey: manifestId
+  titleProperty: manifestId
+  properties:
+  - name: manifestId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  lifecycle: operational
+- apiName: Dispatch
+  domain: core
+  displayName: Dispatch
+  primaryKey: dispatchId
+  titleProperty: dispatchId
+  properties:
+  - name: dispatchId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  lifecycle: operational
+- apiName: RoutingDecision
+  domain: core
+  displayName: RoutingDecision
+  primaryKey: routingDecisionId
+  titleProperty: routingDecisionId
+  properties:
+  - name: routingDecisionId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  - name: variancePct
+    type: number
+    required: false
+  lifecycle: operational
+- apiName: ShipmentScheme
+  domain: core
+  displayName: ShipmentScheme
+  primaryKey: shipmentSchemeId
+  titleProperty: shipmentSchemeId
+  properties:
+  - name: shipmentSchemeId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  lifecycle: operational
+- apiName: WaybillTTK
+  domain: core
+  displayName: WaybillTTK
+  primaryKey: waybillTTKId
+  titleProperty: waybillTTKId
+  properties:
+  - name: waybillTTKId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  lifecycle: operational
+- apiName: ActivityTouchpoint
+  domain: core
+  displayName: ActivityTouchpoint
+  primaryKey: activityTouchpointId
+  titleProperty: activityTouchpointId
+  properties:
+  - name: activityTouchpointId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  lifecycle: operational
+- apiName: CustomerAccount
+  domain: commercial
+  displayName: CustomerAccount
+  primaryKey: customerAccountId
+  titleProperty: customerAccountId
+  properties:
+  - name: customerAccountId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: Contact
+  domain: commercial
+  displayName: Contact
+  primaryKey: contactId
+  titleProperty: contactId
+  properties:
+  - name: contactId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  - name: championDepartureSignal
+    type: boolean
+    required: false
+- apiName: Lead
+  domain: commercial
+  displayName: Lead
+  primaryKey: leadId
+  titleProperty: leadId
+  properties:
+  - name: leadId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: Opportunity
+  domain: commercial
+  displayName: Opportunity
+  primaryKey: opportunityId
+  titleProperty: opportunityId
+  properties:
+  - name: opportunityId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: Activity
+  domain: commercial
+  displayName: Activity
+  primaryKey: activityId
+  titleProperty: activityId
+  properties:
+  - name: activityId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: Conversation
+  domain: commercial
+  displayName: Conversation
+  primaryKey: conversationId
+  titleProperty: conversationId
+  properties:
+  - name: conversationId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: AccountPlan
+  domain: commercial
+  displayName: AccountPlan
+  primaryKey: accountPlanId
+  titleProperty: accountPlanId
+  properties:
+  - name: accountPlanId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: CommercialOrder
+  domain: commercial
+  displayName: CommercialOrder
+  primaryKey: commercialOrderId
+  titleProperty: commercialOrderId
+  properties:
+  - name: commercialOrderId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: AccountHealthScore
+  domain: commercial
+  displayName: AccountHealthScore
+  primaryKey: accountHealthScoreId
+  titleProperty: accountHealthScoreId
+  properties:
+  - name: accountHealthScoreId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: SalesPlaybook
+  domain: commercial
+  displayName: SalesPlaybook
+  primaryKey: salesPlaybookId
+  titleProperty: salesPlaybookId
+  properties:
+  - name: salesPlaybookId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: Route
+  domain: network
+  displayName: Route
+  primaryKey: routeId
+  titleProperty: routeId
+  properties:
+  - name: routeId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: ServiceArea
+  domain: network
+  displayName: ServiceArea
+  primaryKey: serviceAreaId
+  titleProperty: serviceAreaId
+  properties:
+  - name: serviceAreaId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: AgentPartner
+  domain: network
+  displayName: AgentPartner
+  primaryKey: agentPartnerId
+  titleProperty: agentPartnerId
+  properties:
+  - name: agentPartnerId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: CoverageRegistry
+  domain: network
+  displayName: CoverageRegistry
+  primaryKey: coverageRegistryId
+  titleProperty: coverageRegistryId
+  properties:
+  - name: coverageRegistryId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: LaneCapacity
+  domain: network
+  displayName: LaneCapacity
+  primaryKey: laneCapacityId
+  titleProperty: laneCapacityId
+  properties:
+  - name: laneCapacityId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: NetworkConstraint
+  domain: network
+  displayName: NetworkConstraint
+  primaryKey: networkConstraintId
+  titleProperty: networkConstraintId
+  properties:
+  - name: networkConstraintId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+- apiName: VendorCost
+  domain: financial
+  displayName: VendorCost
+  primaryKey: vendorCostId
+  titleProperty: vendorCostId
+  properties:
+  - name: vendorCostId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  readOnlyStub: true
+- apiName: TPCalculation
+  domain: financial
+  displayName: TPCalculation
+  primaryKey: tPCalculationId
+  titleProperty: tPCalculationId
+  properties:
+  - name: tPCalculationId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  readOnlyStub: true
+- apiName: Invoice
+  domain: financial
+  displayName: Invoice
+  primaryKey: invoiceId
+  titleProperty: invoiceId
+  properties:
+  - name: invoiceId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  readOnlyStub: true
+- apiName: IntercoTransaction
+  domain: financial
+  displayName: IntercoTransaction
+  primaryKey: intercoTransactionId
+  titleProperty: intercoTransactionId
+  properties:
+  - name: intercoTransactionId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  readOnlyStub: true
+- apiName: OBLScorecard
+  domain: financial
+  displayName: OBLScorecard
+  primaryKey: oBLScorecardId
+  titleProperty: oBLScorecardId
+  properties:
+  - name: oBLScorecardId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  readOnlyStub: true
+- apiName: AllocationRun
+  domain: financial
+  displayName: AllocationRun
+  primaryKey: allocationRunId
+  titleProperty: allocationRunId
+  properties:
+  - name: allocationRunId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  readOnlyStub: true
+- apiName: GovernanceAuditRecord
+  domain: financial
+  displayName: GovernanceAuditRecord
+  primaryKey: governanceAuditRecordId
+  titleProperty: governanceAuditRecordId
+  properties:
+  - name: governanceAuditRecordId
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  readOnlyStub: true

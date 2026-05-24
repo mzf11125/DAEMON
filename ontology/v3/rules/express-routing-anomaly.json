@@ -1,0 +1,7 @@
+{
+  "id": "express-routing-anomaly",
+  "description": "Express cargo routing decision cost variance",
+  "sql": "SELECT observation_id, asset_id, value FROM dataset_observations WHERE label = 'express_routing_variance_pct' AND value > {threshold:Float64}",
+  "threshold": 15.0,
+  "signalSeverity": "medium"
+}

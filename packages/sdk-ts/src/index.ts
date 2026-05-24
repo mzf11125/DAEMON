@@ -165,6 +165,29 @@ export function createClient(config: DaemonClientConfig) {
       });
       return parse<Record<string, unknown>>(res);
     },
+    executeAction: (actionType: string, parameters: Record<string, unknown>) =>
+      post<Record<string, unknown>>(
+        `${config.ontologyServiceUrl}/v1/actions/${encodeURIComponent(actionType)}`,
+        parameters,
+      ),
+    createShipmentDraft: (params: {
+      customerAccountId: string;
+      origin: string;
+      destination: string;
+      weight?: number;
+      items?: Array<{ description: string; quantity: number }>;
+      references?: Record<string, string>;
+      confidence?: Record<string, number>;
+    }) =>
+      post<{ shipmentId: string; commercialOrderId: string; status: string }>(
+        `${config.ontologyServiceUrl}/v1/actions/CreateShipmentDraft`,
+        params,
+      ),
+    confirmShipment: (params: { shipmentId: string; confirmedBy?: string }) =>
+      post<{ shipmentId: string; status: string }>(
+        `${config.ontologyServiceUrl}/v1/actions/ConfirmShipment`,
+        params,
+      ),
     createWorkOrder: (params: { title: string; assetId?: string; caseId?: string }) =>
       post<Record<string, unknown>>(
         `${config.ontologyServiceUrl}/v1/actions/CreateWorkOrder`,

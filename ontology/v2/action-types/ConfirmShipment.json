@@ -1,0 +1,12 @@
+{
+  "apiName": "ConfirmShipment",
+  "displayName": "Confirm Shipment Draft",
+  "requiredRoles": [
+    "operations_planner",
+    "analyst"
+  ],
+  "parameters": [
+    { "id": "shipmentId", "type": "string" },
+    { "id": "confirmedBy", "type": "string" }
+  ]
+}

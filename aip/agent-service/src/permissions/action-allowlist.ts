@@ -5,6 +5,8 @@ const DAEMON_OPS_ALLOWLIST: readonly string[] = [
   'ExecuteWorkOrder',
   'RecordDecision',
   'EscalateSignal',
+  'CreateShipmentDraft',
+  'ConfirmShipment',
 ] as const;
 
 // Default Wave 1 allowlist — ops domain core actions

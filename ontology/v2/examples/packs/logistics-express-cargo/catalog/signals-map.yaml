@@ -1,0 +1,168 @@
+version: "0.1"
+packId: logistics-express-cargo
+description: Cross-domain signal map — customer commercial signal to ops trigger and finance/OBL implications (synthetic, vendor-neutral).
+
+rows:
+  - id: ec-sm-001
+    customerSignal: leg_sla_miss_observation
+    opsTrigger: express-leg-sla-breach
+    tpImplication: expedite_vendor_cost_review
+    oblImpact: service_credit_risk_flag
+    ruleId: express-leg-sla-breach
+  - id: ec-sm-002
+    customerSignal: routing_cost_variance
+    opsTrigger: express-routing-anomaly
+    tpImplication: margin_compression_alert
+    oblImpact: lane_profitability_watch
+    ruleId: express-routing-anomaly
+  - id: ec-sm-003
+    customerSignal: champion_departure_risk
+    opsTrigger: express-champion-idle
+    tpImplication: account_revenue_at_risk
+    oblImpact: renewal_escalation
+    ruleId: express-champion-idle
+  - id: ec-sm-004
+    customerSignal: pickup_delay_touchpoint
+    opsTrigger: touchpoint_sla_miss
+    tpImplication: vendor_penalty_candidate
+    oblImpact: customer_sla_breach
+  - id: ec-sm-005
+    customerSignal: hub_congestion_indicator
+    opsTrigger: hub_dwell_threshold
+    tpImplication: interco_rebalance
+    oblImpact: network_capacity_note
+  - id: ec-sm-006
+    customerSignal: manifest_mismatch
+    opsTrigger: document_intake_exception
+    tpImplication: billing_hold
+    oblImpact: revenue_recognition_delay
+  - id: ec-sm-007
+    customerSignal: pod_missing
+    opsTrigger: delivery_proof_gap
+    tpImplication: invoice_block
+    oblImpact: dso_extension
+  - id: ec-sm-008
+    customerSignal: weight_discrepancy
+    opsTrigger: weighbridge_variance
+    tpImplication: repricing_line_item
+    oblImpact: dispute_reserve
+  - id: ec-sm-009
+    customerSignal: duplicate_bast_reference
+    opsTrigger: intake_duplicate_check
+    tpImplication: duplicate_shipment_prevent
+    oblImpact: audit_trail_required
+  - id: ec-sm-010
+    customerSignal: silent_account_90d
+    opsTrigger: activity_gap_alert
+    tpImplication: churn_playbook
+    oblImpact: account_health_downgrade
+  - id: ec-sm-011
+    customerSignal: tier_a_volume_drop
+    opsTrigger: volume_trend_anomaly
+    tpImplication: forecast_adjustment
+    oblImpact: quota_miss_warning
+  - id: ec-sm-012
+    customerSignal: tier_b_upsell_window
+    opsTrigger: growth_opportunity
+    tpImplication: bundled_rate_offer
+    oblImpact: expansion_target
+  - id: ec-sm-013
+    customerSignal: cross_hub_detour
+    opsTrigger: route_deviation
+    tpImplication: fuel_surcharge
+    oblImpact: cost_to_serve_increase
+  - id: ec-sm-014
+    customerSignal: asset_idle_at_hub
+    opsTrigger: asset_utilization_low
+    tpImplication: fleet_reassignment
+    oblImpact: capex_utilization_metric
+  - id: ec-sm-015
+    customerSignal: vendor_invoice_spike
+    opsTrigger: vendor_cost_anomaly
+    tpImplication: allocation_run_review
+    oblImpact: gross_margin_alert
+  - id: ec-sm-016
+    customerSignal: interco_pending_aging
+    opsTrigger: interco_sla_breach
+    tpImplication: settlement_acceleration
+    oblImpact: transfer_pricing_note
+  - id: ec-sm-017
+    customerSignal: invoice_dispute_open
+    opsTrigger: ar_dispute_case
+    tpImplication: credit_memo_candidate
+    oblImpact: revenue_adjustment
+  - id: ec-sm-018
+    customerSignal: governance_audit_finding
+    opsTrigger: compliance_exception
+    tpImplication: process_hold
+    oblImpact: control_remediation
+  - id: ec-sm-019
+    customerSignal: allocation_run_failure
+    opsTrigger: finance_batch_error
+    tpImplication: manual_allocation
+    oblImpact: close_delay
+  - id: ec-sm-020
+    customerSignal: obl_score_drop
+    opsTrigger: scorecard_threshold
+    tpImplication: executive_review
+    oblImpact: covenant_watch
+  - id: ec-sm-021
+    customerSignal: service_area_outage
+    opsTrigger: network_incident
+    tpImplication: contingency_routing
+    oblImpact: force_majeure_log
+  - id: ec-sm-022
+    customerSignal: temperature_excursion
+    opsTrigger: cold_chain_breach
+    tpImplication: spoilage_claim
+    oblImpact: insurance_notification
+  - id: ec-sm-023
+    customerSignal: hazmat_doc_missing
+    opsTrigger: compliance_block
+    tpImplication: shipment_hold
+    oblImpact: regulatory_exposure
+  - id: ec-sm-024
+    customerSignal: customer_escalation_email
+    opsTrigger: case_priority_boost
+    tpImplication: war_room_workorder
+    oblImpact: exec_briefing
+  - id: ec-sm-025
+    customerSignal: repeat_sla_breach_7d
+    opsTrigger: chronic_sla_pattern
+    tpImplication: account_review
+    oblImpact: contract_penalty_clause
+  - id: ec-sm-026
+    customerSignal: new_lane_request
+    opsTrigger: commercial_intake
+    tpImplication: pricing_approval
+    oblImpact: pipeline_add
+  - id: ec-sm-027
+    customerSignal: rate_card_expiry
+    opsTrigger: contract_renewal
+    tpImplication: repricing_cycle
+    oblImpact: revenue_at_risk
+  - id: ec-sm-028
+    customerSignal: fuel_index_surge
+    opsTrigger: surcharge_trigger
+    tpImplication: passthrough_invoice
+    oblImpact: margin_neutral_adjust
+  - id: ec-sm-029
+    customerSignal: weekend_delivery_request
+    opsTrigger: capacity_override
+    tpImplication: premium_service_fee
+    oblImpact: ops_overtime_cost
+  - id: ec-sm-030
+    customerSignal: return_shipment_loop
+    opsTrigger: reverse_logistics
+    tpImplication: credit_rebill
+    oblImpact: net_revenue_impact
+  - id: ec-sm-031
+    customerSignal: integration_edi_gap
+    opsTrigger: connector_replay_fail
+    tpImplication: manual_entry_queue
+    oblImpact: data_quality_flag
+  - id: ec-sm-032
+    customerSignal: sim_sandbox_health
+    opsTrigger: signal-logistics-express-cargo-001
+    tpImplication: demo_only
+    oblImpact: none_sim

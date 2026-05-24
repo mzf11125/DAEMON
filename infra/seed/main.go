@@ -53,7 +53,7 @@ func main() {
 	_, _ = pg.Exec(ctx, `INSERT INTO tenants (tenant_id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING`, tenant, "Demo Manufacturing Co")
 	demoUserID := getenv("SUPABASE_DEMO_USER_ID", "user-analyst-1")
 	_, _ = pg.Exec(ctx, `INSERT INTO users (user_id, tenant_id, email, display_name, roles) VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING`,
-		demoUserID, tenant, "analyst@demo.local", "Alex Analyst", []string{"analyst", "lead"})
+		demoUserID, tenant, "analyst@demo.local", "Alex Analyst", []string{"analyst", "lead", "operations_planner"})
 
 	objects := []struct {
 		rid, typ, pk string
@@ -125,11 +125,28 @@ func main() {
 		_ = batch.Send()
 	}
 
-	seedP3Verticals(ctx, pg, ch, driver, tenant, now)
-	seedRemainingSectors(ctx, pg, ch, driver, tenant, now)
-	seedSyntheticSectors(ctx, pg, ch, driver, tenant, now)
+	if shouldSeedAllSectors() {
+		seedP3Verticals(ctx, pg, ch, driver, tenant, now)
+		seedRemainingSectors(ctx, pg, ch, driver, tenant, now)
+		seedSyntheticSectors(ctx, pg, ch, driver, tenant, now)
+		seedExpressCargoSim(ctx, pg, ch, driver, tenant, now)
+	}
 
 	fmt.Println("seed completed")
+}
+
+// shouldSeedAllSectors returns false when SEED_ALL_SECTORS=0; --sandbox always enables full sector registry.
+func shouldSeedAllSectors() bool {
+	for _, arg := range os.Args[1:] {
+		if arg == "--sandbox" {
+			return true
+		}
+	}
+	switch os.Getenv("SEED_ALL_SECTORS") {
+	case "0", "false", "FALSE":
+		return false
+	}
+	return true
 }
 
 func getenv(k, d string) string {

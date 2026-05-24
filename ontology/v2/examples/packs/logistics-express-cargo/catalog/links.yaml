@@ -1,0 +1,45 @@
+catalogVersion: "2.0.1"
+hierarchies:
+  - name: commercial
+    root: CustomerAccount
+    levels:
+      - CommercialOrder
+      - Shipment
+      - WaybillTTK
+  - name: operational
+    root: Trip
+    levels:
+      - Manifest
+      - ShipmentLeg
+      - Shipment
+  - name: network
+    root: Route
+    levels:
+      - ServiceArea
+      - LaneCapacity
+junctions:
+  - linkType: ActivityTouchpointToShipment
+    source: ActivityTouchpoint
+    target: Shipment
+    cardinality: many_to_one
+    onDelete: restrict
+  - linkType: ShipmentLegToObservation
+    source: ShipmentLeg
+    target: Observation
+    cardinality: one_to_many
+    onDelete: cascade
+  - linkType: CustomerAccountToCommercialOrder
+    source: CustomerAccount
+    target: CommercialOrder
+    cardinality: one_to_many
+    onDelete: restrict
+  - linkType: CommercialOrderToShipment
+    source: CommercialOrder
+    target: Shipment
+    cardinality: one_to_many
+    onDelete: restrict
+  - linkType: RoutingDecisionToSignal
+    source: RoutingDecision
+    target: Signal
+    cardinality: one_to_many
+    onDelete: restrict

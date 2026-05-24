@@ -6,6 +6,7 @@
   "availablePacks": [
     "aml-fintech",
     "logistics-nvocc",
+    "logistics-express-cargo",
     "healthcare-ops",
     "government-ops",
     "web3-intel",

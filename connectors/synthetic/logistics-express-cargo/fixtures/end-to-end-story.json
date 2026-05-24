@@ -1,0 +1,67 @@
+{
+  "fixtureVersion": 1,
+  "packId": "logistics-express-cargo",
+  "narrative": "Tier-A account, two shipments, multi-leg cross-hub journey, SLA breach and routing anomaly signals",
+  "sites": [
+    {
+      "siteId": "site-logistics-express-cargo-001",
+      "name": "Central Sort Hub",
+      "latitude": 41.8781,
+      "longitude": -87.6298
+    },
+    {
+      "siteId": "site-logistics-express-cargo-002",
+      "name": "Regional Office East",
+      "latitude": 40.7128,
+      "longitude": -74.006
+    }
+  ],
+  "shipments": [
+    {
+      "shipmentId": "shipment-express-001",
+      "status": "in_transit",
+      "commercialOrderId": "order-express-001"
+    },
+    {
+      "shipmentId": "shipment-express-002",
+      "status": "delivered",
+      "commercialOrderId": "order-express-001"
+    }
+  ],
+  "legs": [
+    {
+      "shipmentLegId": "leg-express-001",
+      "shipmentId": "shipment-express-001",
+      "slaStatus": "late",
+      "manifestId": "manifest-express-001"
+    },
+    {
+      "shipmentLegId": "leg-express-002",
+      "shipmentId": "shipment-express-001",
+      "slaStatus": "on_time",
+      "manifestId": "manifest-express-001"
+    }
+  ],
+  "signals": [
+    {
+      "signalId": "signal-logistics-express-cargo-001",
+      "summary": "Routing cost variance on hub consolidation lane",
+      "severity": "medium"
+    },
+    {
+      "signalId": "signal-express-sla-001",
+      "summary": "Shipment leg SLA breach on cross-hub leg",
+      "severity": "high"
+    },
+    {
+      "signalId": "signal-express-routing-001",
+      "summary": "Routing decision variance above threshold",
+      "severity": "medium"
+    },
+    {
+      "signalId": "signal-express-champion-001",
+      "summary": "Account champion departure risk",
+      "severity": "low"
+    }
+  ]
+}

@@ -51,6 +51,7 @@ func main() {
 		r.Get("/audit/events", listAuditEventsHandler(pool))
 		r.Post("/audit/events", auditHandler(pool))
 		mountAttachmentRoutes(r, pool, store)
+		mountActionProposalRoutes(r, pool)
 		mountGeoRoutes(r, pool)
 	})
 

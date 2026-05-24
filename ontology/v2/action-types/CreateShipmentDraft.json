@@ -1,0 +1,17 @@
+{
+  "apiName": "CreateShipmentDraft",
+  "displayName": "Create Shipment Draft",
+  "requiredRoles": [
+    "operations_planner",
+    "analyst"
+  ],
+  "parameters": [
+    { "id": "customerAccountId", "type": "string" },
+    { "id": "origin", "type": "string" },
+    { "id": "destination", "type": "string" },
+    { "id": "items", "type": "object[]" },
+    { "id": "weight", "type": "number" },
+    { "id": "references", "type": "object" },
+    { "id": "confidence", "type": "object" }
+  ]
+}

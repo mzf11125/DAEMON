@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { fetchAttachmentObjectUrl } from "@/lib/attachment-content";
 import { createDaemonClient } from "@/lib/daemon-client";
 
 export function AttachmentUpload({
@@ -19,6 +20,7 @@ export function AttachmentUpload({
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<Array<Record<string, unknown>>>([]);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const [remotePreview, setRemotePreview] = useState<string | null>(null);
 
   const isThumbnail = role === "thumbnail";
   const heading = title ?? (isThumbnail ? "Thumbnail" : "Attachments");
@@ -32,6 +34,43 @@ export function AttachmentUpload({
   useEffect(() => {
     void refresh();
   }, [resourceType, resourceId, role]);
+
+  useEffect(() => {
+    if (!isThumbnail || localPreview) {
+      setRemotePreview((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+      return;
+    }
+    const first = items[0];
+    const attachmentId = first?.attachmentId;
+    if (typeof attachmentId !== "string") {
+      setRemotePreview(null);
+      return;
+    }
+    let cancelled = false;
+    void fetchAttachmentObjectUrl(attachmentId).then((url) => {
+      if (cancelled) {
+        if (url) URL.revokeObjectURL(url);
+        return;
+      }
+      setRemotePreview((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return url;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isThumbnail, localPreview, items]);
+
+  useEffect(
+    () => () => {
+      if (remotePreview) URL.revokeObjectURL(remotePreview);
+    },
+    [remotePreview],
+  );
 
   useEffect(() => {
     if (!file || !isThumbnail || !file.type.startsWith("image/")) {
@@ -74,14 +113,18 @@ export function AttachmentUpload({
   return (
     <section>
       <h2>{heading}</h2>
-      {isThumbnail && localPreview && (
+      {isThumbnail && (localPreview || remotePreview) && (
         <p style={{ marginBottom: "0.75rem" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={localPreview} alt="Thumbnail preview" style={{ maxWidth: 240, maxHeight: 160, objectFit: "cover" }} />
+          <img
+            src={localPreview ?? remotePreview ?? ""}
+            alt="Thumbnail preview"
+            style={{ maxWidth: 240, maxHeight: 160, objectFit: "cover" }}
+          />
         </p>
       )}
-      {isThumbnail && !localPreview && items.length > 0 && (
-        <p className="muted">Thumbnail on file ({String(items[0].filename ?? items[0].attachmentId)}).</p>
+      {isThumbnail && !localPreview && !remotePreview && items.length > 0 && (
+        <p className="muted">Loading thumbnail…</p>
       )}
       {!isThumbnail && (
         <>

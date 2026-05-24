@@ -1,0 +1,11 @@
+{
+  "packId": "logistics-express-cargo",
+  "displayName": "Logistics / express freight",
+  "status": "reference",
+  "sector": "logistics",
+  "catalogVersion": "2.0.1",
+  "fixtureVersion": 1,
+  "sourceMasterRef": "express-master-v2.0.1",
+  "connectorProfiles": ["tms", "gps", "edi", "synthetic"],
+  "regulatoryNotes": "Vendor-neutral express courier simulation pack; Ontology Master v2.0.1 domain mapping."
+}

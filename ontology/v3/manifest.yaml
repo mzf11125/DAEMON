@@ -5,6 +5,7 @@ defaultPack: null
 availablePacks:
   - aml-fintech
   - logistics-nvocc
+  - logistics-express-cargo
   - healthcare-ops
   - government-ops
   - web3-intel
@@ -46,6 +47,8 @@ actionTypes:
   - ExecuteWorkOrder
   - RecordDecision
   - CloseCase
+  - CreateShipmentDraft
+  - ConfirmShipment
 functions:
   - aggregateObservations
   - computeSignalPriority

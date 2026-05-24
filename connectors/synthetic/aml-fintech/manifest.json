@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-aml-fintech",
+  "packId": "aml-fintech",
   "displayName": "Synthetic sandbox — aml-fintech",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/aml-fintech/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/aml-fintech/",
   "version": "1.0.0",
+  "geoEnabled": false,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

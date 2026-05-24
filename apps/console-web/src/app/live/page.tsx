@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LiveMap } from "@/components/LiveMap";
+import { LiveMapPanel } from "@/components/LiveMapPanel";
 import { createDaemonClient } from "@/lib/daemon-client";
 import { getDevBearer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -45,10 +45,10 @@ export default async function LivePage() {
         <p className="muted">Geo map is disabled for this tenant. Enable `geoMapEnabled` in tenant_settings.</p>
       )}
       {enabled && mapData && (
-        <LiveMap
-          sites={mapData.sites as Parameters<typeof LiveMap>[0]["sites"]}
-          assets={mapData.assets as Parameters<typeof LiveMap>[0]["assets"]}
-          signals={mapData.signals as Parameters<typeof LiveMap>[0]["signals"]}
+        <LiveMapPanel
+          sites={mapData.sites as Parameters<typeof LiveMapPanel>[0]["sites"]}
+          assets={mapData.assets as Parameters<typeof LiveMapPanel>[0]["assets"]}
+          signals={mapData.signals as Parameters<typeof LiveMapPanel>[0]["signals"]}
         />
       )}
     </main>

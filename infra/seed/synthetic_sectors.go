@@ -74,4 +74,40 @@ func seedSyntheticSectors(ctx context.Context, pg *pgxpool.Pool, ch clickhouse.C
 		}
 		_ = ch
 	}
+	seedMissionTaskingProximity(ctx, pg, driver, tenant, now)
+}
+
+// seedMissionTaskingProximity adds friendly/hostile track assets and a proximity work order (synthetic demo).
+func seedMissionTaskingProximity(ctx context.Context, pg *pgxpool.Pool, driver neo4j.DriverWithContext, tenant string, now time.Time) {
+	packID := "mission-tasking"
+	sitePK := fmt.Sprintf("site-%s-001", packID)
+	friendlyPK := "asset-friendly-001"
+	hostilePK := "track-hostile-001"
+
+	upsertObject(ctx, pg, tenant, now, "ri.demo.asset.mission.friendly", "Asset", friendlyPK, map[string]any{
+		"assetId": friendlyPK, "name": "Friendly recon unit (synthetic)", "affiliation": "friendly",
+		"status": "online", "vertical": packID, "latitude": 34.0530, "longitude": -118.2440,
+	})
+	upsertObject(ctx, pg, tenant, now, "ri.demo.asset.mission.hostile", "Asset", hostilePK, map[string]any{
+		"assetId": hostilePK, "name": "Hostile track (synthetic)", "affiliation": "hostile",
+		"status": "tracked", "vertical": packID, "latitude": 34.0550, "longitude": -118.2460,
+	})
+	upsertObject(ctx, pg, tenant, now, "ri.demo.wo.mission.proximity", "WorkOrder", "wo-proximity-hostile-001", map[string]any{
+		"workOrderId": "wo-proximity-hostile-001", "title": "Investigate proximity to hostile track",
+		"status": "open", "assetId": hostilePK, "caseId": fmt.Sprintf("case-%s-001", packID),
+		"assignedAssetId": friendlyPK,
+	})
+
+	if driver != nil {
+		sess := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+		for _, link := range []struct{ typ, from, to string }{
+			{"SiteHostsAsset", sitePK, friendlyPK},
+			{"SiteHostsAsset", sitePK, hostilePK},
+			{"WorkOrderTargetsAsset", "wo-proximity-hostile-001", hostilePK},
+		} {
+			_, _ = sess.Run(ctx, `MERGE (a:Entity {id: $from}) MERGE (b:Entity {id: $to}) MERGE (a)-[:LINK {type: $type}]->(b)`,
+				map[string]any{"type": link.typ, "from": link.from, "to": link.to})
+		}
+		sess.Close(ctx)
+	}
 }

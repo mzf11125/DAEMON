@@ -35,6 +35,19 @@ make up-merge-track        # optional: control-plane + agent-bridge
 3. `./scripts/prove-operational-loop.sh`
 4. `./scripts/prove-aip-eval.sh`
 5. `./scripts/smoke-agent-bridge.sh` (if merge-track profile up)
+6. `./scripts/prove-express-cargo-sim.sh` (express HITL + rules; set service URLs if not localhost)
+7. `./scripts/prove-plugin-remap.sh` (P3 plugin remap runtime proof)
+
+Point smoke scripts at staging by exporting `ONTOLOGY_SERVICE_URL`, `PLATFORM_API_URL`, and rules-engine base URL before running prove scripts.
+
+## OIDC pilot (Wave 2)
+
+1. Set `OIDC_REQUIRED=true` on Go services (`platform-api`, `ontology-service`, `rules-engine`, `case-service`).
+2. Obtain Supabase JWT for `tenant-demo` user; export `SUPABASE_JWT` for prove scripts that call authenticated routes.
+3. Run staging smoke table in [oidc-rls-verification-v1.md](./oidc-rls-verification-v1.md) and paste curl transcripts with staging hostnames.
+4. Confirm express HITL: `./scripts/prove-express-cargo-sim.sh` against staging ontology `:8081`.
+
+**Exit:** Internal pilot URL + JWT login + express intake/exceptions pages load with real attachment list from `GET /v1/attachments`.
 
 ## Security before P2
 

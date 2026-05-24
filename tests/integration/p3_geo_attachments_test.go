@@ -84,12 +84,16 @@ func TestGeoMapDisabledWithoutFeature(t *testing.T) {
 
 	env := testutil.SetupDataStores(ctx, t)
 	defer env.Cleanup(ctx)
+	const tenantNoGeo = "tenant-integration-no-geo"
+	if err := testutil.EnsureTenant(ctx, env.PostgresURL, tenantNoGeo, "Integration no-geo tenant"); err != nil {
+		t.Fatal(err)
+	}
 
 	base, proc := startPlatformAPI(ctx, t, env, nil)
 	defer stopService(proc)
 
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, base+"/v1/geo/map", nil)
-	req.Header.Set("X-Tenant-Id", "tenant-demo")
+	req.Header.Set("X-Tenant-Id", tenantNoGeo)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		t.Fatal(err)

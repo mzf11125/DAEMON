@@ -20,8 +20,20 @@ unset OIDC_REQUIRED && make test-integration
 ./scripts/prove-operational-loop.sh
 ./scripts/prove-aip-eval.sh
 ./scripts/smoke-agent-bridge.sh
+./scripts/prove-express-cargo-sim.sh
 curl -sf http://localhost:4000/health
 ```
+
+Staging pilot: run the same prove scripts against staging URLs with `OIDC_REQUIRED=true` on Go services and a valid Supabase JWT for console HITL (`/express-cargo/intake`).
+
+### Staging smoke template (fill on deploy)
+
+| Step | Command | Staging URL / result | Date |
+|------|---------|----------------------|------|
+| Health | `curl -sf $PLATFORM_API_URL/health` | | |
+| OIDC deny | `curl -s -o /dev/null -w '%{http_code}' $ONTOLOGY_SERVICE_URL/v1/objects/Signal` (no Bearer) | expect 401 when `OIDC_REQUIRED=true` | |
+| Express HITL | `./scripts/prove-express-cargo-sim.sh` | set `ONTOLOGY_SERVICE_URL`, `RULES_ENGINE_URL` | |
+| Plugin remap | `./scripts/prove-plugin-remap.sh` | agent-bridge → :8081 | |
 
 ## Local repro (Supabase)
 

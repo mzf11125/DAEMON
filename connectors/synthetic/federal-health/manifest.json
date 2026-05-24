@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-federal-health",
+  "packId": "federal-health",
   "displayName": "Synthetic sandbox — federal-health",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/federal-health/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/federal-health/",
   "version": "1.0.0",
+  "geoEnabled": true,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

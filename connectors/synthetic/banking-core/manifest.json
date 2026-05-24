@@ -1,8 +1,12 @@
 {
   "connectorId": "synthetic-banking-core",
+  "packId": "banking-core",
   "displayName": "Synthetic sandbox — banking-core",
-  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/banking-core/",
+  "description": "Developer-local fixture connector; replay-only JSON under connectors/synthetic/banking-core/",
   "version": "1.0.0",
+  "geoEnabled": false,
+  "fixtureVersion": "1",
+  "objectTypes": ["Site", "Asset", "Observation", "Signal", "Case"],
   "paramsSchema": {
     "type": "object",
     "properties": {

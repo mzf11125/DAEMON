@@ -23,4 +23,4 @@ make prove-p3-geo
 - Embedding vendor sample app UIs
 - Autonomous agent controls without audit trail
 
-Cross-link: [operational-sample-apps-parity-v1.md](../traceability/operational-sample-apps-parity-v1.md)
+Cross-link: [operational-sample-patterns-v1.md](../research/operational-sample-patterns-v1.md)

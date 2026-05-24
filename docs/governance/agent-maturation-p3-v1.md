@@ -24,10 +24,13 @@ make agent-bridge-smoke
 
 | Day | CI `aip-eval` | Notes |
 |-----|---------------|-------|
-| D0 | Local 8/8 after `ensure-aip-eval-stack.sh` | Baseline not bumped; watch remote flake |
-| D1–D7 | Track GitHub Actions `aip-eval` job | Target flake &lt; 10%; bump [aip/evals/baseline.json](../../aip/evals/baseline.json) only after review |
+| D0 (2026-05-23) | Local 8/8 after `ensure-aip-eval-stack.sh` | Baseline not bumped; watch remote flake |
+| D1 (2026-05-24) | [`26370438725`](https://github.com/daemon-blockint-tech/DAEMON/actions/runs/26370438725) success (PR #5 merge) | 8/8; flake 0% on window so far |
+| D2–D7 | Track GitHub Actions `aip-eval` on `main` | Target flake &lt; 10%; bump [aip/evals/baseline.json](../../aip/evals/baseline.json) only after review |
 
-Bridge + plugin remap evidence: run weekly on staging per [plugin-remap-v1.md](../aip/plugin-remap-v1.md) and log curl transcripts in this doc or the runbook.
+Prior failures on `main` (2026-05-22–23) pre–wave0 land; do not count toward P3 window after PR #5 merge baseline.
+
+Bridge + plugin remap evidence: weekly on staging per [plugin-remap-v1.md](../aip/plugin-remap-v1.md); local D1 pass logged below.
 
 ## Explicitly not P3 yet
 

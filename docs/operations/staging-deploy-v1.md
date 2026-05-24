@@ -49,6 +49,8 @@ Point smoke scripts at staging by exporting `ONTOLOGY_SERVICE_URL`, `PLATFORM_AP
 
 **Exit:** Internal pilot URL + JWT login + express intake/exceptions pages load with real attachment list from `GET /v1/attachments`.
 
+**Local pilot (2026-05-24):** Wave 2 smoke chain executed on localhost with `OIDC_REQUIRED=true` auth verification and prove scripts; staging hostnames remain TBD — see filled local rows in [oidc-rls-verification-v1.md](./oidc-rls-verification-v1.md).
+
 ## Security before P2
 
 - [ai-surface-review-v1.md](../security/ai-surface-review-v1.md): JWT → tenant, RLS negative tests

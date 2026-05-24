@@ -27,3 +27,4 @@ make aip-build && ./scripts/prove-aip-eval.sh
 | Date | Environment | `agent-bridge-smoke` | `prove-plugin-remap.sh` | Notes |
 |------|-------------|----------------------|-------------------------|-------|
 | 2026-05-23 | local | manual | local pass after ontology-sync | D0 baseline; staging URLs TBD Wave 2 |
+| 2026-05-24 | local (container) | pass `:3001` (`docker-agent-bridge-1`, bookworm-slim + `agent_bridge_node_modules` volume) | pass `TestExpressCargoRulesEvaluate` | Ontology via `host.docker.internal:8081`; merge-track cold start ~2 min after volume warm |

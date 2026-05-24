@@ -82,7 +82,9 @@
 | L3 | `./scripts/prove-operational-loop.sh` | [operational-proof-l3-v1.md](./operational-proof-l3-v1.md) |
 | L4 | `make up-merge-track` + `./scripts/smoke-agent-bridge.sh` + `./scripts/prove-plugin-remap.sh` | [merge-track-runbook-v1.md](../operations/merge-track-runbook-v1.md); [plugin-remap-v1.md](../aip/plugin-remap-v1.md) |
 
-Last verified locally: 2026-05-23 (`prove-express-cargo-sim`, `make aip-eval` 8/8 after `ensure-aip-eval-stack.sh`).
+Last verified locally: **2026-05-24** — L3 `TestOperationalLoopHTTP` pass; L4 `prove-plugin-remap.sh` + container `agent-bridge` on `:3001` (bookworm-slim + isolated `node_modules` volume); host `smoke-agent-bridge.sh` pass.
+
+Remote **main** after [PR #5](https://github.com/daemon-blockint-tech/DAEMON/pull/5) merge: CI run [`26370438733`](https://github.com/daemon-blockint-tech/DAEMON/actions/runs/26370438733) — `validate`, `integration`, `e2e-full` success; AIP eval run [`26370438725`](https://github.com/daemon-blockint-tech/DAEMON/actions/runs/26370438725) — 8/8 success.
 
 ## Operational patterns (CAP-*)
 

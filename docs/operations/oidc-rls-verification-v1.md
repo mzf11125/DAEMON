@@ -30,10 +30,13 @@ Staging pilot: run the same prove scripts against staging URLs with `OIDC_REQUIR
 
 | Step | Command | Staging URL / result | Date |
 |------|---------|----------------------|------|
-| Health | `curl -sf $PLATFORM_API_URL/health` | | |
-| OIDC deny | `curl -s -o /dev/null -w '%{http_code}' $ONTOLOGY_SERVICE_URL/v1/objects/Signal` (no Bearer) | expect 401 when `OIDC_REQUIRED=true` | |
-| Express HITL | `./scripts/prove-express-cargo-sim.sh` | set `ONTOLOGY_SERVICE_URL`, `RULES_ENGINE_URL` | |
-| Plugin remap | `./scripts/prove-plugin-remap.sh` | agent-bridge → :8081 | |
+| Health | `curl -sf $PLATFORM_API_URL/health` | local pilot: `http://localhost:8080/health` → `ok` | 2026-05-24 |
+| OIDC deny | `curl -s -o /dev/null -w '%{http_code}' $ONTOLOGY_SERVICE_URL/v1/objects/Signal` (no Bearer) | local: `401` when `OIDC_REQUIRED=true` (verify-auth-migration) | 2026-05-24 |
+| Express HITL | `./scripts/prove-express-cargo-sim.sh` | local `:8081` / `:8083`; CI integration job | 2026-05-24 |
+| Plugin remap | `./scripts/prove-plugin-remap.sh` | local pass; rules evaluate → Signal provenance | 2026-05-24 |
+| Agent bridge | `./scripts/smoke-agent-bridge.sh` | local `:3001` container + host paths | 2026-05-24 |
+
+**Staging hostnames:** TBD — repeat table with non-localhost URLs when pilot env is provisioned ([staging-deploy-v1.md](./staging-deploy-v1.md)).
 
 ## Local repro (Supabase)
 

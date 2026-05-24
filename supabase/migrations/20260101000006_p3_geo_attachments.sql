@@ -1,14 +1,5 @@
 -- P3: attachment plane, links, tenant feature flags (geo map).
-
-CREATE SCHEMA IF NOT EXISTS auth;
-
-CREATE OR REPLACE FUNCTION auth.jwt() RETURNS jsonb AS $$
-  SELECT COALESCE(NULLIF(current_setting('request.jwt.claims', true), ''), '{}')::jsonb;
-$$ LANGUAGE sql STABLE;
-
-CREATE OR REPLACE FUNCTION public.jwt_tenant_id() RETURNS text AS $$
-  SELECT COALESCE(auth.jwt() ->> 'tenant_id', '');
-$$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public;
+-- Uses existing public.jwt_tenant_id() from 20260101000002_rls_policies.sql (Supabase auth.jwt).
 
 CREATE TABLE IF NOT EXISTS attachments (
   attachment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

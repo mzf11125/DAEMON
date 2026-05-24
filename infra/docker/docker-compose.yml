@@ -73,17 +73,29 @@ services:
     image: neo4j:5.26-community
     environment:
       NEO4J_AUTH: neo4j/daemonneo4j
-      NEO4J_PLUGINS: '["apoc"]'
     ports:
       - "7474:7474"
       - "7687:7687"
     volumes:
       - neo4j_data:/data
+
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: daemon
+      MINIO_ROOT_PASSWORD: daemonsecret
+    ports:
+      - "9002:9000"
+      - "9003:9001"
+    volumes:
+      - minio_data:/data
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
-      interval: 10s
-      timeout: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
       retries: 10
+      start_period: 10s
 
   platform-api:
     profiles: ["apps"]
@@ -96,8 +108,15 @@ services:
       <<: *supabase-oidc-env
       HTTP_PORT: "8080"
       DATABASE_URL: postgresql://daemon_runtime:daemon_runtime_local@host.docker.internal:54332/postgres?sslmode=disable
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: daemon
+      MINIO_SECRET_KEY: daemonsecret
+      MINIO_BUCKET: daemon-attachments
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      minio:
+        condition: service_healthy
 
   ontology-service:
     profiles: ["apps"]
@@ -193,8 +212,81 @@ services:
       timeout: 3s
       retries: 10
 
+  # Merge-track: control-plane registry + agent HTTP bridge (ADR D-TENANT-01).
+  cp-postgres:
+    profiles: ["merge-track"]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: daemon
+      POSTGRES_PASSWORD: daemon
+      POSTGRES_DB: control_plane
+    ports:
+      - "5433:5432"
+    volumes:
+      - cp_postgres_data:/var/lib/postgresql/data
+      - ../../apps/control-plane/src/db/migrations/0001_initial.sql:/docker-entrypoint-initdb.d/01_initial.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daemon -d control_plane"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  control-plane:
+    profiles: ["merge-track"]
+    image: node:20-alpine
+    working_dir: /repo
+    command:
+      - sh
+      - -c
+      - |
+        corepack enable
+        pnpm install --frozen-lockfile || pnpm install
+        pnpm --filter @daemon/control-plane build
+        node apps/control-plane/dist/index.js
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: "4000"
+      DB_HOST: cp-postgres
+      DB_PORT: "5432"
+      DB_USER: daemon
+      DB_PASSWORD: daemon
+      DB_NAME: control_plane
+      INTERNAL_SECRET: ${CP_INTERNAL_SECRET:-local-dev-internal-secret}
+    volumes:
+      - ../..:/repo
+    depends_on:
+      cp-postgres:
+        condition: service_healthy
+
+  agent-bridge:
+    profiles: ["merge-track"]
+    image: node:20-alpine
+    working_dir: /repo
+    command:
+      - sh
+      - -c
+      - |
+        corepack enable
+        pnpm install --frozen-lockfile || pnpm install
+        pnpm --filter @daemon/agent-service exec tsx src/bridge-main.ts
+    ports:
+      - "3001:3001"
+    environment:
+      AGENT_DAEMON_BRIDGE: "true"
+      PORT: "3001"
+      # Host Go stack (default `make up` + `prove-operational-loop`); override when using --profile apps.
+      ONTOLOGY_SERVICE_URL: ${ONTOLOGY_SERVICE_URL:-http://host.docker.internal:8081}
+      PLATFORM_API_URL: ${PLATFORM_API_URL:-http://host.docker.internal:8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ../..:/repo
+
 volumes:
   postgres_data:
   clickhouse_data:
   neo4j_data:
+  minio_data:
   redis_data:
+  cp_postgres_data:

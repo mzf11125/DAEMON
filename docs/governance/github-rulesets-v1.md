@@ -27,6 +27,8 @@ If GitHub shows a different display name, use the name from the latest green PR.
 
 **Rollout:** create ruleset as **Disabled**, merge one green PR to `main`, then set **Active**.
 
+**Automation (admins):** `./scripts/apply-github-ruleset.sh` (requires `gh` auth). Preview with `DRY_RUN=1 ./scripts/apply-github-ruleset.sh`.
+
 ## Push ruleset (optional)
 
 | Restriction | Path pattern |

@@ -2,7 +2,7 @@
 
 Industry-agnostic operational intelligence platform: ingest data, model it in an ontology, evaluate rules, execute actions, and operate cases through a web cockpit.
 
-The default domain is **enterprise operations** (manufacturing, logistics, healthcare ops, energy, and similar). Optional vertical packs live under `ontology/v2/examples/packs/`. Architecture follows Foundry-style patterns (data plane, ontology, applications, observability) without requiring a single vendor stack.
+The default domain is **enterprise operations** (manufacturing, logistics, healthcare ops, energy, and similar). Optional vertical packs live under `ontology/v2/examples/packs/`. Architecture follows data-plane + ontology + application-layer patterns without requiring a single vendor stack.
 
 ## What works today (v1 parity)
 
@@ -12,7 +12,7 @@ The default domain is **enterprise operations** (manufacturing, logistics, healt
 - **Read-only functions** (`summarizeCaseContext`)
 - **HTTP APIs** with shared envelope, pagination, OpenAPI spec, and TypeScript client (`packages/sdk-ts`)
 
-Traceability: [docs/traceability/foundry-parity-v1.md](docs/traceability/foundry-parity-v1.md). UX flow: [docs/ux/operational-cockpit-flow-v1.md](docs/ux/operational-cockpit-flow-v1.md).
+Traceability: [docs/traceability/operational-platform-parity-v1.md](docs/traceability/operational-platform-parity-v1.md). UX flow: [docs/ux/operational-cockpit-flow-v1.md](docs/ux/operational-cockpit-flow-v1.md).
 
 ## Stack
 

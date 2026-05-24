@@ -1,5 +1,6 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { traceable } from "langsmith/traceable";
 import { repoRoot } from "./mcp-client.js";
 import { redactForLog } from "./redact.js";
 
@@ -44,10 +45,26 @@ export async function traceEvalRun<T>(caseId: string, fn: () => Promise<T>): Pro
   }
 }
 
-export async function traceAgentRun<T>(agentId: string, fn: () => Promise<T>): Promise<T> {
+export function traceAgentRun<T>(
+  agentId: string,
+  promptVersion: string,
+  fn: () => Promise<T>,
+): Promise<T> {
   const project = process.env.LANGCHAIN_PROJECT ?? "daemon-aip-agent";
   if (tracingEnabled()) {
     process.env.LANGCHAIN_PROJECT = project;
   }
-  return fn();
+  const traced = traceable(
+    async () => fn(),
+    {
+      name: `agent:${agentId}:${promptVersion}`,
+      metadata: {
+        agentId,
+        promptVersion,
+        model: process.env.LLM_MODEL ?? "openai/gpt-4o-mini",
+        project,
+      },
+    },
+  );
+  return traced();
 }

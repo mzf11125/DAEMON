@@ -4,7 +4,7 @@
 
 ## Background
 
-Foundry Parity v1 proves the **operational loop** (signal → case → decision → audit) under JWT+RLS. This plan defines formative and usability research **after** console routes `/` and `/cases/{id}` are stable.
+Operational Parity v1 proves the **operational loop** (signal → case → decision → audit) under JWT+RLS. This plan defines formative and usability research **after** console routes `/` and `/cases/{id}` are stable.
 
 ## Objectives
 

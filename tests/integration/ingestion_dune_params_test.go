@@ -22,22 +22,19 @@ func TestIngestionJobInvalidSimParams(t *testing.T) {
 	env := testutil.SetupDataStores(ctx, t)
 	defer env.Cleanup(ctx)
 
-	port := "38184"
+	port := testutil.FreeTCPPort(t)
 	svcDir := filepath.Join(env.RepoRoot, "services", "ingestion-service")
-	cmd := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
+	proc := testutil.BuildAndStart(ctx, t, svcDir, "ingestion-service",
 		"DATABASE_URL="+env.PostgresURL,
 		"CLICKHOUSE_DSN="+env.ClickHouseDSN,
 		"HTTP_PORT="+port,
 		"REPO_ROOT="+env.RepoRoot,
 		"OIDC_REQUIRED=false",
 	)
-	defer func() {
-		_ = cmd.Process.Kill()
-		_, _ = cmd.Process.Wait()
-	}()
+	defer stopService(proc)
 
 	base := "http://localhost:" + port
-	waitServiceHealth(t, base+"/health", "ingestion-service", 90*time.Second)
+	waitServiceHealth(t, base+"/health", "ingestion-service", proc, 90*time.Second)
 
 	body, _ := json.Marshal(map[string]any{
 		"connector": "sim-dune",

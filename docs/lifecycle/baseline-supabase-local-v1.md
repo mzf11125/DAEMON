@@ -54,5 +54,5 @@ Apply with: `supabase db reset` or `make migrate`.
 ## Parity v1 cross-links
 
 - Assumptions (gated): [`docs/governance/assumption-register-parity-v1.md`](../governance/assumption-register-parity-v1.md)
-- Proof map: [`docs/traceability/foundry-parity-v1.md`](../traceability/foundry-parity-v1.md)
+- Proof map: [`docs/traceability/operational-parity-v1.md`](../traceability/operational-parity-v1.md)
 - Operator UX: [`docs/ux/operational-cockpit-flow-v1.md`](../ux/operational-cockpit-flow-v1.md)

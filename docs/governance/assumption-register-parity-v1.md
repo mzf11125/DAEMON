@@ -1,4 +1,4 @@
-# Assumption register — Foundry Parity v1
+# Assumption register — Operational Parity v1
 
 Govern platform and product assumptions for Parity v1 (not insurance actuarial models).
 
@@ -13,7 +13,7 @@ Govern platform and product assumptions for Parity v1 (not insurance actuarial m
 |----|----------|------------|----------------|-------|
 | A-ARCH-01 | Architectural | Core primitives | `Signal`, `Case`, `Decision` unchanged; packs add types only | Ontology |
 | A-ARCH-02 | Architectural | Default pack | `defaultPack: null` | Product |
-| A-ARCH-03 | Architectural | Palantir OSS | Imitate only; zero Palantir code in DAEMON | Platform |
+| A-ARCH-03 | Architectural | vendor OSS | Imitate only; zero third-party proprietary code in DAEMON | Platform |
 | A-ARCH-04 | Multi-tenant | Tenant boundary | Tenant isolates data; connectors per tenant | Product |
 | A-OPS-01 | Operational | OpenCase linkage | `signalIds` → `case_signals` (validated) | Ontology |
 | A-OPS-02 | Operational | Audit read | `GET /v1/audit/events` with RLS | Platform API |
@@ -69,4 +69,4 @@ Judgment overrides: changes to **A-ARCH-01** or **A-OPS-01** require change log 
 ## Related
 
 - [`assumption-register-v1.md`](assumption-register-v1.md) — short index
-- [`docs/traceability/foundry-parity-v1.md`](../traceability/foundry-parity-v1.md)
+- [`docs/traceability/operational-parity-v1.md`](../traceability/operational-parity-v1.md)

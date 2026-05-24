@@ -1,6 +1,7 @@
-FROM golang:1.22-alpine AS build
+FROM golang:1.25-alpine AS build
 WORKDIR /src
 COPY packages/go-common /src/packages/go-common
+COPY packages/dune-ingest /src/packages/dune-ingest
 COPY packages/pipeline-runner /src/packages/pipeline-runner
 COPY services/ingestion-service /src/services/ingestion-service
 WORKDIR /src/services/ingestion-service

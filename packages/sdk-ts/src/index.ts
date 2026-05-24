@@ -109,6 +109,72 @@ export function createClient(config: DaemonClientConfig) {
         `${config.platformApiUrl}/v1/audit/events${qs ? `?${qs}` : ""}`,
       );
     },
+    listObjects: (objectType: string, params?: ListParams) => {
+      const q = listQuery(params);
+      return get<{
+        items: Array<{ rid: string; primaryKey: string; properties: Record<string, unknown> }>;
+        meta?: ListMeta;
+      }>(`${config.ontologyServiceUrl}/v1/objects/${objectType}${q}`);
+    },
+    listSites: (params?: ListParams) => {
+      const q = listQuery(params);
+      return get<{
+        items: Array<{ rid: string; primaryKey: string; properties: Record<string, unknown> }>;
+        meta?: ListMeta;
+      }>(`${config.ontologyServiceUrl}/v1/objects/Site${q}`);
+    },
+    geoMap: () =>
+      get<{
+        sites: Array<Record<string, unknown>>;
+        assets: Array<Record<string, unknown>>;
+        signals: Array<Record<string, unknown>>;
+      }>(`${config.platformApiUrl}/v1/geo/map`),
+    listAttachments: (params?: {
+      resourceType?: string;
+      resourceId?: string;
+      role?: string;
+    }) => {
+      const q = new URLSearchParams();
+      if (params?.resourceType) q.set("resourceType", params.resourceType);
+      if (params?.resourceId) q.set("resourceId", params.resourceId);
+      if (params?.role) q.set("role", params.role);
+      const qs = q.toString();
+      return get<{ items: Array<Record<string, unknown>>; meta?: ListMeta }>(
+        `${config.platformApiUrl}/v1/attachments${qs ? `?${qs}` : ""}`,
+      );
+    },
+    uploadAttachment: async (params: {
+      file: File | Blob;
+      filename?: string;
+      resourceType?: string;
+      resourceId?: string;
+      role?: string;
+    }) => {
+      const form = new FormData();
+      form.append("file", params.file, params.filename ?? "upload.bin");
+      if (params.resourceType) form.append("resourceType", params.resourceType);
+      if (params.resourceId) form.append("resourceId", params.resourceId);
+      if (params.role) form.append("role", params.role);
+      const h: Record<string, string> = {};
+      if (config.bearerToken) h.Authorization = `Bearer ${config.bearerToken}`;
+      if (config.tenantId) h["X-Tenant-Id"] = config.tenantId;
+      const res = await fetch(`${config.platformApiUrl}/v1/attachments`, {
+        method: "POST",
+        headers: h,
+        body: form,
+      });
+      return parse<Record<string, unknown>>(res);
+    },
+    createWorkOrder: (params: { title: string; assetId?: string; caseId?: string }) =>
+      post<Record<string, unknown>>(
+        `${config.ontologyServiceUrl}/v1/actions/CreateWorkOrder`,
+        params,
+      ),
+    executeWorkOrder: (params: { workOrderId: string; status: string }) =>
+      post<Record<string, unknown>>(
+        `${config.ontologyServiceUrl}/v1/actions/ExecuteWorkOrder`,
+        params,
+      ),
     summarizeCaseContext: (caseId: string) =>
       post<{ summary: string; caseId: string; signalCount: number }>(
         `${config.ontologyServiceUrl}/v1/functions/summarizeCaseContext`,

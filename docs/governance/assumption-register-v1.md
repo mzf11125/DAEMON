@@ -7,7 +7,7 @@
 | A-03 | Neo4j optional for loop proof | Graph features degraded | Ontology |
 | A-04 | Solana + EVM via Dune/Sim connectors only | Chain coverage gaps | Ingestion |
 | A-05 | Sector packs are stubs until W2 | No vertical GA | Product |
-| A-06 | No Palantir code import | Legal / maintainability | Engineering |
+| A-06 | No third-party vendor code import | Legal / maintainability | Engineering |
 
 Review quarterly or before external pilot.
 

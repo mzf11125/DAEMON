@@ -2,6 +2,8 @@ package auth
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
@@ -36,9 +38,15 @@ type Config struct {
 
 func LoadConfigFromEnv() Config {
 	required := strings.EqualFold(os.Getenv("OIDC_REQUIRED"), "true")
+	issuer := strings.TrimSuffix(os.Getenv("OIDC_ISSUER"), "/")
+	if issuer == "" {
+		if u := strings.TrimSuffix(os.Getenv("SUPABASE_URL"), "/"); u != "" {
+			issuer = u + "/auth/v1"
+		}
+	}
 	return Config{
 		Required:  required,
-		Issuer:    strings.TrimSuffix(os.Getenv("OIDC_ISSUER"), "/"),
+		Issuer:    issuer,
 		Audience:  os.Getenv("OIDC_AUDIENCE"),
 		JWTSecret: os.Getenv("SUPABASE_JWT_SECRET"),
 	}
@@ -49,16 +57,23 @@ func IsSupabaseMode(cfg Config) bool {
 	return strings.Contains(cfg.Issuer, "/auth/v1") || cfg.JWTSecret != ""
 }
 
+type jwkVerifyKey struct {
+	methods []string
+	key     any
+}
+
 type jwksCache struct {
 	mu   sync.RWMutex
-	keys map[string]*rsa.PublicKey
+	keys map[string]jwkVerifyKey
 	at   time.Time
 	ttl  time.Duration
 }
 
-func (c *jwksCache) get(issuer string, testKey *rsa.PublicKey) (map[string]*rsa.PublicKey, error) {
+func (c *jwksCache) get(issuer string, testKey *rsa.PublicKey) (map[string]jwkVerifyKey, error) {
 	if testKey != nil {
-		return map[string]*rsa.PublicKey{"test": testKey}, nil
+		return map[string]jwkVerifyKey{
+			"test": {methods: []string{jwt.SigningMethodRS256.Alg()}, key: testKey},
+		}, nil
 	}
 	c.mu.RLock()
 	if time.Since(c.at) < c.ttl && len(c.keys) > 0 {
@@ -80,7 +95,7 @@ func (c *jwksCache) get(issuer string, testKey *rsa.PublicKey) (map[string]*rsa.
 	return keys, nil
 }
 
-func fetchJWKS(issuer string) (map[string]*rsa.PublicKey, error) {
+func fetchJWKS(issuer string) (map[string]jwkVerifyKey, error) {
 	wellKnown := issuer + "/.well-known/openid-configuration"
 	resp, err := http.Get(wellKnown) //nolint:noctx
 	if err != nil {
@@ -107,29 +122,50 @@ func fetchJWKS(issuer string) (map[string]*rsa.PublicKey, error) {
 	if err := json.NewDecoder(resp2.Body).Decode(&jwks); err != nil {
 		return nil, err
 	}
-	out := make(map[string]*rsa.PublicKey)
+	out := make(map[string]jwkVerifyKey)
 	for _, raw := range jwks.Keys {
 		var hdr struct {
 			Kid string `json:"kid"`
 			Kty string `json:"kty"`
+			Alg string `json:"alg"`
 			N   string `json:"n"`
 			E   string `json:"e"`
+			Crv string `json:"crv"`
+			X   string `json:"x"`
+			Y   string `json:"y"`
 		}
-		if err := json.Unmarshal(raw, &hdr); err != nil || hdr.Kty != "RSA" {
-			continue
-		}
-		pub, err := rsaPublicKeyFromJWK(hdr.N, hdr.E)
-		if err != nil {
+		if err := json.Unmarshal(raw, &hdr); err != nil {
 			continue
 		}
 		kid := hdr.Kid
 		if kid == "" {
 			kid = "default"
 		}
-		out[kid] = pub
+		switch hdr.Kty {
+		case "RSA":
+			pub, err := rsaPublicKeyFromJWK(hdr.N, hdr.E)
+			if err != nil {
+				continue
+			}
+			method := hdr.Alg
+			if method == "" {
+				method = jwt.SigningMethodRS256.Alg()
+			}
+			out[kid] = jwkVerifyKey{methods: []string{method}, key: pub}
+		case "EC":
+			pub, err := ecPublicKeyFromJWK(hdr.Crv, hdr.X, hdr.Y)
+			if err != nil {
+				continue
+			}
+			method := hdr.Alg
+			if method == "" {
+				method = jwt.SigningMethodES256.Alg()
+			}
+			out[kid] = jwkVerifyKey{methods: []string{method}, key: pub}
+		}
 	}
 	if len(out) == 0 {
-		return nil, fmt.Errorf("no RSA keys in JWKS")
+		return nil, fmt.Errorf("no supported keys in JWKS")
 	}
 	return out, nil
 }
@@ -138,6 +174,10 @@ func fetchJWKS(issuer string) (map[string]*rsa.PublicKey, error) {
 func Middleware(cfg Config) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/health" || r.URL.Path == "/internal/health" {
+				next.ServeHTTP(w, r)
+				return
+			}
 			authz := r.Header.Get("Authorization")
 			if strings.HasPrefix(authz, "Bearer ") {
 				tokenStr := strings.TrimPrefix(authz, "Bearer ")
@@ -203,10 +243,12 @@ func validateToken(ctx context.Context, cfg Config, tokenStr string) (*Claims, e
 			lastErr = err
 		}
 	}
-	if claims, err := validateRS256(cfg, tokenStr); err == nil {
-		return claims, nil
-	} else if err != nil {
-		lastErr = err
+	if cfg.Issuer != "" {
+		if claims, err := validateJWKS(cfg, tokenStr); err == nil {
+			return claims, nil
+		} else if err != nil {
+			lastErr = err
+		}
 	}
 	if lastErr != nil {
 		return nil, lastErr
@@ -237,19 +279,21 @@ func validateHS256(cfg Config, tokenStr string) (*Claims, error) {
 	return mapClaimsToClaims(mc)
 }
 
-func validateRS256(cfg Config, tokenStr string) (*Claims, error) {
+func validateJWKS(cfg Config, tokenStr string) (*Claims, error) {
 	keys, err := (&jwksCache{}).get(cfg.Issuer, cfg.TestPublicKey)
 	if err != nil {
 		return nil, err
 	}
 	var lastErr error
-	for _, pub := range keys {
+	for _, vk := range keys {
 		tok, err := jwt.Parse(tokenStr, func(t *jwt.Token) (any, error) {
-			if t.Method.Alg() != jwt.SigningMethodRS256.Alg() {
-				return nil, fmt.Errorf("unexpected alg %s", t.Method.Alg())
+			for _, method := range vk.methods {
+				if t.Method.Alg() == method {
+					return vk.key, nil
+				}
 			}
-			return pub, nil
-		}, jwt.WithIssuer(cfg.Issuer), jwt.WithValidMethods([]string{"RS256"}))
+			return nil, fmt.Errorf("unexpected alg %s", t.Method.Alg())
+		}, jwt.WithIssuer(cfg.Issuer), jwt.WithValidMethods(vk.methods))
 		if err != nil {
 			lastErr = err
 			continue
@@ -400,6 +444,23 @@ func rsaPublicKeyFromJWK(nB64, eB64 string) (*rsa.PublicKey, error) {
 		return nil, fmt.Errorf("invalid exponent")
 	}
 	return &rsa.PublicKey{N: n, E: e}, nil
+}
+
+func ecPublicKeyFromJWK(crv, xB64, yB64 string) (*ecdsa.PublicKey, error) {
+	if crv != "P-256" {
+		return nil, fmt.Errorf("unsupported curve %s", crv)
+	}
+	xBytes, err := base64.RawURLEncoding.DecodeString(xB64)
+	if err != nil {
+		return nil, err
+	}
+	yBytes, err := base64.RawURLEncoding.DecodeString(yB64)
+	if err != nil {
+		return nil, err
+	}
+	x := new(big.Int).SetBytes(xBytes)
+	y := new(big.Int).SetBytes(yBytes)
+	return &ecdsa.PublicKey{Curve: elliptic.P256(), X: x, Y: y}, nil
 }
 
 func writeUnauthorized(w http.ResponseWriter, message string) {

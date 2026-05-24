@@ -43,6 +43,12 @@ export default async function HomePage() {
 
       <p className="muted">
         <Link href="/dev">Developer tools</Link> (ingestion, rules, Dune)
+        {(me?.features as Record<string, unknown> | undefined)?.geoMapEnabled === true && (
+          <>
+            {" · "}
+            <Link href="/live">Live map</Link>
+          </>
+        )}
       </p>
 
       <section style={{ marginTop: "2rem" }}>

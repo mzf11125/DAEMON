@@ -1,4 +1,4 @@
-.PHONY: up down up-legacy up-apps down-apps migrate migrate-legacy seed test test-integration validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration
+.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track migrate migrate-legacy seed seed-sandbox test test-integration validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop prove-p3-geo prove-sandbox-sectors ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke
 
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
@@ -31,6 +31,18 @@ up-apps:
 down-apps:
 	docker compose -f infra/docker/docker-compose.yml --profile apps down
 
+up-merge-track:
+	$(COMPOSE) --profile merge-track up -d
+
+down-merge-track:
+	$(COMPOSE) --profile merge-track down
+
+seed-control-plane:
+	./scripts/seed-control-plane-demo-tenant.sh
+
+prove-operational-loop:
+	./scripts/prove-operational-loop.sh
+
 migrate:
 	@if command -v supabase >/dev/null 2>&1 && [ -f supabase/config.toml ]; then \
 		supabase db reset || { \
@@ -42,20 +54,25 @@ migrate:
 	else \
 		$(MAKE) migrate-legacy; \
 	fi
-	@if command -v clickhouse-client >/dev/null 2>&1; then \
-		clickhouse-client --host localhost --user daemon --password daemon --multiquery < infra/migrations/clickhouse/001_init.sql || true; \
-		clickhouse-client --host localhost --user daemon --password daemon --multiquery < infra/migrations/clickhouse/002_tenant_observations.sql || true; \
-	else \
-		echo "migrate: skip ClickHouse SQL (clickhouse-client not installed; run make up first if you need CH)"; \
-	fi
+	@./scripts/apply-clickhouse-migrations.sh || echo "migrate: skip ClickHouse SQL (start clickhouse: make up)"
 
 migrate-legacy:
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/001_init.sql
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/002_indexes_fk.sql || true
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/003_ingestion_params.sql || true
+	psql "$(DATABASE_URL)" -f infra/migrations/postgres/004_supabase_compat_roles.sql
+	psql "$(DATABASE_URL)" -f infra/migrations/postgres/005_authenticated_grants.sql
 
 seed:
 	cd infra/seed && go run .
+
+seed-sandbox: seed
+
+prove-p3-geo:
+	./scripts/prove-p3-geo.sh
+
+prove-sandbox-sectors:
+	./scripts/prove-sandbox-sectors.sh
 
 pipeline-raw:
 	cd pipelines/raw-ingest && go run ./cmd
@@ -132,10 +149,14 @@ aip-orchestrator: aip-build
 prove-aip-eval: aip-build
 	./scripts/prove-aip-eval.sh
 
-cli-test: pnpm-workspace
+cli-test: pnpm-workspace ontology-engine-build
 	pnpm --filter @daemon/cli test
 
-cli-build: pnpm-workspace
+ontology-engine-build: pnpm-workspace
+	pnpm --filter @daemon/ontology-language build
+	pnpm --filter @daemon/ontology-engine build
+
+cli-build: ontology-engine-build
 	pnpm --filter @daemon/cli build
 
 agent-bridge-smoke:

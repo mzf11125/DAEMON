@@ -15,6 +15,7 @@ import (
 	"github.com/daemon-platform/daemon/packages/go-common/config"
 	"github.com/daemon-platform/daemon/packages/go-common/db"
 	dhttp "github.com/daemon-platform/daemon/packages/go-common/http"
+	"github.com/daemon-platform/daemon/packages/go-common/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5"
@@ -34,6 +35,11 @@ func main() {
 	}
 	defer pool.Close()
 
+	store, err := storage.NewObjectStore(ctx, storage.LoadConfigFromEnv())
+	if err != nil {
+		log.Fatal().Err(err).Msg("object storage")
+	}
+
 	r := chi.NewRouter()
 	for _, mw := range dhttp.AuthenticatedStack(authCfg) {
 		r.Use(mw)
@@ -44,6 +50,8 @@ func main() {
 		r.Get("/me", meHandler(pool, authCfg))
 		r.Get("/audit/events", listAuditEventsHandler(pool))
 		r.Post("/audit/events", auditHandler(pool))
+		mountAttachmentRoutes(r, pool, store)
+		mountGeoRoutes(r, pool)
 	})
 
 	srv := &http.Server{Addr: ":" + strconv.Itoa(cfg.HTTPPort), Handler: r}
@@ -94,8 +102,11 @@ func meHandler(pool *pgxpool.Pool, authCfg auth.Config) http.HandlerFunc {
 		if len(jwtRoles) > 0 {
 			roles = jwtRoles
 		}
+		tenant := dhttp.TenantFromContext(r.Context())
+		features := tenantFeatures(r.Context(), pool, tenant)
 		dhttp.WriteJSON(w, http.StatusOK, map[string]any{
-			"userId": userID, "tenantId": dhttp.TenantFromContext(r.Context()), "email": email, "displayName": name, "roles": roles,
+			"userId": userID, "tenantId": tenant, "email": email, "displayName": name, "roles": roles,
+			"features": features,
 		})
 	}
 }

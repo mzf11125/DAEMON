@@ -14,7 +14,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.25.10"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -23,7 +23,7 @@ jobs:
       - run: go work sync || true
       - run: |
           for dir in packages/go-common packages/pipeline-runner infra/seed; do
-            (cd "$dir" && go mod tidy && go vet . && go test ./...) || exit 1
+            (cd "$dir" && go mod tidy && go vet ./... && go test ./...) || exit 1
           done
           for dir in services/platform-api services/ontology-service services/ingestion-service \
             services/rules-engine services/case-service \
@@ -35,6 +35,7 @@ jobs:
       - run: make ontology-validate
       - run: ./scripts/check-no-stub-handlers.sh
       - run: ./scripts/check-maturation-policy.sh
+      - run: ./scripts/check-vendor-neutral-language.sh
       - run: pnpm -r typecheck
       - run: pnpm --filter @daemon/ontology-language test
       - run: pnpm --filter @daemon/cli test || echo "cli test skipped if DB unavailable"
@@ -49,7 +50,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.25.10"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -68,7 +69,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.25.10"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -100,7 +101,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.25.10"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -108,7 +109,9 @@ jobs:
           cache: pnpm
       - run: go install golang.org/x/vuln/cmd/govulncheck@latest
       - run: |
-          for dir in packages/go-common services/platform-api services/ontology-service \
+          # testutil pulls testcontainers/docker; scan production packages only in go-common
+          (cd packages/go-common && govulncheck ./auth/... ./config/... ./ctxkeys/... ./db/... ./http/... ./rules/...) || exit 1
+          for dir in services/platform-api services/ontology-service \
             services/ingestion-service services/rules-engine services/case-service \
             pipelines/raw-ingest pipelines/transforms pipelines/features pipelines/quality infra/seed; do
             (cd "$dir" && govulncheck ./...) || exit 1

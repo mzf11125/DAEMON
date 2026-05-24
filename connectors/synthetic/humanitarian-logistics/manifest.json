@@ -1,0 +1,12 @@
+{
+  "connectorId": "synthetic-humanitarian-logistics",
+  "displayName": "Synthetic sandbox — humanitarian-logistics",
+  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/humanitarian-logistics/",
+  "version": "1.0.0",
+  "paramsSchema": {
+    "type": "object",
+    "properties": {
+      "fixturePath": { "type": "string", "default": "fixtures/sample.json" }
+    }
+  }
+}

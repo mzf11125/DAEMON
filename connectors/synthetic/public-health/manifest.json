@@ -1,0 +1,12 @@
+{
+  "connectorId": "synthetic-public-health",
+  "displayName": "Synthetic sandbox — public-health",
+  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/public-health/",
+  "version": "1.0.0",
+  "paramsSchema": {
+    "type": "object",
+    "properties": {
+      "fixturePath": { "type": "string", "default": "fixtures/sample.json" }
+    }
+  }
+}

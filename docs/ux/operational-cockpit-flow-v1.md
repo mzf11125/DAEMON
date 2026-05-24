@@ -90,5 +90,5 @@ Industry-agnostic operator path: **Signal → Case → Decision → audit**. Han
 ## Related
 
 - [`docs/lifecycle/dx-paper-cuts-v1.md`](../lifecycle/dx-paper-cuts-v1.md)
-- [`docs/traceability/foundry-parity-v1.md`](../traceability/foundry-parity-v1.md)
+- [`docs/traceability/operational-parity-v1.md`](../traceability/operational-parity-v1.md)
 - [`docs/research/operational-cockpit-research-plan-v1.md`](../research/operational-cockpit-research-plan-v1.md)

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { normalizeArgv } from './argv.js';
 import { tenantInit } from './commands/init.js';
 import { tenantMigrate } from './commands/migrate.js';
 import { generateToken } from './commands/token.js';
@@ -119,4 +120,4 @@ schema
     }
   });
 
-program.parse();
+program.parse(normalizeArgv(process.argv));

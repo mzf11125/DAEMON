@@ -1,0 +1,12 @@
+{
+  "connectorId": "synthetic-web3-intel",
+  "displayName": "Synthetic sandbox — web3-intel",
+  "description": "Developer-local fixture connector; replay-only CSV/JSON under connectors/synthetic/web3-intel/",
+  "version": "1.0.0",
+  "paramsSchema": {
+    "type": "object",
+    "properties": {
+      "fixturePath": { "type": "string", "default": "fixtures/sample.json" }
+    }
+  }
+}

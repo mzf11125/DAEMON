@@ -1,0 +1,32 @@
+---
+description: Operational parity v1 documentation index for DAEMON
+globs:
+  - docs/**
+  - ontology/v2/**
+  - apps/console-web/**
+---
+
+# 39-docs-operational
+
+Operational platform parity v1 — read these before changing the operational loop or packs.
+
+## Proof and baseline
+
+- `docs/traceability/operational-platform-parity-v1.md` — requirement → code → test
+- `docs/lifecycle/baseline-supabase-local-v1.md` — Supabase local cutover
+- `docs/dx/cursor-operational-parity.md` — Cursor workflow + proof commands
+
+## Operator UX
+
+- `docs/ux/operational-cockpit-flow-v1.md` — inbox → case → decision → audit
+
+## Ontology and packs
+
+- `docs/lifecycle/pack-framework-v1.md`
+- `docs/ontology/vertical-packs.md`
+- `ontology/v2/manifest.json` + `ontology/v2/examples/packs/`
+
+## Governance
+
+- `docs/governance/assumption-register-parity-v1.md`
+- `docs/governance/vendor-neutral-content-v1.md`

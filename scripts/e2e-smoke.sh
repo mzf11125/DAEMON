@@ -35,17 +35,19 @@ compose_up_datastores() {
 }
 
 load_supabase_env() {
-  if [[ -n "${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}" ]]; then
-    return 0
-  fi
   if ! command -v supabase >/dev/null 2>&1; then
     return 1
   fi
   while IFS= read -r line; do
     case "$line" in
-      ANON_KEY=*) export NEXT_PUBLIC_SUPABASE_ANON_KEY="${line#ANON_KEY=}" ;;
+      ANON_KEY=*)
+        export NEXT_PUBLIC_SUPABASE_ANON_KEY="${line#ANON_KEY=}"
+        ;;
       JWT_SECRET=*) export SUPABASE_JWT_SECRET="${line#JWT_SECRET=}" ;;
-      API_URL=*) export SUPABASE_URL="${line#API_URL=}" ;;
+      API_URL=*)
+        export SUPABASE_URL="${line#API_URL=}"
+        export OIDC_ISSUER="${SUPABASE_URL}/auth/v1"
+        ;;
     esac
   done < <(supabase status -o env 2>/dev/null | tr -d '"')
 }
@@ -77,7 +79,7 @@ start_if_down() {
     return
   fi
   echo "e2e-smoke: starting service on :$port"
-  (cd "$dir" && go run ./cmd) &
+  (cd "$dir" && ONTOLOGY_ROOT="$root/ontology/v2-compiled" DATABASE_URL="${DATABASE_URL:-postgresql://daemon_runtime:daemon_runtime_local@127.0.0.1:54332/postgres?sslmode=disable}" go run ./cmd) &
   PIDS+=($!)
   wait_http "http://localhost:${port}/health"
 }
@@ -88,6 +90,19 @@ if ! compose_up_datastores; then
   echo "e2e-smoke: run: make down  (removes legacy postgres/keycloak); or stop other postgres on :5432" >&2
   exit 1
 fi
+
+echo "e2e-smoke: waiting for Neo4j Bolt auth (:7687)"
+sleep 3
+n=0
+until docker exec docker-neo4j-1 bin/cypher-shell -u "${NEO4J_USER}" -p "${NEO4J_PASSWORD}" "RETURN 1" >/dev/null 2>&1; do
+  n=$((n + 1))
+  if [ "$n" -gt 30 ]; then
+    echo "e2e-smoke: timeout waiting for Neo4j Bolt auth" >&2
+    exit 1
+  fi
+  sleep 2
+done
+echo "e2e-smoke: Neo4j Bolt ready"
 
 load_supabase_env || true
 if command -v supabase >/dev/null 2>&1; then
@@ -133,6 +148,13 @@ make pipeline-all
 # After migrate/seed, in-memory Go processes may point at a reset DB — restart listeners.
 export E2E_FORCE_RESTART=1
 
+load_supabase_env || true
+
+if [ -x ./scripts/supabase-seed-auth.sh ]; then
+  eval "$(./scripts/supabase-seed-auth.sh | grep '^SUPABASE_DEMO_USER_ID=')" || true
+  export SUPABASE_DEMO_USER_ID
+fi
+
 BEARER=""
 if [ -n "${NEXT_PUBLIC_SUPABASE_ANON_KEY}" ]; then
   tok=$(curl -sf "${SUPABASE_URL}/auth/v1/token?grant_type=password" \
@@ -142,6 +164,9 @@ if [ -n "${NEXT_PUBLIC_SUPABASE_ANON_KEY}" ]; then
   if [ -n "$tok" ]; then
     BEARER="$tok"
     echo "e2e-smoke: using Supabase access token"
+  else
+    echo "e2e-smoke: password grant failed — run ./scripts/supabase-seed-auth.sh" >&2
+    exit 1
   fi
 fi
 
@@ -172,7 +197,12 @@ if [ "$domain" != "enterprise-operations" ]; then
 fi
 
 echo "e2e-smoke: ontology objects"
-signals=$(curl -sf "${hdr[@]}" "http://localhost:8081/v1/objects/Signal" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('data',d).get('items',[])))")
+obj_resp=$(curl -sf "${hdr[@]}" "http://localhost:8081/v1/objects/Signal")
+if [ -z "$obj_resp" ]; then
+  echo "e2e-smoke: empty Signal response (token expired?)" >&2
+  exit 1
+fi
+signals=$(echo "$obj_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('data',d).get('items',[])))")
 assets=$(curl -sf "${hdr[@]}" "http://localhost:8081/v1/objects/Asset" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('data',d).get('items',[])))")
 if [ "${signals:-0}" -lt 1 ] || [ "${assets:-0}" -lt 1 ]; then
   echo "e2e-smoke: expected seeded Signal and Asset objects"
@@ -201,9 +231,15 @@ print(items[0]['primaryKey'] if items else '')
     echo "e2e-smoke: OpenCase missing caseId"
     exit 1
   fi
-  link_count=$(psql "$DATABASE_URL" -tAc "SELECT count(*) FROM case_signals WHERE case_id='$case_id' AND signal_id='$signal_pk'" 2>/dev/null || echo 0)
-  if [ "${link_count// /}" != "1" ]; then
-    echo "e2e-smoke: expected case_signals link, got $link_count"
+  linked=$(curl -sf "${hdr[@]}" "http://localhost:8084/v1/cases/$case_id" | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+data=d.get('data',d)
+sids=data.get('signalIds',[])
+print('1' if '$signal_pk' in sids else '0')
+")
+  if [ "$linked" != "1" ]; then
+    echo "e2e-smoke: expected case_signals link for signal=$signal_pk case=$case_id"
     exit 1
   fi
   curl -sf -X POST "${hdr[@]}" "http://localhost:8081/v1/actions/RecordDecision" \

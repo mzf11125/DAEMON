@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "tsx src/index.ts",
+    "daemon-cli": "tsx src/index.ts",
     "build": "tsc",
     "test": "vitest run",
     "lint": "tsc --noEmit"
@@ -16,11 +17,13 @@
     "@daemon/ontology-engine": "workspace:*",
     "@daemon/ontology-language": "workspace:*",
     "jsonwebtoken": "^9.0.0",
-    "commander": "^12.0.0"
+    "commander": "^12.0.0",
+    "pg": "^8.11.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.0",
     "@types/node": "^20.0.0",
+    "@types/pg": "^8.11.0",
     "tsx": "^4.0.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"

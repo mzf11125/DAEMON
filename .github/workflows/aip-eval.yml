@@ -17,6 +17,8 @@ on:
       - "services/case-service/**"
       - ".github/workflows/aip-eval.yml"
       - "scripts/prove-aip-eval.sh"
+      - "scripts/smoke-agent-bridge.sh"
+      - "infra/docker/docker-compose.yml"
   workflow_dispatch:
 
 jobs:

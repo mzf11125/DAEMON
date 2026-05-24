@@ -3,7 +3,9 @@ package testutil
 import (
 	"context"
 	"fmt"
+	"net"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -27,14 +29,78 @@ type Env struct {
 	neoContainer  testcontainers.Container
 }
 
-// SetupDataStores starts Postgres, ClickHouse, and Neo4j containers and applies SQL migrations.
+func integrationUseLocal() bool {
+	v := os.Getenv("INTEGRATION_USE_LOCAL")
+	return v == "1" || v == "true"
+}
+
+func dockerAvailable() bool {
+	return exec.Command("docker", "info").Run() == nil
+}
+
+func envOr(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
+}
+
+func requireLocalTCP(name, addr string) error {
+	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
+	if err != nil {
+		return fmt.Errorf("%s (%s): %w", name, addr, err)
+	}
+	_ = conn.Close()
+	return nil
+}
+
+// SetupDataStores starts Postgres, ClickHouse, and Neo4j (containers or local stack) and applies SQL migrations.
 func SetupDataStores(ctx context.Context, t *testing.T) *Env {
 	t.Helper()
 	repoRoot, err := findRepoRoot()
 	if err != nil {
 		t.Fatal(err)
 	}
+	if integrationUseLocal() {
+		return setupLocalDataStores(ctx, t, repoRoot)
+	}
+	if !dockerAvailable() {
+		t.Skip("Docker unavailable for testcontainers; start Docker Desktop or set INTEGRATION_USE_LOCAL=1 with `make up`, `make supabase-up`, and `make migrate`")
+	}
+	return setupContainerDataStores(ctx, t, repoRoot)
+}
 
+func setupLocalDataStores(ctx context.Context, t *testing.T, repoRoot string) *Env {
+	t.Helper()
+	pgURL := envOr("INTEGRATION_POSTGRES_URL", envOr("SEED_DATABASE_URL", "postgresql://postgres:postgres@127.0.0.1:54332/postgres?sslmode=disable"))
+	chDSN := envOr("INTEGRATION_CLICKHOUSE_DSN", envOr("CLICKHOUSE_DSN", "clickhouse://daemon:daemon@127.0.0.1:9000/daemon"))
+	neoURI := envOr("INTEGRATION_NEO4J_URI", envOr("NEO4J_URI", "neo4j://127.0.0.1:7687"))
+	pgHost := envOr("INTEGRATION_PG_HOST", "127.0.0.1")
+	pgPort := envOr("INTEGRATION_PG_PORT", "54332")
+	chHost := envOr("INTEGRATION_CH_HOST", "127.0.0.1")
+	chPort := envOr("INTEGRATION_CH_PORT", "9000")
+	pgAddr := net.JoinHostPort(pgHost, pgPort)
+	chAddr := net.JoinHostPort(chHost, chPort)
+	if pgErr := requireLocalTCP("Postgres", pgAddr); pgErr != nil {
+		t.Skip("INTEGRATION_USE_LOCAL=1 but local stack not ready: " + pgErr.Error() + " — run: ./scripts/bootstrap-integration-local.sh")
+	}
+	if chErr := requireLocalTCP("ClickHouse", chAddr); chErr != nil {
+		t.Skip("INTEGRATION_USE_LOCAL=1 but local stack not ready: " + chErr.Error() + " — run: make up (after Docker Desktop is running)")
+	}
+	env := &Env{
+		PostgresURL:   pgURL,
+		ClickHouseDSN: chDSN,
+		Neo4jURI:      neoURI,
+		Neo4jUser:     envOr("NEO4J_USER", "neo4j"),
+		Neo4jPassword: envOr("NEO4J_PASSWORD", "daemonneo4j"),
+		RepoRoot:      repoRoot,
+	}
+	applyDataStoreMigrations(ctx, t, env)
+	return env
+}
+
+func setupContainerDataStores(ctx context.Context, t *testing.T, repoRoot string) *Env {
+	t.Helper()
 	pgC, err := postgres.Run(ctx,
 		"postgres:16-alpine",
 		postgres.WithDatabase("daemon"),
@@ -110,8 +176,16 @@ func SetupDataStores(ctx context.Context, t *testing.T) *Env {
 		chContainer:   chC,
 		neoContainer:  neoC,
 	}
+	applyDataStoreMigrations(ctx, t, env)
+	return env
+}
 
-	// Schema migrations as daemon user.
+func applyDataStoreMigrations(ctx context.Context, t *testing.T, env *Env) {
+	t.Helper()
+	repoRoot := env.RepoRoot
+	pgURL := env.PostgresURL
+	chDSN := env.ClickHouseDSN
+
 	if err := applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/001_init.sql")); err != nil {
 		t.Fatalf("postgres migration: %v", err)
 	}
@@ -129,8 +203,6 @@ func SetupDataStores(ctx context.Context, t *testing.T) *Env {
 	if err := EnsureDemoTenant(ctx, pgURL); err != nil {
 		t.Fatalf("demo tenant: %v", err)
 	}
-
-	return env
 }
 
 // Cleanup terminates containers.

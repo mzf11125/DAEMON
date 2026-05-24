@@ -71,12 +71,17 @@ func truncateStmt(s string) string {
 
 // EnsureDemoTenant inserts tenant-demo for FK-backed integration tests (no Neo4j required).
 func EnsureDemoTenant(ctx context.Context, pgURL string) error {
+	return EnsureTenant(ctx, pgURL, "tenant-demo", "Demo Manufacturing Co")
+}
+
+// EnsureTenant inserts a tenant row without settings or seed data.
+func EnsureTenant(ctx context.Context, pgURL, tenantID, name string) error {
 	pool, err := pgxpool.New(ctx, pgURL)
 	if err != nil {
 		return err
 	}
 	defer pool.Close()
-	_, err = pool.Exec(ctx, `INSERT INTO tenants (tenant_id, name) VALUES ('tenant-demo', 'Demo Manufacturing Co') ON CONFLICT DO NOTHING`)
+	_, err = pool.Exec(ctx, `INSERT INTO tenants (tenant_id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING`, tenantID, name)
 	return err
 }
 

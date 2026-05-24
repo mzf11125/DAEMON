@@ -283,16 +283,6 @@ services:
     volumes:
       - ../..:/repo
 
-volumes:
-  postgres_data:
-  clickhouse_data:
-  neo4j_data:
-  minio_data:
-  redis_data:
-  cp_postgres_data:
-  caddy_data:
-  caddy_config:
-
   # ============================================================
   # Gateway — Caddy reverse proxy (memory-safe, Go-based)
   # ============================================================
@@ -313,3 +303,13 @@ volumes:
       - default
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+volumes:
+  postgres_data:
+  clickhouse_data:
+  neo4j_data:
+  minio_data:
+  redis_data:
+  cp_postgres_data:
+  caddy_data:
+  caddy_config:

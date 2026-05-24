@@ -6,6 +6,10 @@ on:
   pull_request:
     paths:
       - "aip/**"
+      - "pipelines/market-intel/**"
+      - "pipelines/document-intake/**"
+      - "ontology/v2/examples/packs/logistics-express-cargo/**"
+      - "scripts/prove-market-intel-security.sh"
       - "packages/aip-agent/**"
       - "packages/go-common/**"
       - "services/ontology-service/**"
@@ -57,6 +61,7 @@ jobs:
       TENANT_ID: tenant-demo
       EVAL_DETERMINISTIC: "true"
       EVAL_SKIP_BASELINE: "true"
+      EVAL_SKIP_STACK_BOOTSTRAP: "true"
       SKIP_NEO4J_SEED: "true"
     steps:
       - uses: actions/checkout@v4
@@ -103,6 +108,8 @@ jobs:
       - run: make aip-build
       - name: Golden eval
         run: make aip-eval
+      - name: Market intel security gate
+        run: make prove-market-intel-security
       - name: Agent bridge smoke (HTTP proxy to :8081)
         run: |
           export AGENT_DAEMON_BRIDGE=true

@@ -61,6 +61,8 @@ jobs:
       - run: make ontology-sync
       - run: go work sync
       - run: make test-integration
+        env:
+          INTEGRATION_WITH_NEO4J: "1"
 
   e2e-full:
     runs-on: ubuntu-latest

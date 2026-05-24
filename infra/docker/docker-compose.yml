@@ -261,7 +261,8 @@ services:
 
   agent-bridge:
     profiles: ["merge-track"]
-    image: node:20-alpine
+    # bookworm-slim (not alpine): tsx/esbuild native bindings need glibc
+    image: node:20-bookworm-slim
     working_dir: /repo
     command:
       - sh

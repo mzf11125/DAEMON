@@ -196,6 +196,8 @@ func applyDataStoreMigrations(ctx context.Context, t *testing.T, env *Env) {
 	if err := applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/006_p3_geo_attachments.sql")); err != nil {
 		t.Fatalf("postgres migration 006: %v", err)
 	}
+	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/007_market_intel_pgvector.sql"))
+	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/008_action_proposals.sql"))
 	if err := applyClickHouseMigration(ctx, chDSN, filepath.Join(repoRoot, "infra/migrations/clickhouse/001_init.sql")); err != nil {
 		t.Fatalf("clickhouse migration: %v", err)
 	}

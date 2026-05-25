@@ -133,6 +133,8 @@ More detail: [CONTRIBUTING.md](CONTRIBUTING.md), [docs/developer-tools/repo-layo
 
 Full index: [docs/README.md](docs/README.md)
 
+Platform master PRD: [docs/product/PRD-daemon-platform.md](docs/product/PRD-daemon-platform.md)
+
 ## License
 
 BSD 3-Clause — see [LICENSE](LICENSE).

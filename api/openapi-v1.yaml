@@ -7,15 +7,15 @@ info:
     Success responses use `{ data }` or inline payload (see per-endpoint schemas). Errors use `{ error: { code, message, requestId?, timestamp } }`.
     **Auth:** Bearer JWT (Supabase OIDC) + `X-Tenant-Id` on every `/v1/*` route. Tenant isolation via Postgres RLS.
 servers:
-  - url: http://127.0.0.1:8080
+  - url: http://localhost:8080
     description: platform-api
-  - url: http://127.0.0.1:8081
+  - url: http://localhost:8081
     description: ontology-service
-  - url: http://127.0.0.1:8084
+  - url: http://localhost:8084
     description: case-service
-  - url: http://127.0.0.1:8083
+  - url: http://localhost:8083
     description: rules-engine
-  - url: http://127.0.0.1:8082
+  - url: http://localhost:8082
     description: ingestion-service
 security:
   - bearerAuth: []
@@ -383,7 +383,7 @@ paths:
                 $ref: '#/components/schemas/UserProfile'
         '401':
           description: Unauthorized (no Bearer when OIDC required)
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/geo/map:
     get:
@@ -400,7 +400,7 @@ paths:
                 $ref: '#/components/schemas/GeoMapResponse'
         '403':
           description: Geo map not enabled for tenant (`GEO_DISABLED`)
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/attachments:
     get:
@@ -425,7 +425,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AttachmentListResponse'
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
     post:
       summary: Upload attachment (multipart/form-data)
       parameters:
@@ -469,7 +469,7 @@ paths:
           description: File exceeds 25 MiB
         '503':
           description: Object storage not configured
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/attachments/{id}:
     get:
@@ -489,7 +489,7 @@ paths:
                 $ref: '#/components/schemas/AttachmentDetail'
         '404':
           description: Attachment not found
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/attachments/{id}/content:
     get:
@@ -507,7 +507,7 @@ paths:
           description: Attachment not found
         '503':
           description: Object storage not configured
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/attachments/{id}/links:
     post:
@@ -545,7 +545,7 @@ paths:
                 required: [linkId, attachmentId, resourceType, resourceId, role]
         '404':
           description: Attachment not found
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/action-proposals:
     get:
@@ -565,7 +565,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActionProposalListResponse'
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
     post:
       summary: Create action proposal (HITL intake)
       parameters:
@@ -593,7 +593,7 @@ paths:
                 $ref: '#/components/schemas/ActionProposal'
         '400':
           description: Missing actionType or invalid JSON
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/action-proposals/{id}:
     get:
@@ -613,7 +613,7 @@ paths:
                 $ref: '#/components/schemas/ActionProposal'
         '404':
           description: Proposal not found
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
     patch:
       summary: Update proposal status
       parameters:
@@ -642,7 +642,7 @@ paths:
           description: Missing status
         '404':
           description: Proposal not found
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/audit/events:
     get:
@@ -680,7 +680,7 @@ paths:
                   meta:
                     $ref: '#/components/schemas/ListMeta'
                 required: [items, meta]
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
     post:
       summary: Append audit event
       parameters:
@@ -700,7 +700,7 @@ paths:
       responses:
         '201':
           description: Audit event appended
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   /v1/signals:
     get:
@@ -720,7 +720,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/SignalSummary'
-      servers: [{ url: http://127.0.0.1:8080 }]
+      servers: [{ url: http://localhost:8080 }]
 
   # ─── ontology-service :8081 ─────────────────────────────────────────────
   /v1/ontology/v2/manifest:
@@ -735,7 +735,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ManifestResponse'
-      servers: [{ url: http://127.0.0.1:8081 }]
+      servers: [{ url: http://localhost:8081 }]
 
   /v1/objects/{objectType}:
     get:
@@ -763,7 +763,7 @@ paths:
                   meta:
                     $ref: '#/components/schemas/ListMeta'
                 required: [items, meta]
-      servers: [{ url: http://127.0.0.1:8081 }]
+      servers: [{ url: http://localhost:8081 }]
 
   /v1/objects/{objectType}/{id}:
     get:
@@ -783,7 +783,7 @@ paths:
           description: Object detail
         '404':
           description: Object not found
-      servers: [{ url: http://127.0.0.1:8081 }]
+      servers: [{ url: http://localhost:8081 }]
 
   /v1/objects/Case/{id}/links:
     get:
@@ -801,7 +801,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvestigateCaseResponse'
-      servers: [{ url: http://127.0.0.1:8081 }]
+      servers: [{ url: http://localhost:8081 }]
 
   /v1/actions/{actionType}:
     post:
@@ -843,7 +843,7 @@ paths:
           description: Missing required parameter or invalid reference
         '501':
           description: Unknown action type
-      servers: [{ url: http://127.0.0.1:8081 }]
+      servers: [{ url: http://localhost:8081 }]
 
   /v1/functions/summarizeCaseContext:
     post:
@@ -863,7 +863,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SummarizeCaseContextResponse'
-      servers: [{ url: http://127.0.0.1:8081 }]
+      servers: [{ url: http://localhost:8081 }]
 
   # ─── case-service :8084 ─────────────────────────────────────────────────
   /v1/cases:
@@ -888,7 +888,7 @@ paths:
                   meta:
                     $ref: '#/components/schemas/ListMeta'
                 required: [items, meta]
-      servers: [{ url: http://127.0.0.1:8084 }]
+      servers: [{ url: http://localhost:8084 }]
 
   /v1/cases/{caseId}:
     get:
@@ -908,7 +908,7 @@ paths:
                 $ref: '#/components/schemas/CaseDetail'
         '404':
           description: Case not found
-      servers: [{ url: http://127.0.0.1:8084 }]
+      servers: [{ url: http://localhost:8084 }]
 
   # ─── rules-engine :8083 ─────────────────────────────────────────────────
   /v1/evaluate:
@@ -929,7 +929,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EvaluateResponse'
-      servers: [{ url: http://127.0.0.1:8083 }]
+      servers: [{ url: http://localhost:8083 }]
 
   # ─── ingestion-service :8082 ────────────────────────────────────────────
   /v1/jobs:
@@ -959,7 +959,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IngestionJob'
-      servers: [{ url: http://127.0.0.1:8082 }]
+      servers: [{ url: http://localhost:8082 }]
 
   /v1/jobs/{jobId}:
     get:
@@ -979,4 +979,4 @@ paths:
                 $ref: '#/components/schemas/IngestionJob'
         '404':
           description: Job not found
-      servers: [{ url: http://127.0.0.1:8082 }]
+      servers: [{ url: http://localhost:8082 }]

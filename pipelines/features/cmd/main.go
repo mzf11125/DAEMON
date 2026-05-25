@@ -22,13 +22,21 @@ func main() {
 	}
 	defer conn.Close()
 
-	q := `INSERT INTO features_asset_daily
+	q := `INSERT INTO daemon.features_asset_daily
 	SELECT asset_id, toDate(observed_at) AS day, count() AS observation_count, avg(value) AS avg_value, max(value) AS max_value
-	FROM dataset_observations GROUP BY asset_id, day`
+	FROM daemon.dataset_observations GROUP BY asset_id, day`
 	if err := conn.Exec(ctx, q); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("features: built features_asset_daily")
+	labelQ := `INSERT INTO daemon.features_label_daily
+	SELECT asset_id, label, toDate(observed_at) AS day, tenant_id,
+		count() AS observation_count, avg(value) AS avg_value, max(value) AS max_value, stddevPop(value) AS stddev_value
+	FROM daemon.dataset_observations
+	GROUP BY asset_id, label, day, tenant_id`
+	if err := conn.Exec(ctx, labelQ); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("features: built features_asset_daily and features_label_daily")
 }
 
 func getenv(k, d string) string {

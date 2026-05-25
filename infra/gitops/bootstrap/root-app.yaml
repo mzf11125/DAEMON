@@ -1,0 +1,29 @@
+# Single ArgoCD Application that watches infra/gitops/apps/ and onboards every child Application.
+# Apply once: kubectl apply -n argocd -f infra/gitops/bootstrap/root-app.yaml
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: daemon-root
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/daemon-blockint-tech/DAEMON.git
+    path: infra/gitops/apps
+    targetRevision: main
+    directory:
+      recurse: true
+      include: '{platform/*.yaml,aip/*.yaml,observability/*.yaml,platform-shared/*.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=false
+      - ApplyOutOfSyncOnly=true

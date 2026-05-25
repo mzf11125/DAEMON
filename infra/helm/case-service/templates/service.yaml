@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "daemon.fullname" . }}
+  labels: {{- include "daemon.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.config.httpPort }}
+      protocol: TCP
+      name: http
+  selector: {{- include "daemon.selectorLabels" . | nindent 4 }}

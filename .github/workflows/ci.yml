@@ -27,8 +27,9 @@ jobs:
           done
           for dir in services/platform-api services/ontology-service services/ingestion-service \
             services/rules-engine services/case-service \
-            pipelines/raw-ingest pipelines/transforms pipelines/features pipelines/quality; do
-            (cd "$dir" && go mod tidy && go build -o /dev/null ./cmd && go test ./...) || exit 1
+            pipelines/raw-ingest pipelines/transforms pipelines/features pipelines/quality \
+            pipelines/propensity-train pipelines/audit-archival; do
+            (cd "$dir" && go mod tidy && go vet ./... && go build -o /dev/null ./cmd && go test ./...) || exit 1
           done
       - run: pnpm install --frozen-lockfile || pnpm install
       - run: make ontology-sync

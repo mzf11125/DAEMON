@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	gcaudit "github.com/daemon-platform/daemon/packages/go-common/audit"
 	"github.com/daemon-platform/daemon/packages/go-common/auth"
 	"github.com/daemon-platform/daemon/packages/go-common/config"
 	"github.com/daemon-platform/daemon/packages/go-common/db"
@@ -216,9 +217,9 @@ func auditHandler(pool *pgxpool.Pool) http.HandlerFunc {
 		var eventID string
 		err := db.WithRLSTx(r.Context(), pool, func(tx pgx.Tx) error {
 			return tx.QueryRow(r.Context(),
-				`INSERT INTO audit_log (tenant_id, actor_id, action_type, resource_type, resource_id, payload)
-				 VALUES ($1,$2,$3,$4,$5,$6) RETURNING event_id::text`,
-				tenant, nullIfEmpty(actor), body.ActionType, body.ResourceType, body.ResourceID, b).Scan(&eventID)
+				`INSERT INTO audit_log (tenant_id, actor_id, action_type, resource_type, resource_id, payload, event_class)
+				 VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING event_id::text`,
+				tenant, nullIfEmpty(actor), body.ActionType, body.ResourceType, body.ResourceID, b, gcaudit.EventClass(body.ActionType)).Scan(&eventID)
 		})
 		if err != nil {
 			dhttp.WriteErrorRequest(w, r, http.StatusInternalServerError, "AUDIT_FAILED", err.Error())

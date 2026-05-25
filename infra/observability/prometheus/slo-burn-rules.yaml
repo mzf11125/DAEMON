@@ -1,0 +1,18 @@
+# Phase 2 — multi-window burn-rate alerts (apply after Prometheus in cluster).
+groups:
+  - name: daemon-platform-slo
+    rules:
+      - alert: PlatformAPIAvailabilityBurn
+        expr: |
+          (
+            sum(rate(http_requests_total{service="platform-api",code!~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{service="platform-api"}[5m]))
+          ) < 0.999
+        for: 5m
+        labels:
+          severity: page
+          slo: platform-api-availability
+        annotations:
+          summary: "platform-api availability below 99.9% SLO window"
+          runbook: "docs/operations/runbook-oncall-v1.md"

@@ -17,8 +17,10 @@
 - Open `Signal` `signal-logistics-express-cargo-001` present for tenant `tenant-demo`
 - SLA scenario: `signal-express-sla-001` linked to `case-express-sla-001` via `case_signals`
 - `go test -tags=integration ./tests/integration/ -run TestExpressCargoSim` — PASS
+- `go test -tags=integration ./tests/integration/ -run TestExpressCargoRulesEvaluate` — PASS (6 express rules: SLA, routing anomaly, champion idle, z-score propensity, volume ec-sm-011, ML propensity)
 - `./scripts/prove-express-cargo-sim.sh` — exit 0
 - Traceability row in `docs/traceability/matrix-v1.md` for `logistics-express-cargo`
+- Predictive Phase 2 complete per [predictive-roadmap-v1.md](../../analytics/predictive-roadmap-v1.md) and [predictive-cold-start-v1.md](../../analytics/predictive-cold-start-v1.md)
 
 ## FMEA-lite
 
@@ -38,8 +40,9 @@
 | Catalog | 41 objects, 5 junctions — `./scripts/check-express-cargo-catalog.sh` |
 | Signal PK (sandbox) | `signal-logistics-express-cargo-001` |
 | SLA signal / case | `signal-express-sla-001` → `case-express-sla-001` |
-| Integration test | `TestExpressCargoSim`; `TestSandboxSectorsSeeded/logistics-express-cargo` |
+| Integration test | `TestExpressCargoSim`; `TestExpressCargoRulesEvaluate`; `TestSandboxSectorsSeeded/logistics-express-cargo` |
 | Smoke | `prove-express-cargo-sim.sh` |
+| Predictive rules | `make ontology-sync`; CH migrations 003–004; `make train-propensity-express` (optional) |
 
 Geo-enabled: `/v1/geo/map` must return ≥1 feature when `geoMapEnabled=true`.
 

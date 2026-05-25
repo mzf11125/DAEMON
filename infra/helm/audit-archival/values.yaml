@@ -1,0 +1,81 @@
+# audit-archival CronJob — Phase 2.5 deliverable.
+# Reads audit_log + ontology action audit, writes to S3 with Object Lock.
+# Hash-chained per docs/governance/audit-retention-v1.md.
+
+image:
+  repository: ghcr.io/daemon-blockint-tech/audit-archival
+  digest: ""
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+# Hourly schedule; align with retention windows in docs/governance/audit-retention-v1.md.
+schedule: "0 * * * *"
+
+# Job retention - keep last N successes / failures for debugging.
+successfulJobsHistoryLimit: 3
+failedJobsHistoryLimit: 5
+
+concurrencyPolicy: Forbid    # never run two archival jobs at once
+startingDeadlineSeconds: 600
+backoffLimit: 2
+
+config:
+  hotRetentionDays: "90"      # rows older than this are eligible for cold archive
+  batchSize: "10000"          # max rows per batch
+  archiveBucket: "daemon-prod-audit-archive"
+  archiveBucketRegion: ""     # set per env
+  classDefault: "operational"
+  logLevel: "info"
+
+externalSecrets:
+  enabled: true
+  refreshInterval: "1h"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault-cluster
+  remoteSecrets:
+    - name: audit-archival-runtime
+      keys:
+        - DATABASE_URL          # runtime user with SELECT + UPDATE archived flag only
+        - ARCHIVE_S3_ACCESS_KEY
+        - ARCHIVE_S3_SECRET_KEY
+        - ARCHIVE_KMS_KEY_ID
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 65532
+  capabilities:
+    drop: ["ALL"]
+
+networkPolicy:
+  enabled: true
+  egress:
+    # DNS, Postgres (Supabase Cloud), S3 (managed), KMS
+    - toCidr: "0.0.0.0/0"
+      ports: [443, 5432, 6543]
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9100"
+  prometheus.io/path: "/metrics"

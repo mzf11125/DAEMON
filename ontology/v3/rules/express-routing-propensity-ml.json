@@ -1,0 +1,9 @@
+{
+  "id": "express-routing-propensity-ml",
+  "description": "ML-served routing propensity (fallback: express-routing-propensity z-score rule)",
+  "scoreKind": "confidence",
+  "confidenceMethod": "model_logistic_v1",
+  "sql": "SELECT o.observation_id, o.asset_id, s.score AS value FROM dataset_observations o INNER JOIN propensity_model_scores s ON o.asset_id = s.asset_id AND o.tenant_id = s.tenant_id AND s.label = 'express_routing_variance_pct' AND s.day = toDate(o.observed_at) AND s.model_version = 'express-routing-logistic-v1' WHERE o.label = 'express_routing_variance_pct' AND o.tenant_id = {tenant:String} AND s.score > {threshold:Float64}",
+  "threshold": 0.75,
+  "signalSeverity": "medium"
+}

@@ -1,0 +1,32 @@
+# Production override for platform-api. Values must be digest-pinned + cosign-verified.
+replicaCount: 3
+
+image:
+  # Set by GitOps PR via ArgoCD Image Updater or release pipeline. Never tag-only in prod.
+  digest: "sha256:REPLACE_AT_RELEASE"
+  tag: ""
+
+config:
+  oidcRequired: "true"
+  oidcIssuer: "https://prod.supabase.co/auth/v1"
+  logLevel: "info"
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 12
+  targetCPUUtilizationPercentage: 65
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 384Mi
+  limits:
+    cpu: 1500m
+    memory: 768Mi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+priorityClassName: "platform-tier-critical"

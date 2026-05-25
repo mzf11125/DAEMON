@@ -1,0 +1,25 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-tier-critical
+value: 1000000
+globalDefault: false
+description: |
+  Daemon platform tier-0/tier-1 critical workloads. Used by platform-api,
+  ontology-service, case-service, rules-engine, ingestion-service.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-tier-standard
+value: 100000
+globalDefault: false
+description: Daemon platform tier-2 workloads (audit-archival, control-plane, agent-bridge).
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-tier-batch
+value: 10000
+globalDefault: false
+description: Daemon platform tier-3 batch workloads (pipelines/*).

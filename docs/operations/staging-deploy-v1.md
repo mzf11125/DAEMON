@@ -38,6 +38,8 @@ make up-merge-track        # optional: control-plane + agent-bridge
 6. `./scripts/prove-express-cargo-sim.sh` (express HITL + rules; set service URLs if not localhost)
 7. `./scripts/prove-plugin-remap.sh` (P3 plugin remap runtime proof)
 
+Or run the numbered chain in one script: `./scripts/prove-staging-smoke.sh` (wraps steps 1–7 with env URL defaults).
+
 Point smoke scripts at staging by exporting `ONTOLOGY_SERVICE_URL`, `PLATFORM_API_URL`, and rules-engine base URL before running prove scripts.
 
 ## OIDC pilot (Wave 2)
@@ -57,6 +59,17 @@ Point smoke scripts at staging by exporting `ONTOLOGY_SERVICE_URL`, `PLATFORM_AP
 - [supply-chain-v1.md](../security/supply-chain-v1.md): CI `supply-chain` job
 - GitHub ruleset active on `main` ([github-rulesets-v1.md](../governance/github-rulesets-v1.md))
 
-## Kubernetes (optional)
+## Kubernetes (Phase 1 — not Phase 0)
 
-If using `infra/kubernetes/`, pin image digests in manifests; separate namespaces `daemon-staging` / `daemon-prod`.
+P1 staging pilot uses **Docker Compose** ([`infra/docker/docker-compose.yml`](../../infra/docker/docker-compose.yml)). Kubernetes manifests are **not** required to close Phase 0.
+
+| Phase | Infra | Doc |
+|-------|-------|-----|
+| **P0 / P1 pilot** | Compose on VM or local | This file + `make prove-staging-smoke` |
+| **Phase 1.1+** | Self-managed K8s + Helm + GitOps | [`infra/kubernetes/README.md`](../../infra/kubernetes/README.md) (stub index; manifests land Phase 1.1) |
+
+When K8s is introduced: pin image digests; namespaces `daemon-staging` / `daemon-prod`; wire prove scripts via ingress URLs same as compose smoke table in [oidc-rls-verification-v1.md](./oidc-rls-verification-v1.md).
+
+## Locked GA decisions (platform)
+
+Per [production-readiness-v1.md](./production-readiness-v1.md): self-managed K8s, Supabase Cloud + ClickHouse Cloud + Neo4j Aura, platform-only GA scope, P3 agents included at GA with maturation criteria, sequential quality-first sequencing.

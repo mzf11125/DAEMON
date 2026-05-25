@@ -1,0 +1,12 @@
+apiVersion: v2
+name: audit-archival
+description: Daemon audit archival CronJob — drains hot audit_log to immutable cold storage with hash chain.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - daemon
+  - compliance
+  - audit
+maintainers:
+  - name: Daemon Platform Team

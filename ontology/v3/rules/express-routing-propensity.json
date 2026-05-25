@@ -1,0 +1,9 @@
+{
+  "id": "express-routing-propensity",
+  "description": "Routing variance propensity vs 7-day label baseline (z-score capped to 0-1)",
+  "scoreKind": "confidence",
+  "confidenceMethod": "zscore_baseline_7d",
+  "sql": "SELECT o.observation_id, o.asset_id, propensity AS value FROM (SELECT o.observation_id, o.asset_id, o.value, least(1.0, greatest(0.0, (o.value - b.baseline_avg) / nullIf(b.baseline_std, 0) / 3.0)) AS propensity FROM dataset_observations o INNER JOIN (SELECT asset_id, tenant_id, avg(avg_value) AS baseline_avg, stddevPop(avg_value) AS baseline_std FROM features_label_daily WHERE label = 'express_routing_variance_pct' AND tenant_id = {tenant:String} AND day >= today() - 7 AND day < today() GROUP BY asset_id, tenant_id) b ON o.asset_id = b.asset_id AND o.tenant_id = b.tenant_id WHERE o.label = 'express_routing_variance_pct' AND o.tenant_id = {tenant:String}) o WHERE propensity > {threshold:Float64}",
+  "threshold": 0.75,
+  "signalSeverity": "medium"
+}

@@ -4,7 +4,8 @@ info:
   version: 1.0.0
   description: |
     Multi-service HTTP API (platform-api, ontology-service, case-service, rules-engine, ingestion-service).
-    Success responses use `{ data }`. Errors use `{ error: { code, message, requestId?, timestamp } }`.
+    Success responses use `{ data }` or inline payload (see per-endpoint schemas). Errors use `{ error: { code, message, requestId?, timestamp } }`.
+    **Auth:** Bearer JWT (Supabase OIDC) + `X-Tenant-Id` on every `/v1/*` route. Tenant isolation via Postgres RLS.
 servers:
   - url: http://127.0.0.1:8080
     description: platform-api
@@ -12,6 +13,12 @@ servers:
     description: ontology-service
   - url: http://127.0.0.1:8084
     description: case-service
+  - url: http://127.0.0.1:8083
+    description: rules-engine
+  - url: http://127.0.0.1:8082
+    description: ingestion-service
+security:
+  - bearerAuth: []
 components:
   securitySchemes:
     bearerAuth:
@@ -70,64 +77,699 @@ components:
           type: boolean
         returned:
           type: integer
+    GeoPin:
+      type: object
+      properties:
+        id:
+          type: string
+        objectType:
+          type: string
+          enum: [Site, Asset]
+        name:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        vertical:
+          type: string
+        properties:
+          type: object
+          additionalProperties: true
+      required: [id, objectType, latitude, longitude]
+    GeoMapResponse:
+      type: object
+      properties:
+        sites:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoPin'
+        assets:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoPin'
+        signals:
+          type: array
+          items:
+            $ref: '#/components/schemas/SignalSummary'
+      required: [sites, assets, signals]
+    SignalSummary:
+      type: object
+      properties:
+        signalId:
+          type: string
+        summary:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        status:
+          type: string
+          enum: [open, acknowledged, closed]
+      required: [signalId, summary, severity, status]
+    AttachmentItem:
+      type: object
+      properties:
+        attachmentId:
+          type: string
+        filename:
+          type: string
+        contentType:
+          type: string
+        sizeBytes:
+          type: integer
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+      required: [attachmentId, filename, contentType, sizeBytes, createdAt]
+    AttachmentDetail:
+      allOf:
+        - $ref: '#/components/schemas/AttachmentItem'
+        - type: object
+          properties:
+            objectKey:
+              type: string
+            links:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttachmentLink'
+    AttachmentLink:
+      type: object
+      properties:
+        linkId:
+          type: string
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+        role:
+          type: string
+      required: [linkId, resourceType, resourceId, role]
+    AttachmentListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentItem'
+        meta:
+          $ref: '#/components/schemas/ListMeta'
+      required: [items]
+    ActionProposal:
+      type: object
+      properties:
+        proposalId:
+          type: string
+        actionType:
+          type: string
+        status:
+          type: string
+          enum: [proposed, approved, rejected, executed]
+        parameters:
+          type: object
+          additionalProperties: true
+        requiresHumanApproval:
+          type: boolean
+        caseId:
+          type: string
+        reviewFlags:
+          type: array
+          items:
+            type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [proposalId, actionType, status, requiresHumanApproval, createdAt, updatedAt]
+    ActionProposalListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionProposal'
+      required: [items]
+    IngestionJob:
+      type: object
+      properties:
+        jobId:
+          type: string
+        connector:
+          type: string
+          enum: [seed-csv, ais-demo, sim-dune, dune-sql]
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        params:
+          type: object
+          additionalProperties: true
+        errorMessage:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+      required: [jobId, connector, status, createdAt]
+    EvaluateRequest:
+      type: object
+      properties:
+        tenantId:
+          type: string
+          description: Override header tenant (optional).
+      additionalProperties: false
+    EvaluateResponse:
+      type: object
+      properties:
+        signalsCreated:
+          type: array
+          items:
+            type: object
+        count:
+          type: integer
+      required: [signalsCreated, count]
+    UserProfile:
+      type: object
+      properties:
+        sub:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+      required: [sub]
+    ManifestResponse:
+      type: object
+      properties:
+        version:
+          type: string
+        domain:
+          type: string
+        objectTypes:
+          type: array
+          items:
+            type: string
+        linkTypes:
+          type: array
+          items:
+            type: string
+        actionTypes:
+          type: array
+          items:
+            type: string
+        functions:
+          type: array
+          items:
+            type: string
+        packs:
+          type: array
+          items:
+            type: object
+    CaseDetail:
+      type: object
+      properties:
+        caseId:
+          type: string
+        tenantId:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+        ownerId:
+          type: string
+        priority:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        signalIds:
+          type: array
+          items:
+            type: string
+      required: [caseId, title, status]
+    InvestigateCaseResponse:
+      type: object
+      properties:
+        toolsSchemaVersion:
+          type: string
+        signals:
+          type: array
+          items:
+            type: object
+            properties:
+              signalId:
+                type: string
+              summary:
+                type: string
+              severity:
+                type: string
+        recommendation:
+          type: string
+        caseId:
+          type: string
+        links:
+          type: object
+          additionalProperties: true
+    SummarizeCaseContextRequest:
+      type: object
+      properties:
+        caseId:
+          type: string
+      required: [caseId]
+    SummarizeCaseContextResponse:
+      type: object
+      properties:
+        summary:
+          type: string
+        caseId:
+          type: string
+        signalCount:
+          type: integer
+      required: [summary, caseId, signalCount]
+
 paths:
+  # ─── platform-api :8080 ─────────────────────────────────────────────────
   /health:
     get:
       summary: Health check (each service)
+      security: []
       responses:
-        "200":
+        '200':
           description: OK
+
   /v1/me:
     get:
       summary: Current user profile
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: "#/components/parameters/TenantId" }]
-      servers: [{ url: http://127.0.0.1:8080 }]
-  /v1/audit/events:
-    get:
-      summary: List audit events
-      security: [{ bearerAuth: [] }]
       parameters:
-        - { $ref: "#/components/parameters/TenantId" }
-        - { $ref: "#/components/parameters/Limit" }
-        - { $ref: "#/components/parameters/Offset" }
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized (no Bearer when OIDC required)
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/geo/map:
+    get:
+      summary: Geo map read model (sites, assets, open signals)
+      description: Returns geo pins for all Site and Asset objects with lat/lon, plus open Signal summaries. Requires tenant feature flag `geoMapEnabled`.
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        '200':
+          description: Geo map data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoMapResponse'
+        '403':
+          description: Geo map not enabled for tenant (`GEO_DISABLED`)
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/attachments:
+    get:
+      summary: List attachments
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
         - name: resourceType
           in: query
           schema: { type: string }
         - name: resourceId
           in: query
           schema: { type: string }
+        - name: role
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Attachment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentListResponse'
+      servers: [{ url: http://127.0.0.1:8080 }]
+    post:
+      summary: Upload attachment (multipart/form-data)
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Maximum 25 MiB.
+                resourceType:
+                  type: string
+                resourceId:
+                  type: string
+                role:
+                  type: string
+                  default: attachment
+              required: [file]
+      responses:
+        '201':
+          description: Attachment uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  attachmentId: { type: string }
+                  filename: { type: string }
+                  contentType: { type: string }
+                  sizeBytes: { type: integer }
+                  objectKey: { type: string }
+                required: [attachmentId, filename, contentType, sizeBytes, objectKey]
+        '400':
+          description: Missing file or invalid multipart
+        '413':
+          description: File exceeds 25 MiB
+        '503':
+          description: Object storage not configured
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/attachments/{id}:
+    get:
+      summary: Get attachment metadata with links
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Attachment detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentDetail'
+        '404':
+          description: Attachment not found
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/attachments/{id}/content:
+    get:
+      summary: Download attachment binary content
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Binary file content (inline Content-Disposition)
+        '404':
+          description: Attachment not found
+        '503':
+          description: Object storage not configured
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/attachments/{id}/links:
+    post:
+      summary: Link attachment to a resource
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resourceType: { type: string }
+                resourceId: { type: string }
+                role: { type: string, default: attachment }
+              required: [resourceType, resourceId]
+      responses:
+        '201':
+          description: Link created (idempotent)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  linkId: { type: string }
+                  attachmentId: { type: string }
+                  resourceType: { type: string }
+                  resourceId: { type: string }
+                  role: { type: string }
+                required: [linkId, attachmentId, resourceType, resourceId, role]
+        '404':
+          description: Attachment not found
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/action-proposals:
+    get:
+      summary: List action proposals for tenant
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: caseId
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string, enum: [proposed, approved, rejected, executed] }
+      responses:
+        '200':
+          description: Proposal list (max 100, newest first)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionProposalListResponse'
+      servers: [{ url: http://127.0.0.1:8080 }]
+    post:
+      summary: Create action proposal (HITL intake)
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actionType: { type: string }
+                status: { type: string, default: proposed }
+                parameters: { type: object, additionalProperties: true }
+                requiresHumanApproval: { type: boolean, default: true }
+                caseId: { type: string }
+                reviewFlags: { type: array, items: { type: string } }
+              required: [actionType]
+      responses:
+        '201':
+          description: Proposal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionProposal'
+        '400':
+          description: Missing actionType or invalid JSON
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/action-proposals/{id}:
+    get:
+      summary: Get action proposal by ID
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Proposal detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionProposal'
+        '404':
+          description: Proposal not found
+      servers: [{ url: http://127.0.0.1:8080 }]
+    patch:
+      summary: Update proposal status
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [proposed, approved, rejected, executed] }
+              required: [status]
+      responses:
+        '200':
+          description: Updated proposal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionProposal'
+        '400':
+          description: Missing status
+        '404':
+          description: Proposal not found
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/audit/events:
+    get:
+      summary: List audit events
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: resourceType
+          in: query
+          schema: { type: string }
+        - name: resourceId
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Audit event list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        eventId: { type: string }
+                        actionType: { type: string }
+                        resourceType: { type: string }
+                        resourceId: { type: string }
+                        actorId: { type: string }
+                        payload: { type: object }
+                        createdAt: { type: string, format: date-time }
+                  meta:
+                    $ref: '#/components/schemas/ListMeta'
+                required: [items, meta]
       servers: [{ url: http://127.0.0.1:8080 }]
     post:
       summary: Append audit event
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: "#/components/parameters/TenantId" }]
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actionType: { type: string }
+                resourceType: { type: string }
+                resourceId: { type: string }
+                payload: { type: object }
+              required: [actionType, resourceType, resourceId]
+      responses:
+        '201':
+          description: Audit event appended
       servers: [{ url: http://127.0.0.1:8080 }]
+
+  /v1/signals:
+    get:
+      summary: List signals (platform-api facade)
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Signal list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SignalSummary'
+      servers: [{ url: http://127.0.0.1:8080 }]
+
+  # ─── ontology-service :8081 ─────────────────────────────────────────────
   /v1/ontology/v2/manifest:
     get:
-      summary: Ontology v2 manifest
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: "#/components/parameters/TenantId" }]
+      summary: Ontology manifest (object types, action types, packs)
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        '200':
+          description: Manifest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManifestResponse'
       servers: [{ url: http://127.0.0.1:8081 }]
+
   /v1/objects/{objectType}:
     get:
       summary: List ontology objects by type
-      security: [{ bearerAuth: [] }]
       parameters:
-        - { $ref: "#/components/parameters/TenantId" }
-        - { $ref: "#/components/parameters/Limit" }
-        - { $ref: "#/components/parameters/Offset" }
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
         - name: objectType
           in: path
           required: true
           schema: { type: string }
+      responses:
+        '200':
+          description: Object list with items + meta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    $ref: '#/components/schemas/ListMeta'
+                required: [items, meta]
       servers: [{ url: http://127.0.0.1:8081 }]
+
   /v1/objects/{objectType}/{id}:
     get:
-      summary: Get ontology object
-      security: [{ bearerAuth: [] }]
+      summary: Get ontology object by ID
       parameters:
-        - { $ref: "#/components/parameters/TenantId" }
+        - $ref: '#/components/parameters/TenantId'
         - name: objectType
           in: path
           required: true
@@ -136,27 +778,40 @@ paths:
           in: path
           required: true
           schema: { type: string }
+      responses:
+        '200':
+          description: Object detail
+        '404':
+          description: Object not found
       servers: [{ url: http://127.0.0.1:8081 }]
+
   /v1/objects/Case/{id}/links:
     get:
       summary: Case links (SignalLinkedToCase)
-      security: [{ bearerAuth: [] }]
       parameters:
-        - { $ref: "#/components/parameters/TenantId" }
+        - $ref: '#/components/parameters/TenantId'
         - name: id
           in: path
           required: true
           schema: { type: string }
+      responses:
+        '200':
+          description: Case links
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigateCaseResponse'
       servers: [{ url: http://127.0.0.1:8081 }]
+
   /v1/actions/{actionType}:
     post:
       summary: Execute ontology action (declarative RPC)
       description: |
         Semantic validation failures return HTTP 422 (`MISSING_PARAM`, `SIGNAL_NOT_FOUND`).
         Malformed JSON returns 400 (`INVALID_JSON`).
-      security: [{ bearerAuth: [] }]
+        Unknown action types return 501 (`NOT_IMPLEMENTED`).
       parameters:
-        - { $ref: "#/components/parameters/TenantId" }
+        - $ref: '#/components/parameters/TenantId'
         - name: actionType
           in: path
           required: true
@@ -170,36 +825,158 @@ paths:
               - EscalateSignal
               - RecordObservation
               - ExecuteWorkOrder
+              - CreateWorkOrder
+              - CreateShipmentDraft
+              - ConfirmShipment
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+      responses:
+        '200':
+          description: Action response (varies by action type)
+        '400':
+          description: Invalid JSON body
+        '422':
+          description: Missing required parameter or invalid reference
+        '501':
+          description: Unknown action type
       servers: [{ url: http://127.0.0.1:8081 }]
+
   /v1/functions/summarizeCaseContext:
     post:
       summary: Read-only case context summary
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: "#/components/parameters/TenantId" }]
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SummarizeCaseContextRequest'
+      responses:
+        '200':
+          description: Case context summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummarizeCaseContextResponse'
       servers: [{ url: http://127.0.0.1:8081 }]
+
+  # ─── case-service :8084 ─────────────────────────────────────────────────
   /v1/cases:
     get:
       summary: List cases
-      security: [{ bearerAuth: [] }]
       parameters:
-        - { $ref: "#/components/parameters/TenantId" }
-        - { $ref: "#/components/parameters/Limit" }
-        - { $ref: "#/components/parameters/Offset" }
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Case list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CaseDetail'
+                  meta:
+                    $ref: '#/components/schemas/ListMeta'
+                required: [items, meta]
       servers: [{ url: http://127.0.0.1:8084 }]
+
   /v1/cases/{caseId}:
     get:
-      summary: Get case with signalIds
-      security: [{ bearerAuth: [] }]
+      summary: Get case detail with linked signalIds
       parameters:
-        - { $ref: "#/components/parameters/TenantId" }
+        - $ref: '#/components/parameters/TenantId'
         - name: caseId
           in: path
           required: true
           schema: { type: string }
+      responses:
+        '200':
+          description: Case detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDetail'
+        '404':
+          description: Case not found
       servers: [{ url: http://127.0.0.1:8084 }]
+
+  # ─── rules-engine :8083 ─────────────────────────────────────────────────
+  /v1/evaluate:
+    post:
+      summary: Evaluate all rules against ClickHouse datasets
+      description: Runs all `ontology/v3/rules/*.json` queries, creates Signals in ontology when thresholds are exceeded. Tenant-scoped via header.
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateRequest'
+      responses:
+        '200':
+          description: Evaluation results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluateResponse'
+      servers: [{ url: http://127.0.0.1:8083 }]
+
+  # ─── ingestion-service :8082 ────────────────────────────────────────────
+  /v1/jobs:
+    post:
+      summary: Create ingestion job
+      description: Runs connector pipeline chain asynchronously (seed-csv, ais-demo, sim-dune, dune-sql).
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                connector:
+                  type: string
+                  enum: [seed-csv, ais-demo, sim-dune, dune-sql]
+                params:
+                  type: object
+                  additionalProperties: true
+              required: [connector]
+      responses:
+        '201':
+          description: Job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionJob'
+      servers: [{ url: http://127.0.0.1:8082 }]
+
+  /v1/jobs/{jobId}:
+    get:
+      summary: Get ingestion job status
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: jobId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionJob'
+        '404':
+          description: Job not found
+      servers: [{ url: http://127.0.0.1:8082 }]

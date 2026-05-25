@@ -1,4 +1,4 @@
-.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track up-gateway down-gateway migrate migrate-legacy seed seed-sandbox seed-express-cargo test test-integration bootstrap-integration-local validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop prove-p3-geo prove-sandbox-sectors prove-traffic-engineering prove-logistics-nvocc prove-express-cargo-sim prove-market-intel prove-market-intel-social prove-market-intel-rag prove-market-intel-hybrid prove-market-intel-research prove-market-intel-shodan prove-market-intel-security check-vendor-neutral check-sandbox-registry check-express-cargo-catalog ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke market-intel-install
+.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track up-gateway down-gateway migrate migrate-legacy seed seed-sandbox seed-express-cargo test test-integration bootstrap-integration-local validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop prove-p3-geo prove-sandbox-sectors prove-traffic-engineering prove-logistics-nvocc prove-express-cargo-sim prove-staging-smoke train-propensity-express backtest-propensity-express prove-market-intel prove-market-intel-social prove-market-intel-rag prove-market-intel-hybrid prove-market-intel-research prove-market-intel-shodan prove-market-intel-security check-vendor-neutral check-sandbox-registry check-express-cargo-catalog ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke market-intel-install
 
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
@@ -62,6 +62,17 @@ migrate:
 	fi
 	@./scripts/apply-clickhouse-migrations.sh || echo "migrate: skip ClickHouse SQL (start clickhouse: make up)"
 
+# Apply all Postgres DDL as superuser (Supabase local :54332). Use SEED_DATABASE_URL, not daemon_runtime.
+SEED_DATABASE_URL ?= postgresql://postgres:postgres@127.0.0.1:54332/postgres?sslmode=disable
+
+migrate-superuser:
+	@set -e; \
+	for f in infra/migrations/postgres/*.sql; do \
+		echo "==> $$f"; \
+		psql "$(SEED_DATABASE_URL)" -v ON_ERROR_STOP=0 -f "$$f" || true; \
+	done; \
+	echo "migrate-superuser: OK (re-run safe; inspect psql output for unexpected errors)"
+
 migrate-legacy:
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/001_init.sql
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/002_indexes_fk.sql || true
@@ -71,6 +82,7 @@ migrate-legacy:
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/006_p3_geo_attachments.sql
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/007_market_intel_pgvector.sql
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/008_action_proposals.sql
+	psql "$(DATABASE_URL)" -f infra/migrations/postgres/009_audit_event_class_and_archive_batches.sql || true
 
 market-intel-install:
 	@ROOT="$(CURDIR)"; \
@@ -123,6 +135,32 @@ prove-logistics-nvocc:
 
 prove-express-cargo-sim:
 	./scripts/prove-express-cargo-sim.sh
+
+prove-staging-smoke:
+	./scripts/prove-staging-smoke.sh
+
+train-propensity-express:
+	cd pipelines/propensity-train && go run ./cmd
+
+# Supabase local default when DATABASE_URL unset (see .env.example)
+LOCAL_DATABASE_URL ?= postgresql://daemon_runtime:daemon_runtime_local@127.0.0.1:54332/postgres?sslmode=disable
+
+audit-archival-dry-run:
+	cd pipelines/audit-archival && DATABASE_URL="$(or $(DATABASE_URL),$(LOCAL_DATABASE_URL))" go run ./cmd --dry-run
+
+test-audit-archival-integration:
+	@SEED=$${SEED_DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:54332/postgres?sslmode=disable}; \
+	cd pipelines/audit-archival && SEED_DATABASE_URL="$$SEED" go test -tags=integration -count=1 -timeout=120s ./internal/archiver/...
+
+phase0-ruleset-apply:
+	ENFORCEMENT=active ./scripts/apply-github-ruleset.sh
+
+phase0-staging-proof:
+	@test -f .env.staging || (echo "cp .env.staging.example .env.staging and set HTTPS URLs" >&2; exit 1)
+	@set -a && . ./.env.staging && set +a && PHASE0_STRICT=1 ./scripts/run-phase0-staging-proof.sh
+
+backtest-propensity-express:
+	./scripts/backtest-propensity-express.sh
 
 bootstrap-integration-local:
 	./scripts/bootstrap-integration-local.sh
@@ -233,6 +271,9 @@ cp-test: pnpm-workspace
 
 maturation-policy:
 	./scripts/check-maturation-policy.sh
+
+pre-push-gate:
+	./scripts/pre-push-gate.sh
 
 ontology-sync:
 	./scripts/ontology-sync.sh

@@ -11,6 +11,7 @@
 - Mark to-dos as `in_progress` when working on them, starting with the first one. Confidence: 0.85
 - Reference terminal output files using `@/path/to/terminals/N.txt:line-range` syntax. Confidence: 0.75
 - Continue working through all to-dos until completion when directed. Confidence: 0.85
+- After a subagent completes, do not reiterate or summarize its results; end with a brief third-person confirmation. Confidence: 0.70
 
 # Architecture & Domain
 - Security framework integration includes MITRE ATT&CK coverage mapping. Confidence: 0.65

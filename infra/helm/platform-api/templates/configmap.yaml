@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "platform-api.fullname" . }}-config
+  labels:
+    {{- include "platform-api.labels" . | nindent 4 }}
+data:
+  HTTP_PORT: {{ .Values.config.httpPort | quote }}
+  OIDC_REQUIRED: {{ .Values.config.oidcRequired | quote }}
+  OIDC_ISSUER: {{ .Values.config.oidcIssuer | quote }}
+  OIDC_AUDIENCE: {{ .Values.config.oidcAudience | quote }}
+  ONTOLOGY_SERVICE_URL: {{ .Values.config.ontologyServiceUrl | quote }}
+  CASE_SERVICE_URL: {{ .Values.config.caseServiceUrl | quote }}
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}

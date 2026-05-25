@@ -1,0 +1,12 @@
+# Example tfvars for staging. Copy to terraform.tfvars and fill (never commit).
+# Secrets via TF_VAR_* env vars from Vault — never put secret values here.
+
+cluster_provider     = "gke"
+region               = "us-east1"
+gcp_project_id       = "daemon-staging-XXXXX"
+vpc_cidr             = "10.10.0.0/16"
+pod_cidr             = "10.10.0.0/14"
+service_cidr         = "10.14.0.0/19"
+acme_email           = "platform@daemon.example.com"
+azure_resource_group = ""
+# vault_addr injected via TF_VAR_vault_addr

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Apply ClickHouse SQL migrations (001 + 002) via local clickhouse-client or docker compose.
+# Apply ClickHouse SQL migrations (001–003) via local clickhouse-client or docker compose.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -22,4 +22,6 @@ apply_file() {
 
 apply_file "$root/infra/migrations/clickhouse/001_init.sql"
 apply_file "$root/infra/migrations/clickhouse/002_tenant_observations.sql"
+apply_file "$root/infra/migrations/clickhouse/003_features_label_daily.sql"
+apply_file "$root/infra/migrations/clickhouse/004_propensity_model_scores.sql"
 echo "apply-clickhouse-migrations: OK"

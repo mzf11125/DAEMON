@@ -16,12 +16,15 @@ fi
 OWNER="${REPO%%/*}"
 NAME="${REPO##*/}"
 
+# enforcement: disabled for first apply (rollout step 3), active for step 5 — see github-rulesets-v1.md
+ENFORCEMENT="${ENFORCEMENT:-active}"
+
 # Ruleset payload: PR required + required checks (names must match CI job names).
-PAYLOAD=$(cat <<'JSON'
+PAYLOAD=$(cat <<JSON
 {
   "name": "main-production-gates",
   "target": "branch",
-  "enforcement": "active",
+  "enforcement": "${ENFORCEMENT}",
   "conditions": {
     "ref_name": {
       "exclude": [],
@@ -72,6 +75,11 @@ if ! command -v gh >/dev/null 2>&1; then
 fi
 
 echo "apply-github-ruleset: creating/updating ruleset on $REPO (requires admin)"
-echo "$PAYLOAD" | gh api "repos/${OWNER}/${NAME}/rulesets" --method POST --input - 2>/dev/null \
-  || echo "apply-github-ruleset: if ruleset exists, update in GitHub UI per docs/governance/github-rulesets-v1.md"
+RULESET_ID="$(gh api "repos/${OWNER}/${NAME}/rulesets" --jq '.[] | select(.name=="main-production-gates") | .id' 2>/dev/null | head -1)"
+if [ -n "$RULESET_ID" ]; then
+  echo "apply-github-ruleset: updating existing ruleset id=$RULESET_ID (enforcement=${ENFORCEMENT})"
+  echo "$PAYLOAD" | gh api "repos/${OWNER}/${NAME}/rulesets/${RULESET_ID}" --method PUT --input -
+else
+  echo "$PAYLOAD" | gh api "repos/${OWNER}/${NAME}/rulesets" --method POST --input -
+fi
 echo "apply-github-ruleset: done — verify required checks match latest green PR job names"

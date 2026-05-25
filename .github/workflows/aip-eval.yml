@@ -6,6 +6,8 @@ on:
   pull_request:
     paths:
       - "docs/product/**"
+      - "docs/operations/**"
+      - "api/**"
       - "aip/**"
       - "pipelines/market-intel/**"
       - "pipelines/document-intake/**"

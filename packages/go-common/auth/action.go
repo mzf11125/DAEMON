@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
+
+var actionTypeNamePattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9]*$`)
 
 // ActionTypeDef mirrors ontology/v2/action-types/*.json.
 type ActionTypeDef struct {
@@ -33,7 +36,15 @@ func AuthorizeAction(ctx context.Context, ontologyRoot, actionType string) error
 }
 
 func loadActionType(root, actionType string) (ActionTypeDef, error) {
-	p := filepath.Join(root, "action-types", actionType+".json")
+	if !actionTypeNamePattern.MatchString(actionType) {
+		return ActionTypeDef{}, fmt.Errorf("action type %q: invalid name", actionType)
+	}
+	base := filepath.Join(root, "action-types")
+	p := filepath.Join(base, actionType+".json")
+	rel, err := filepath.Rel(base, p)
+	if err != nil || strings.HasPrefix(rel, "..") || strings.Contains(rel, string(filepath.Separator)+"..") {
+		return ActionTypeDef{}, fmt.Errorf("action type %q: path escape", actionType)
+	}
 	b, err := os.ReadFile(p)
 	if err != nil {
 		return ActionTypeDef{}, fmt.Errorf("action type %s: %w", actionType, err)

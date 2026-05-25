@@ -134,7 +134,6 @@ func listAuditEventsHandler(pool *pgxpool.Pool) http.HandlerFunc {
 			if resourceID != "" {
 				countQuery += fmt.Sprintf(` AND resource_id = $%d`, cn)
 				countArgs = append(countArgs, resourceID)
-				cn++
 			}
 			if err := tx.QueryRow(r.Context(), countQuery, countArgs...).Scan(&total); err != nil {
 				return err

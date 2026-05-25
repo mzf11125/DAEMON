@@ -1,0 +1,68 @@
+# CodeQL — Go uses manual build (go.work monorepo; autobuild cannot infer layout).
+name: CodeQL Advanced
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "36 16 * * 1"
+
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+  packages: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+          - language: go
+            build-mode: manual
+          - language: javascript-typescript
+            build-mode: none
+          - language: python
+            build-mode: none
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-go@v5
+        if: matrix.language == 'go'
+        with:
+          go-version: "1.25.10"
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      - name: Build Go modules
+        if: matrix.language == 'go'
+        run: |
+          go work sync
+          for dir in packages/go-common packages/pipeline-runner infra/seed; do
+            (cd "$dir" && go mod tidy && go build -o /dev/null ./...) || exit 1
+          done
+          for dir in services/platform-api services/ontology-service services/ingestion-service \
+            services/rules-engine services/case-service \
+            pipelines/raw-ingest pipelines/transforms pipelines/features pipelines/quality \
+            pipelines/propensity-train pipelines/audit-archival; do
+            (cd "$dir" && go mod tidy && go build -o /dev/null ./cmd && go build -o /dev/null ./...) || exit 1
+          done
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{matrix.language}}"

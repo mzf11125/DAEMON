@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Daemon platform tier — Go services + console + control-plane + audit-archival.
+  sourceRepos:
+    - https://github.com/daemon-blockint-tech/DAEMON.git
+  destinations:
+    - namespace: daemon-platform
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: scheduling.k8s.io
+      kind: PriorityClass
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Secret
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ServiceAccount
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: batch
+      kind: CronJob
+    - group: batch
+      kind: Job
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+    - group: policy
+      kind: PodDisruptionBudget
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: external-secrets.io
+      kind: ExternalSecret
+  roles:
+    - name: read-only
+      description: Read-only access to platform apps for SOC 2 access reviews.
+      policies:
+        - p, proj:platform:read-only, applications, get, platform/*, allow
+        - p, proj:platform:read-only, applications, sync, platform/*, deny
+    - name: deployer
+      description: Sync access for platform on-call during incidents.
+      policies:
+        - p, proj:platform:deployer, applications, sync, platform/*, allow
+        - p, proj:platform:deployer, applications, action/*, platform/*, allow

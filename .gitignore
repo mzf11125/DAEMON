@@ -1,5 +1,6 @@
 .env
 .env.local
+.env.staging
 node_modules/
 .agents/
 .cursor/plans/
@@ -25,3 +26,4 @@ artifacts/
 ontology/v2-compiled/
 packages/ontology-language/dist/
 **/*.tsbuildinfo
+.pnpm-store/

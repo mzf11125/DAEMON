@@ -11,6 +11,11 @@ make aip-build
 echo "== eval stack =="
 ./scripts/ensure-aip-eval-stack.sh
 
+# prove-staging-smoke restarts local listeners; Cloudflare tunnel URLs may be stale afterward.
+if curl -sf "http://127.0.0.1:8081/health" >/dev/null 2>&1; then
+  ONTOLOGY_URL="http://127.0.0.1:8081"
+fi
+
 echo "== ontology health =="
 curl -sf "${ONTOLOGY_URL}/health" >/dev/null
 curl -sf "${ONTOLOGY_URL}/internal/health" >/dev/null 2>/dev/null || curl -sf "${ONTOLOGY_URL}/health" >/dev/null

@@ -187,7 +187,24 @@ func seedExpressCargoSim(ctx context.Context, pg *pgxpool.Pool, ch clickhouse.Co
 		chObsSQL := `INSERT INTO dataset_observations (observation_id, label, value, unit, observed_at, asset_id, tenant_id, created_at, updated_at)`
 		if batch, err := ch.PrepareBatch(ctx, chObsSQL); err == nil {
 			_ = batch.Append(obsSLA, "express_leg_sla_miss", 1.0, "flag", now, assetVan, tenant, now, now)
+			for d := 1; d <= 6; d++ {
+				prior := now.AddDate(0, 0, -d)
+				priorVal := 8.0 + float64(d%5) // stable baseline ~8–12%
+				_ = batch.Append(
+					fmt.Sprintf("obs-express-routing-baseline-%d", d),
+					"express_routing_variance_pct", priorVal, "pct", prior, assetVan, tenant, prior, prior,
+				)
+			}
 			_ = batch.Append(obsRouting, "express_routing_variance_pct", 22.0, "pct", now, assetVan, tenant, now, now)
+			for d := 1; d <= 6; d++ {
+				prior := now.AddDate(0, 0, -d)
+				vol := 98.0 + float64(d%5) // stable tier A volume baseline ~98–102
+				_ = batch.Append(
+					fmt.Sprintf("obs-express-volume-baseline-%d", d),
+					"tier_a_daily_volume", vol, "units", prior, account1, tenant, prior, prior,
+				)
+			}
+			_ = batch.Append("obs-express-volume-today", "tier_a_daily_volume", 55.0, "units", now, account1, tenant, now, now)
 			_ = batch.Append(obsChampion, "express_champion_departure", 1.0, "flag", now, account1, tenant, now, now)
 			_ = batch.Send()
 		}

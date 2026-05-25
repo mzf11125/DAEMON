@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespaces.yaml
+  - default-deny-networkpolicy.yaml
+  - priorityclasses.yaml
+  - resourcequotas.yaml
+
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+  daemon.platform/managed-by: gitops

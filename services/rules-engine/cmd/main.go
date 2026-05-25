@@ -126,6 +126,15 @@ func evaluateHandler(pool *pgxpool.Pool, ch clickhouse.Conn, rulesRoot string) h
 					"provenanceRuleId": rule.ID,
 					"vertical": expressVerticalForRule(rule.ID),
 				})
+				if rule.ScoreKind == "confidence" {
+					var propsMap map[string]any
+					_ = json.Unmarshal(props, &propsMap)
+					propsMap["confidence"] = map[string]any{
+						"score":  value,
+						"method": rule.ConfidenceMethod,
+					}
+					props, _ = json.Marshal(propsMap)
+				}
 				rid := "ri." + tenant + ".signal." + signalID
 				err = db.ExecRLS(r.Context(), pool, `
 					INSERT INTO ontology_objects (object_rid, tenant_id, object_type, primary_key_value, properties, created_at, updated_at)
@@ -146,7 +155,8 @@ func evaluateHandler(pool *pgxpool.Pool, ch clickhouse.Conn, rulesRoot string) h
 
 func expressVerticalForRule(ruleID string) string {
 	switch ruleID {
-	case "express-leg-sla-breach", "express-routing-anomaly", "express-champion-idle":
+	case "express-leg-sla-breach", "express-routing-anomaly", "express-champion-idle",
+		"express-routing-propensity", "express-volume-trend-anomaly", "express-routing-propensity-ml":
 		return "logistics-express-cargo"
 	default:
 		return ""

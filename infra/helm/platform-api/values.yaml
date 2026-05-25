@@ -1,0 +1,167 @@
+# Default values for platform-api. Override per environment via values.staging.yaml / values.prod.yaml.
+# Production rule: image MUST be digest-pinned + cosign-signed; no tag-only at prod.
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/daemon-blockint-tech/platform-api
+  # Digest-pinned at GitOps sync time; never tag-only in prod.
+  digest: ""
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# OIDC + tenant config — non-secret env wired via ConfigMap.
+config:
+  oidcRequired: "true"
+  oidcAudience: "authenticated"
+  oidcIssuer: "https://<supabase-cloud-host>/auth/v1"
+  ontologyServiceUrl: "http://ontology-service.daemon-platform.svc.cluster.local:8081"
+  caseServiceUrl: "http://case-service.daemon-platform.svc.cluster.local:8084"
+  httpPort: "8080"
+  logLevel: "info"
+
+# Secrets via external-secrets-operator → ClusterSecretStore (Vault / cloud-native).
+externalSecrets:
+  enabled: true
+  refreshInterval: "1h"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault-cluster
+  remoteSecrets:
+    - name: platform-api-runtime
+      keys:
+        - DATABASE_URL
+        - SUPABASE_JWT_SECRET
+        - MINIO_ACCESS_KEY
+        - MINIO_SECRET_KEY
+
+service:
+  type: ClusterIP
+  port: 8080
+  annotations: {}
+
+ingress:
+  enabled: false  # routed via gateway / Caddy / cloud LB
+  className: ""
+  hosts: []
+  tls: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Hardened pod security — non-root, read-only root FS, drop all caps.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 65532
+  capabilities:
+    drop: ["ALL"]
+
+# Probes hit /health (non-OIDC per docs/operations/api-rest-conventions-v1.md).
+probes:
+  liveness:
+    path: /health
+    port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+  readiness:
+    path: /health
+    port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+  startup:
+    path: /health
+    port: 8080
+    initialDelaySeconds: 0
+    periodSeconds: 2
+    timeoutSeconds: 3
+    failureThreshold: 30
+
+# NetworkPolicy — deny-all default; explicit allowlist below.
+networkPolicy:
+  enabled: true
+  ingress:
+    - fromNamespaceLabel: daemon-platform
+      ports: [8080]
+    - fromNamespaceLabel: daemon-aip
+      ports: [8080]
+    - fromNamespaceLabel: daemon-observability
+      ports: [8080]
+  egress:
+    # Supabase Cloud Postgres — restricted by FQDN egress policy at provider level.
+    - toCidr: "0.0.0.0/0"
+      ports: [443, 5432, 6543]
+    - toNamespaceLabel: daemon-platform
+      ports: [8081, 8084]
+
+serviceAccount:
+  create: true
+  # Workload identity to managed services (Supabase Cloud OIDC, S3 KMS).
+  annotations: {}
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+
+# OTel collector sidecar / DaemonSet expectation; agent endpoint via env.
+observability:
+  otel:
+    enabled: true
+    endpoint: "http://otel-collector.daemon-observability.svc.cluster.local:4317"
+    serviceName: "platform-api"
+
+# Topology spread + anti-affinity for production HA.
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: platform-api
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: platform-api
+
+nodeSelector: {}
+tolerations: []
+
+priorityClassName: ""

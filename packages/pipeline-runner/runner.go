@@ -137,10 +137,18 @@ func features(ctx context.Context, cfg Config) error {
 		return err
 	}
 	defer conn.Close()
-	q := `INSERT INTO features_asset_daily
+	q := `INSERT INTO daemon.features_asset_daily
 	SELECT asset_id, toDate(observed_at) AS day, count() AS observation_count, avg(value) AS avg_value, max(value) AS max_value
-	FROM dataset_observations GROUP BY asset_id, day`
-	return conn.Exec(ctx, q)
+	FROM daemon.dataset_observations GROUP BY asset_id, day`
+	if err := conn.Exec(ctx, q); err != nil {
+		return err
+	}
+	labelQ := `INSERT INTO daemon.features_label_daily
+	SELECT asset_id, label, toDate(observed_at) AS day, tenant_id,
+		count() AS observation_count, avg(value) AS avg_value, max(value) AS max_value, stddevPop(value) AS stddev_value
+	FROM daemon.dataset_observations
+	GROUP BY asset_id, label, day, tenant_id`
+	return conn.Exec(ctx, labelQ)
 }
 
 func quality(ctx context.Context, cfg Config) error {

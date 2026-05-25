@@ -1,0 +1,11 @@
+apiVersion: v2
+name: console-web
+description: Daemon operational cockpit (Next.js) — analyst console for signals, cases, audit.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - daemon
+  - console
+maintainers:
+  - name: Daemon Platform Team

@@ -5,7 +5,9 @@ use (
 	./packages/dune-ingest
 	./packages/go-common
 	./packages/pipeline-runner
+	./pipelines/audit-archival
 	./pipelines/features
+	./pipelines/propensity-train
 	./pipelines/quality
 	./pipelines/raw-ingest
 	./pipelines/transforms

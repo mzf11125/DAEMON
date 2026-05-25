@@ -43,6 +43,9 @@ Vendor-neutral mapping from **customer/commercial signals** to **operations trig
 |-----------|------|-------------------|
 | signal-express-sla-001 | express-leg-sla-breach | shipment-express-001 |
 | signal-express-routing-001 | express-routing-anomaly | shipment-express-001 |
+| signal-express-routing-propensity | express-routing-propensity (confidence) | shipment-express-001 |
+| signal-express-volume-trend | express-volume-trend-anomaly (ec-sm-011) | account-tier-a-001 |
+| signal-express-routing-propensity-ml | express-routing-propensity-ml (model + fallback) | shipment-express-001 |
 | signal-express-champion-001 | express-champion-idle | account-tier-a-001 |
 | signal-logistics-express-cargo-001 | (sandbox) | vertical pack |
 

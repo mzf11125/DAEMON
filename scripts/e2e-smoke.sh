@@ -130,6 +130,7 @@ supabase db reset 2>/dev/null || {
 psql "$SEED_DATABASE_URL" -f infra/migrations/postgres/001_init.sql 2>/dev/null || true
 psql "$SEED_DATABASE_URL" -f infra/migrations/postgres/002_indexes_fk.sql 2>/dev/null || true
 psql "$SEED_DATABASE_URL" -f infra/migrations/postgres/003_ingestion_params.sql 2>/dev/null || true
+psql "$SEED_DATABASE_URL" -f infra/migrations/postgres/009_audit_event_class_and_archive_batches.sql 2>/dev/null || true
 if [ -x ./scripts/supabase-seed-auth.sh ]; then
   eval "$(./scripts/supabase-seed-auth.sh | grep '^SUPABASE_DEMO_USER_ID=')" || true
   export SUPABASE_DEMO_USER_ID

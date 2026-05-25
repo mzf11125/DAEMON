@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: aip
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Daemon AIP tier — agent-bridge, agent-service, MCP servers, LLM gateway.
+  sourceRepos:
+    - https://github.com/daemon-blockint-tech/DAEMON.git
+  destinations:
+    - namespace: daemon-aip
+      server: https://kubernetes.default.svc
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: "*"
+    - group: apps
+      kind: "*"
+    - group: batch
+      kind: "*"
+    - group: autoscaling
+      kind: "*"
+    - group: policy
+      kind: "*"
+    - group: networking.k8s.io
+      kind: "*"
+    - group: external-secrets.io
+      kind: ExternalSecret

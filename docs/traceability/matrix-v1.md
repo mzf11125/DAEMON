@@ -68,6 +68,9 @@
 | Cross-domain signal map | `catalog/signals-map.yaml` | signal-map doc v0.1 | manual review | 2 | G-EC-08 |
 | Console HITL intake → draft | `bast-sim-001` fixture | `packages/sdk-ts` + `/express-cargo/intake` | `TestExpressCargoHITL` | 1 | G-EC-09 |
 | Rules-engine express signals | `ontology/v3/rules/express-*.json` | CH `dataset_observations` labels | `TestExpressCargoRulesEvaluate` | 1 | G-EC-03 |
+| Routing propensity (baseline z-score) | `express-routing-propensity.json` | CH `features_label_daily` + observations | `TestExpressCargoRulesEvaluate` | 1 | G-EC-03 |
+| Volume trend anomaly (ec-sm-011) | `express-volume-trend-anomaly.json` | CH `features_label_daily` + observations | `TestExpressCargoRulesEvaluate` | 1 | G-EC-03 |
+| ML routing propensity (optional) | `express-routing-propensity-ml.json` | CH `propensity_model_scores` + features | `TestExpressCargoRulesEvaluate` | 1 | G-EC-03 |
 | Action proposals (Postgres) | `008_action_proposals.sql` | `POST/GET/PATCH /v1/action-proposals` | platform-api build; intake HITL path | 1 | G-EC-10 |
 | Horizontal pack prove (traffic) | `prove-traffic-engineering.sh` | `TestSandboxSectorsSeeded/traffic-engineering` | `make prove-traffic-engineering` | 2 | — |
 | Horizontal pack prove (nvocc) | `prove-logistics-nvocc.sh` | `TestSandboxSectorsSeeded/logistics-nvocc` | `make prove-logistics-nvocc` | 2 | — |
@@ -82,7 +85,7 @@
 | L3 | `./scripts/prove-operational-loop.sh` | [operational-proof-l3-v1.md](./operational-proof-l3-v1.md) |
 | L4 | `make up-merge-track` + `./scripts/smoke-agent-bridge.sh` + `./scripts/prove-plugin-remap.sh` | [merge-track-runbook-v1.md](../operations/merge-track-runbook-v1.md); [plugin-remap-v1.md](../aip/plugin-remap-v1.md) |
 
-Last verified locally: **2026-05-24** — L3 `TestOperationalLoopHTTP` pass; L4 `prove-plugin-remap.sh` + container `agent-bridge` on `:3001` (bookworm-slim + isolated `node_modules` volume); host `smoke-agent-bridge.sh` pass.
+Last verified locally: **2026-05-25** (working tree; land via PR-A) — L3 `TestOperationalLoopHTTP` pass; L4 `prove-plugin-remap.sh` + `smoke-agent-bridge.sh` pass; express predictive `TestExpressCargoRulesEvaluate` (6 rules incl. volume + ML propensity). Pre-push gate: `make pre-push-gate` / [pre-push-gate.sh](../../scripts/pre-push-gate.sh). Staging localhost chain: [staging-local-pilot-evidence-v1.md](../operations/staging-local-pilot-evidence-v1.md).
 
 Remote **main** after [PR #5](https://github.com/daemon-blockint-tech/DAEMON/pull/5) merge: CI run [`26370438733`](https://github.com/daemon-blockint-tech/DAEMON/actions/runs/26370438733) — `validate`, `integration`, `e2e-full` success; AIP eval run [`26370438725`](https://github.com/daemon-blockint-tech/DAEMON/actions/runs/26370438725) — 8/8 success.
 

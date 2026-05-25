@@ -1,0 +1,86 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: audit-archival
+  labels:
+    app.kubernetes.io/name: audit-archival
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/part-of: daemon-platform
+    daemon.platform/tier: critical
+    daemon.platform/compliance: "soc2 iso27001 hipaa gdpr"
+spec:
+  schedule: {{ .Values.schedule | quote }}
+  concurrencyPolicy: {{ .Values.concurrencyPolicy }}
+  startingDeadlineSeconds: {{ .Values.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.backoffLimit }}
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: audit-archival
+          annotations:
+            {{- with .Values.podAnnotations }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: {{ if .Values.serviceAccount.create }}audit-archival{{ else }}default{{ end }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          containers:
+            - name: audit-archival
+              image: {{- if .Values.image.digest }} "{{ .Values.image.repository }}@{{ .Values.image.digest }}"{{- else }} "{{ .Values.image.repository }}:{{ .Values.image.tag }}"{{- end }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                {{- toYaml .Values.containerSecurityContext | nindent 16 }}
+              env:
+                - name: HOT_RETENTION_DAYS
+                  value: {{ .Values.config.hotRetentionDays | quote }}
+                - name: BATCH_SIZE
+                  value: {{ .Values.config.batchSize | quote }}
+                - name: ARCHIVE_BUCKET
+                  value: {{ .Values.config.archiveBucket | quote }}
+                - name: ARCHIVE_BUCKET_REGION
+                  value: {{ .Values.config.archiveBucketRegion | quote }}
+                - name: CLASS_DEFAULT
+                  value: {{ .Values.config.classDefault | quote }}
+                - name: LOG_LEVEL
+                  value: {{ .Values.config.logLevel | quote }}
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: audit-archival-runtime
+                      key: DATABASE_URL
+                - name: ARCHIVE_S3_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: audit-archival-runtime
+                      key: ARCHIVE_S3_ACCESS_KEY
+                - name: ARCHIVE_S3_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: audit-archival-runtime
+                      key: ARCHIVE_S3_SECRET_KEY
+                - name: ARCHIVE_KMS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: audit-archival-runtime
+                      key: ARCHIVE_KMS_KEY_ID
+              ports:
+                - name: metrics
+                  containerPort: 9100
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir:
+                medium: Memory
+                sizeLimit: 256Mi

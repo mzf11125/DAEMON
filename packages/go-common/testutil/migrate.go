@@ -50,10 +50,20 @@ func applyClickHouseMigration(ctx context.Context, dsn, sqlPath string) error {
 
 // splitClickHouseStatements splits migration files; ClickHouse HTTP/native drivers reject multi-statement Exec.
 func splitClickHouseStatements(sql string) []string {
+	// Drop full-line comments so semicolons inside comments do not split statements.
+	var kept []string
+	for _, line := range strings.Split(sql, "\n") {
+		t := strings.TrimSpace(line)
+		if t == "" || strings.HasPrefix(t, "--") {
+			continue
+		}
+		kept = append(kept, line)
+	}
+	cleaned := strings.Join(kept, "\n")
 	var out []string
-	for _, part := range strings.Split(sql, ";") {
+	for _, part := range strings.Split(cleaned, ";") {
 		stmt := strings.TrimSpace(part)
-		if stmt == "" || strings.HasPrefix(stmt, "--") {
+		if stmt == "" {
 			continue
 		}
 		out = append(out, stmt)

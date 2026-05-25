@@ -1,0 +1,9 @@
+{
+  "id": "express-volume-trend-anomaly",
+  "description": "Tier A daily volume drop vs 7-day baseline (ec-sm-011 volume_trend_anomaly)",
+  "scoreKind": "confidence",
+  "confidenceMethod": "volume_drop_baseline_7d",
+  "sql": "SELECT o.observation_id, o.asset_id, propensity AS value FROM (SELECT o.observation_id, o.asset_id, o.value, least(1.0, greatest(0.0, (b.baseline_avg - o.value) / nullIf(b.baseline_avg, 0) / 0.35)) AS propensity FROM dataset_observations o INNER JOIN (SELECT asset_id, tenant_id, avg(avg_value) AS baseline_avg, stddevPop(avg_value) AS baseline_std FROM features_label_daily WHERE label = 'tier_a_daily_volume' AND tenant_id = {tenant:String} AND day >= today() - 7 AND day < today() GROUP BY asset_id, tenant_id HAVING baseline_avg > 0) b ON o.asset_id = b.asset_id AND o.tenant_id = b.tenant_id WHERE o.label = 'tier_a_daily_volume' AND o.tenant_id = {tenant:String}) o WHERE propensity > {threshold:Float64}",
+  "threshold": 0.75,
+  "signalSeverity": "medium"
+}

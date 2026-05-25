@@ -28,13 +28,20 @@ func TestExpressCargoRulesEvaluate(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	runFeaturesPipeline(t, ctx, env)
+	runPropensityTrain(t, ctx, env)
+
 	rulesRoot := filepath.Join(env.RepoRoot, "ontology", "v2-compiled", "rules")
-	if _, err := os.Stat(filepath.Join(rulesRoot, "express-leg-sla-breach.json")); err != nil {
+	propensityRule := filepath.Join(rulesRoot, "express-routing-propensity.json")
+	if _, err := os.Stat(propensityRule); err != nil {
 		sync := exec.CommandContext(ctx, "make", "ontology-sync")
 		sync.Dir = env.RepoRoot
 		if out, err := sync.CombinedOutput(); err != nil {
 			t.Fatalf("ontology-sync: %v: %s", err, out)
 		}
+	}
+	if _, err := os.Stat(propensityRule); err != nil {
+		t.Fatalf("missing compiled rule %s: %v", propensityRule, err)
 	}
 
 	port := testutil.FreeTCPPort(t)
@@ -69,7 +76,10 @@ func TestExpressCargoRulesEvaluate(t *testing.T) {
 	}
 	defer pool.Close()
 
-	for _, ruleID := range []string{"express-leg-sla-breach", "express-routing-anomaly", "express-champion-idle"} {
+	for _, ruleID := range []string{
+		"express-leg-sla-breach", "express-routing-anomaly", "express-champion-idle",
+		"express-routing-propensity", "express-volume-trend-anomaly", "express-routing-propensity-ml",
+	} {
 		var n int
 		err := pool.QueryRow(ctx, `
 			SELECT COUNT(*) FROM ontology_objects
@@ -85,6 +95,19 @@ func TestExpressCargoRulesEvaluate(t *testing.T) {
 		}
 	}
 
+	var confidenceScore string
+	err = pool.QueryRow(ctx, `
+		SELECT properties->'confidence'->>'score' FROM ontology_objects
+		WHERE tenant_id = 'tenant-demo' AND object_type = 'Signal'
+		  AND properties->>'provenanceRuleId' = 'express-routing-propensity'
+		LIMIT 1`).Scan(&confidenceScore)
+	if err != nil {
+		t.Fatalf("propensity confidence score: %v", err)
+	}
+	if confidenceScore == "" {
+		t.Fatal("expected confidence.score on express-routing-propensity Signal")
+	}
+
 	var evalEnvelope struct {
 		Data struct {
 			Count int `json:"count"`
@@ -93,7 +116,27 @@ func TestExpressCargoRulesEvaluate(t *testing.T) {
 	if err := json.Unmarshal(body, &evalEnvelope); err != nil {
 		t.Fatal(err)
 	}
-	if evalEnvelope.Data.Count < 3 {
-		t.Fatalf("evaluate count=%d, want >=3 express rules matched", evalEnvelope.Data.Count)
+	if evalEnvelope.Data.Count < 6 {
+		t.Fatalf("evaluate count=%d, want >=6 express rules matched", evalEnvelope.Data.Count)
+	}
+}
+
+func runPropensityTrain(t *testing.T, ctx context.Context, env *testutil.Env) {
+	t.Helper()
+	cmd := exec.CommandContext(ctx, "go", "run", "./cmd")
+	cmd.Dir = filepath.Join(env.RepoRoot, "pipelines", "propensity-train")
+	cmd.Env = append(os.Environ(), "CLICKHOUSE_DSN="+env.ClickHouseDSN, "TENANT_ID=tenant-demo")
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("pipeline-propensity-train: %v: %s", err, out)
+	}
+}
+
+func runFeaturesPipeline(t *testing.T, ctx context.Context, env *testutil.Env) {
+	t.Helper()
+	cmd := exec.CommandContext(ctx, "go", "run", "./cmd")
+	cmd.Dir = filepath.Join(env.RepoRoot, "pipelines", "features")
+	cmd.Env = append(os.Environ(), "CLICKHOUSE_DSN="+env.ClickHouseDSN)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("pipeline-features: %v: %s", err, out)
 	}
 }

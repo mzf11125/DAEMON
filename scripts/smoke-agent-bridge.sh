@@ -5,6 +5,14 @@ ONTOLOGY_SERVICE_URL="${ONTOLOGY_SERVICE_URL:-http://localhost:8081}"
 PLATFORM_API_URL="${PLATFORM_API_URL:-http://localhost:8080}"
 AGENT_PORT="${AGENT_PORT:-3001}"
 
+# Prefer local listeners after e2e-smoke / ensure-aip-eval-stack restarts (tunnels may be stale).
+if curl -sf "http://127.0.0.1:8081/health" >/dev/null 2>&1; then
+  ONTOLOGY_SERVICE_URL="http://127.0.0.1:8081"
+fi
+if curl -sf "http://127.0.0.1:8080/health" >/dev/null 2>&1; then
+  PLATFORM_API_URL="http://127.0.0.1:8080"
+fi
+
 curl -sf "${ONTOLOGY_SERVICE_URL}/health" >/dev/null
 curl -sf "${PLATFORM_API_URL}/health" >/dev/null
 

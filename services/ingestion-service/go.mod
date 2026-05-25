@@ -8,7 +8,7 @@ require (
 	github.com/daemon-platform/daemon/packages/pipeline-runner v0.0.0
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.7.2
+	github.com/jackc/pgx/v5 v5.7.4
 	github.com/rs/zerolog v1.33.0
 )
 

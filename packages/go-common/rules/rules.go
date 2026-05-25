@@ -9,17 +9,34 @@ import (
 const maxSQLLength = 16_384
 
 var (
-	placeholderRe = regexp.MustCompile(`\{threshold:Float64\}`)
-	tableRewriteRe  = regexp.MustCompile(`(?i)\bFROM\s+dataset_observations\b`)
+	placeholderRe              = regexp.MustCompile(`\{threshold:Float64\}`)
+	tenantPlaceholderRe        = regexp.MustCompile(`\{tenant:String\}`)
+	tableRewriteRe             = regexp.MustCompile(`(?i)\bFROM\s+dataset_observations\b`)
+	featureLabelRewriteRe      = regexp.MustCompile(`(?i)\bFROM\s+features_label_daily\b`)
+	propensityScoresTableRe    = regexp.MustCompile(`(?i)\bpropensity_model_scores\b`)
+	tenantIDRe                 = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9._-]{0,62}$`)
 )
 
 // RuleDef matches ontology/v2/rules/*.json.
 type RuleDef struct {
-	ID             string  `json:"id"`
-	Description    string  `json:"description"`
-	SQL            string  `json:"sql"`
-	Threshold      float64 `json:"threshold"`
-	SignalSeverity string  `json:"signalSeverity"`
+	ID               string  `json:"id"`
+	Description      string  `json:"description"`
+	SQL              string  `json:"sql"`
+	Threshold        float64 `json:"threshold"`
+	SignalSeverity   string  `json:"signalSeverity"`
+	ScoreKind        string  `json:"scoreKind,omitempty"`
+	ConfidenceMethod string  `json:"confidenceMethod,omitempty"`
+}
+
+// ValidateTenantID rejects tenant IDs that would break SQL string interpolation.
+func ValidateTenantID(tenantID string) error {
+	if tenantID == "" {
+		return nil
+	}
+	if !tenantIDRe.MatchString(tenantID) {
+		return fmt.Errorf("invalid tenant id %q", tenantID)
+	}
+	return nil
 }
 
 // RenderSQL substitutes placeholders, normalizes table names, and scopes by tenant when set.
@@ -27,10 +44,20 @@ func RenderSQL(rule RuleDef, tenantID string) (string, error) {
 	if strings.TrimSpace(rule.SQL) == "" {
 		return "", fmt.Errorf("rule %s: sql is required", rule.ID)
 	}
+	if err := ValidateTenantID(tenantID); err != nil {
+		return "", err
+	}
 	q := placeholderRe.ReplaceAllString(rule.SQL, fmt.Sprintf("%g", rule.Threshold))
 	q = tableRewriteRe.ReplaceAllString(q, "FROM daemon.dataset_observations")
+	q = featureLabelRewriteRe.ReplaceAllString(q, "FROM daemon.features_label_daily")
+	q = propensityScoresTableRe.ReplaceAllString(q, "daemon.propensity_model_scores")
 	if tenantID != "" {
-		q = appendTenantFilter(q, tenantID)
+		escaped := strings.ReplaceAll(tenantID, "'", "''")
+		if strings.Contains(rule.SQL, "{tenant:String}") {
+			q = tenantPlaceholderRe.ReplaceAllString(q, fmt.Sprintf("'%s'", escaped))
+		} else {
+			q = appendTenantFilter(q, tenantID)
+		}
 	}
 	return q, nil
 }

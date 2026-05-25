@@ -28,15 +28,32 @@ Staging pilot: run the same prove scripts against staging URLs with `OIDC_REQUIR
 
 ### Staging smoke template (fill on deploy)
 
-| Step | Command | Staging URL / result | Date |
-|------|---------|----------------------|------|
-| Health | `curl -sf $PLATFORM_API_URL/health` | local pilot: `http://localhost:8080/health` → `ok` | 2026-05-24 |
-| OIDC deny | `curl -s -o /dev/null -w '%{http_code}' $ONTOLOGY_SERVICE_URL/v1/objects/Signal` (no Bearer) | local: `401` when `OIDC_REQUIRED=true` (verify-auth-migration) | 2026-05-24 |
-| Express HITL | `./scripts/prove-express-cargo-sim.sh` | local `:8081` / `:8083`; CI integration job | 2026-05-24 |
-| Plugin remap | `./scripts/prove-plugin-remap.sh` | local pass; rules evaluate → Signal provenance | 2026-05-24 |
-| Agent bridge | `./scripts/smoke-agent-bridge.sh` | local `:3001` container + host paths | 2026-05-24 |
+**Local proof (complete):**
 
-**Staging hostnames:** TBD — repeat table with non-localhost URLs when pilot env is provisioned ([staging-deploy-v1.md](./staging-deploy-v1.md)).
+| Step | Command | Local URL / result | Date |
+|------|---------|-------------------|------|
+| Health | `curl -sf $PLATFORM_API_URL/health` | `http://localhost:8080/health` → `ok` | 2026-05-24 |
+| OIDC deny | `curl -s -o /dev/null -w '%{http_code}' $ONTOLOGY_SERVICE_URL/v1/objects/Signal` (no Bearer) | `401` when `OIDC_REQUIRED=true` | 2026-05-24 |
+| Express HITL | `./scripts/prove-express-cargo-sim.sh` | `:8081` / `:8083`; CI integration | 2026-05-24 |
+| Plugin remap | `./scripts/prove-plugin-remap.sh` | rules evaluate → Signal provenance | 2026-05-24 |
+| Agent bridge | `./scripts/smoke-agent-bridge.sh` | `:3001` merge-track profile | 2026-05-24 |
+| Full chain | `make prove-staging-smoke` | wraps e2e + prove scripts 1–7 | 2026-05-24 |
+
+**Staging hostnames (P0.3 / P0.4 — 2026-05-25):**
+
+Proof used **non-localhost HTTPS** via [`scripts/phase0-staging-tunnel-env.sh`](../../scripts/phase0-staging-tunnel-env.sh) (Cloudflare quick tunnels → host-run Go services on `127.0.0.1`). Ephemeral `trycloudflare.com` URLs; regenerate before each run. Replace with VM/K8s staging DNS when provisioned ([`staging-vm-compose-v1.md`](./staging-vm-compose-v1.md)).
+
+| Step | Env var | Staging URL (proof run) | Result | Date |
+|------|---------|-------------------------|--------|------|
+| Platform API | `PLATFORM_API_URL` | `https://existence-seattle-olive-leslie.trycloudflare.com` | `/health` → `ok` (HTTPS) | 2026-05-25 |
+| Ontology | `ONTOLOGY_SERVICE_URL` | `https://patrol-determining-temperature-empty.trycloudflare.com` | `/health` → `ok`; `GET /v1/objects/Signal` no Bearer → `401` | 2026-05-25 |
+| Rules engine | `RULES_ENGINE_URL` | `https://anymore-domain-anchor-terminal.trycloudflare.com` | `/health` → `ok` (HTTPS) | 2026-05-25 |
+| Case service | `CASE_SERVICE_URL` | `http://127.0.0.1:8084` (local only) | e2e cases green in proof | 2026-05-25 |
+| Console | `NEXT_PUBLIC_PLATFORM_API_URL` | same as platform tunnel URL | not exercised in proof | 2026-05-25 |
+| Supabase Auth | `OIDC_ISSUER` | `https://poems-thru-watts-view.trycloudflare.com` (tunnel to `:54331/auth/v1`) | JWT via local Supabase; host services `OIDC_REQUIRED=true` | 2026-05-25 |
+| Prove chain | — | `make phase0-staging-proof` (`PHASE0_STRICT=1`) | exit 0; transcript `/tmp/phase0-staging-proof-transcript-final.txt` | 2026-05-25 |
+
+Copy env template from [`.env.example`](../../.env.example). Record results in [p1-staging-pilot-closeout-v1.md](./p1-staging-pilot-closeout-v1.md) and flip P0.4 in [production-readiness-v1.md](./production-readiness-v1.md).
 
 ## Local repro (Supabase)
 

@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	gcaudit "github.com/daemon-platform/daemon/packages/go-common/audit"
 	"github.com/daemon-platform/daemon/packages/go-common/auth"
 	"github.com/daemon-platform/daemon/packages/go-common/config"
 	"github.com/daemon-platform/daemon/packages/go-common/db"
@@ -661,6 +662,6 @@ func recordAudit(pool *pgxpool.Pool, ctx context.Context, tenant, actionType, re
 	if actor != "" {
 		actorVal = actor
 	}
-	_ = db.ExecRLS(ctx, pool, `INSERT INTO audit_log (tenant_id, actor_id, action_type, resource_type, resource_id, payload) VALUES ($1,$2,$3,$4,$5,$6)`,
-		tenant, actorVal, actionType, resourceType, resourceID, b)
+	_ = db.ExecRLS(ctx, pool, `INSERT INTO audit_log (tenant_id, actor_id, action_type, resource_type, resource_id, payload, event_class) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+		tenant, actorVal, actionType, resourceType, resourceID, b, gcaudit.EventClass(actionType))
 }

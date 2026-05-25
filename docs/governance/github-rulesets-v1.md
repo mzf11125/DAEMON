@@ -25,9 +25,19 @@ Reference: [About rulesets](https://docs.github.com/en/repositories/configuring-
 
 If GitHub shows a different display name, use the name from the latest green PR.
 
-**Rollout:** create ruleset as **Disabled**, merge one green PR to `main`, then set **Active**.
+### Active rollout (repo admins — human ops)
 
-**Automation (admins):** `./scripts/apply-github-ruleset.sh` (requires `gh` auth). Preview with `DRY_RUN=1 ./scripts/apply-github-ruleset.sh`.
+| Step | Action | Done |
+|------|--------|------|
+| 1 | Confirm last green PR on `main` shows all four jobs: `validate`, `integration`, `aip-eval`, `policy` | ✅ 2026-05-25 |
+| 2 | Preview payload: `DRY_RUN=1 ./scripts/apply-github-ruleset.sh` | ✅ |
+| 3 | **First apply (disabled):** `ENFORCEMENT=disabled ./scripts/apply-github-ruleset.sh` — creates `main-production-gates` without blocking merges | ✅ (skipped; ruleset pre-existed) |
+| 4 | Merge one more green PR; confirm checks still match step 1 job **display names** | ✅ |
+| 5 | **Activate:** `ENFORCEMENT=active ./scripts/apply-github-ruleset.sh` (or UI: Rulesets → `main-production-gates` → **Active**) | ✅ 2026-05-25 |
+| 6 | Open a test PR; verify merge is blocked until all four checks pass | ☐ (optional spot-check) |
+| 7 | Record completion date in [production-readiness-v1.md](../operations/production-readiness-v1.md) P0.2 row | ✅ 2026-05-25 |
+
+**Automation (admins):** [`scripts/apply-github-ruleset.sh`](../../scripts/apply-github-ruleset.sh) (requires `gh` auth + repo admin). Defaults: `ENFORCEMENT=active`. Use `ENFORCEMENT=disabled` for step 3 only.
 
 ## Push ruleset (optional)
 

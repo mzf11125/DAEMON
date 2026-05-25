@@ -1,0 +1,110 @@
+name: IaC plan
+
+on:
+  pull_request:
+    paths:
+      - "infra/terraform/**"
+      - "infra/helm/**"
+      - "infra/kubernetes/**"
+      - "infra/gitops/**"
+      - ".github/workflows/iac-plan.yml"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive infra/terraform
+
+      - name: terraform validate (modules)
+        run: |
+          set -euxo pipefail
+          for d in infra/terraform/modules/*; do
+            if [ -d "$d" ]; then
+              (cd "$d" && terraform init -backend=false -input=false && terraform validate)
+            fi
+          done
+
+      - name: terraform validate (envs)
+        run: |
+          set -euxo pipefail
+          for d in infra/terraform/envs/*; do
+            if [ -d "$d" ]; then
+              (cd "$d" && terraform init -backend=false -input=false && terraform validate)
+            fi
+          done
+
+      - uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: infra/terraform
+          soft_fail: true   # Phase 1.1 — tighten to hard fail before GA
+
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.16.2
+
+      - name: helm lint (every chart)
+        run: |
+          set -euxo pipefail
+          for c in infra/helm/*/; do
+            if [ -f "$c/Chart.yaml" ]; then
+              echo "::group::lint $c"
+              helm lint "$c"
+              echo "::endgroup::"
+            fi
+          done
+
+      - name: helm template (sanity render)
+        run: |
+          set -euxo pipefail
+          for c in infra/helm/*/; do
+            if [ -f "$c/Chart.yaml" ]; then
+              echo "::group::template $c"
+              helm template release "$c" >/tmp/render.yaml
+              if [ -f "$c/values.staging.yaml" ]; then
+                helm template release "$c" --values "$c/values.staging.yaml" >/tmp/render-staging.yaml
+              fi
+              echo "::endgroup::"
+            fi
+          done
+
+  kustomize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: kustomize build base
+        run: |
+          set -euxo pipefail
+          if [ -f infra/kubernetes/base/kustomization.yaml ]; then
+            kubectl kustomize infra/kubernetes/base >/tmp/base.yaml
+          fi
+      - name: kustomize build overlays
+        run: |
+          set -euxo pipefail
+          for o in infra/kubernetes/overlays/*/; do
+            if [ -f "$o/kustomization.yaml" ]; then
+              kubectl kustomize "$o" >"/tmp/$(basename $o).yaml"
+            fi
+          done
+
+  gitops:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - run: python3 scripts/validate-gitops-applications.py

@@ -77,3 +77,62 @@ func TestValidateRuleFile(t *testing.T) {
 		t.Fatal("expected error")
 	}
 }
+
+func TestValidateTenantID(t *testing.T) {
+	if err := ValidateTenantID("tenant-demo"); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateTenantID("bad tenant"); err == nil {
+		t.Fatal("expected error for space in tenant id")
+	}
+}
+
+func TestExpressVolumeTrendRule(t *testing.T) {
+	path := filepath.Join("..", "..", "..", "ontology", "v3", "rules", "express-volume-trend-anomaly.json")
+	b, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var rule RuleDef
+	if err := json.Unmarshal(b, &rule); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateRuleFile(rule); err != nil {
+		t.Fatal(err)
+	}
+	got, err := RenderSQL(rule, "tenant-demo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(got, "tier_a_daily_volume") {
+		t.Fatalf("expected tier_a_daily_volume in %q", got)
+	}
+}
+
+func TestExpressRoutingPropensityRule(t *testing.T) {
+	path := filepath.Join("..", "..", "..", "ontology", "v3", "rules", "express-routing-propensity.json")
+	b, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var rule RuleDef
+	if err := json.Unmarshal(b, &rule); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateRuleFile(rule); err != nil {
+		t.Fatal(err)
+	}
+	got, err := RenderSQL(rule, "tenant-demo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(got, "daemon.features_label_daily") {
+		t.Fatalf("expected features_label_daily rewrite in %q", got)
+	}
+	if !strings.Contains(got, "tenant_id = 'tenant-demo'") {
+		t.Fatalf("expected tenant placeholder in %q", got)
+	}
+	if !strings.Contains(got, "0.75") {
+		t.Fatalf("expected threshold substitution in %q", got)
+	}
+}

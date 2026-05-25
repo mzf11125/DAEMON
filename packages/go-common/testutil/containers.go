@@ -198,10 +198,19 @@ func applyDataStoreMigrations(ctx context.Context, t *testing.T, env *Env) {
 	}
 	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/007_market_intel_pgvector.sql"))
 	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/008_action_proposals.sql"))
+	_ = applyPostgresMigration(ctx, pgURL, filepath.Join(repoRoot, "infra/migrations/postgres/009_audit_event_class_and_archive_batches.sql"))
 	if err := applyClickHouseMigration(ctx, chDSN, filepath.Join(repoRoot, "infra/migrations/clickhouse/001_init.sql")); err != nil {
 		t.Fatalf("clickhouse migration: %v", err)
 	}
-	_ = applyClickHouseMigration(ctx, chDSN, filepath.Join(repoRoot, "infra/migrations/clickhouse/002_tenant_observations.sql"))
+	if err := applyClickHouseMigration(ctx, chDSN, filepath.Join(repoRoot, "infra/migrations/clickhouse/002_tenant_observations.sql")); err != nil {
+		t.Fatalf("clickhouse migration 002: %v", err)
+	}
+	if err := applyClickHouseMigration(ctx, chDSN, filepath.Join(repoRoot, "infra/migrations/clickhouse/003_features_label_daily.sql")); err != nil {
+		t.Fatalf("clickhouse migration 003: %v", err)
+	}
+	if err := applyClickHouseMigration(ctx, chDSN, filepath.Join(repoRoot, "infra/migrations/clickhouse/004_propensity_model_scores.sql")); err != nil {
+		t.Fatalf("clickhouse migration 004: %v", err)
+	}
 	if err := EnsureDemoTenant(ctx, pgURL); err != nil {
 		t.Fatalf("demo tenant: %v", err)
 	}

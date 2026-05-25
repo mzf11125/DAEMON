@@ -41,17 +41,17 @@ Staging pilot: run the same prove scripts against staging URLs with `OIDC_REQUIR
 
 **Staging hostnames (P0.3 / P0.4 — 2026-05-25):**
 
-Proof used **non-localhost HTTPS** via [`scripts/phase0-staging-tunnel-env.sh`](../../scripts/phase0-staging-tunnel-env.sh) (Cloudflare quick tunnels → host-run Go services on `127.0.0.1`). Ephemeral `trycloudflare.com` URLs; regenerate before each run. Replace with VM/K8s staging DNS when provisioned ([`staging-vm-compose-v1.md`](./staging-vm-compose-v1.md)).
+Proof used **non-localhost HTTPS** via [`scripts/phase0-staging-tunnel-env.sh`](../../scripts/phase0-staging-tunnel-env.sh) (Cloudflare quick tunnels → host-run Go services on localhost). Ephemeral `https://<random>.trycloudflare.com` URLs are generated per run and must **not** be committed; copy values into gitignored `.env.staging` only. Replace with VM/K8s staging DNS when provisioned ([`staging-vm-compose-v1.md`](./staging-vm-compose-v1.md)).
 
 | Step | Env var | Staging URL (proof run) | Result | Date |
 |------|---------|-------------------------|--------|------|
-| Platform API | `PLATFORM_API_URL` | `https://existence-seattle-olive-leslie.trycloudflare.com` | `/health` → `ok` (HTTPS) | 2026-05-25 |
-| Ontology | `ONTOLOGY_SERVICE_URL` | `https://patrol-determining-temperature-empty.trycloudflare.com` | `/health` → `ok`; `GET /v1/objects/Signal` no Bearer → `401` | 2026-05-25 |
-| Rules engine | `RULES_ENGINE_URL` | `https://anymore-domain-anchor-terminal.trycloudflare.com` | `/health` → `ok` (HTTPS) | 2026-05-25 |
-| Case service | `CASE_SERVICE_URL` | `http://127.0.0.1:8084` (local only) | e2e cases green in proof | 2026-05-25 |
+| Platform API | `PLATFORM_API_URL` | `https://<platform-tunnel>.trycloudflare.com` | `/health` → `ok` (HTTPS) | 2026-05-25 |
+| Ontology | `ONTOLOGY_SERVICE_URL` | `https://<ontology-tunnel>.trycloudflare.com` | `/health` → `ok`; `GET /v1/objects/Signal` no Bearer → `401` | 2026-05-25 |
+| Rules engine | `RULES_ENGINE_URL` | `https://<rules-tunnel>.trycloudflare.com` | `/health` → `ok` (HTTPS) | 2026-05-25 |
+| Case service | `CASE_SERVICE_URL` | `http://localhost:8084` (local only) | e2e cases green in proof | 2026-05-25 |
 | Console | `NEXT_PUBLIC_PLATFORM_API_URL` | same as platform tunnel URL | not exercised in proof | 2026-05-25 |
-| Supabase Auth | `OIDC_ISSUER` | `https://poems-thru-watts-view.trycloudflare.com` (tunnel to `:54331/auth/v1`) | JWT via local Supabase; host services `OIDC_REQUIRED=true` | 2026-05-25 |
-| Prove chain | — | `make phase0-staging-proof` (`PHASE0_STRICT=1`) | exit 0; transcript `/tmp/phase0-staging-proof-transcript-final.txt` | 2026-05-25 |
+| Supabase Auth | `OIDC_ISSUER` | `https://<supabase-tunnel>.trycloudflare.com` (tunnel to `:54331/auth/v1`) | JWT via local Supabase; host services `OIDC_REQUIRED=true` | 2026-05-25 |
+| Prove chain | — | `make phase0-staging-proof` (`PHASE0_STRICT=1`) | exit 0; transcript in local `/tmp/` (not committed) | 2026-05-25 |
 
 Copy env template from [`.env.example`](../../.env.example). Record results in [p1-staging-pilot-closeout-v1.md](./p1-staging-pilot-closeout-v1.md) and flip P0.4 in [production-readiness-v1.md](./production-readiness-v1.md).
 

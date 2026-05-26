@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"syscall"
 	"time"
@@ -16,7 +17,6 @@ import (
 	"github.com/daemon-platform/daemon/services/ontology-builder/internal/handler"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -24,6 +24,13 @@ import (
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	cfg := config.LoadBase(8085)
+
+	// Compiler output root — where compiled per-tenant ontologies are written
+	outputRoot := os.Getenv("COMPILED_ROOT")
+	if outputRoot == "" {
+		outputRoot = filepath.Join("..", "..", "ontology", "v2-compiled")
+	}
+
 	ctx := context.Background()
 
 	pool, err := db.NewPostgres(ctx, cfg.DatabaseURL)
@@ -32,6 +39,8 @@ func main() {
 	}
 	defer pool.Close()
 
+	compilerCfg := &handler.CompilerConfig{OutputRoot: outputRoot}
+
 	r := chi.NewRouter()
 	for _, mw := range dhttp.AuthenticatedStack(auth.LoadConfigFromEnv()) {
 		r.Use(mw)
@@ -39,14 +48,12 @@ func main() {
 	r.Use(middleware.Timeout(30 * time.Second))
 	dhttp.MountHealth(r, "ontology-builder")
 
-	// Initialize handlers
 	wsHandler := handler.NewWorkspaceHandler(pool)
 	objHandler := handler.NewObjectHandler(pool)
 	linkHandler := handler.NewLinkHandler(pool)
 	actionHandler := handler.NewActionHandler(pool)
 
 	r.Route("/v1", func(r chi.Router) {
-		// Workspace CRUD
 		r.Get("/workspaces", wsHandler.List)
 		r.Post("/workspaces", wsHandler.Create)
 		r.Route("/workspaces/{workspaceId}", func(r chi.Router) {
@@ -55,7 +62,6 @@ func main() {
 			r.Delete("/", wsHandler.Delete)
 			r.Post("/clone", wsHandler.Clone)
 
-			// Object types
 			r.Get("/objects", objHandler.List)
 			r.Post("/objects", objHandler.Create)
 			r.Route("/objects/{objectTypeId}", func(r chi.Router) {
@@ -68,7 +74,6 @@ func main() {
 			})
 			r.Post("/objects/reorder", objHandler.Reorder)
 
-			// Link types
 			r.Get("/links", linkHandler.List)
 			r.Post("/links", linkHandler.Create)
 			r.Route("/links/{linkId}", func(r chi.Router) {
@@ -77,7 +82,6 @@ func main() {
 				r.Delete("/", linkHandler.Delete)
 			})
 
-			// Action types
 			r.Get("/actions", actionHandler.List)
 			r.Post("/actions", actionHandler.Create)
 			r.Route("/actions/{actionId}", func(r chi.Router) {
@@ -89,10 +93,12 @@ func main() {
 				r.Delete("/params/{paramId}", actionHandler.DeleteParam)
 			})
 
-			// Validation & Compile
+			// Validation & Compilation
 			r.Post("/validate", handler.ValidateWorkspace(pool))
 			r.Post("/compile/preview", handler.CompilePreview(pool))
-			r.Post("/compile", handler.CompileWorkspace(pool))
+			r.Post("/compile", handler.CompileToDiskHandler(pool, compilerCfg))
+			r.Post("/migrations/preview", handler.MigrationPreview(pool))
+			r.Post("/migrations/apply", handler.MigrationApply(pool))
 
 			// Versions
 			r.Get("/versions", handler.ListVersions(pool))
@@ -101,17 +107,14 @@ func main() {
 		})
 	})
 
-	// Templates (global, outside workspace scope)
 	r.Get("/v1/templates", handler.ListTemplates(pool))
 	r.Get("/v1/templates/{templateId}", handler.GetTemplate(pool))
 	r.Post("/v1/templates", handler.CreateTemplate(pool))
-
-	// Publish workspace
 	r.Post("/v1/workspaces/{workspaceId}/publish", handler.PublishWorkspace(pool))
 
 	srv := &http.Server{Addr: ":" + strconv.Itoa(cfg.HTTPPort), Handler: r}
 	go func() {
-		log.Info().Int("port", cfg.HTTPPort).Msg("ontology-builder listening")
+		log.Info().Int("port", cfg.HTTPPort).Str("compiled_root", outputRoot).Msg("ontology-builder listening")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal().Err(err).Msg("listen")
 		}
@@ -125,6 +128,3 @@ func main() {
 	defer cancel()
 	_ = srv.Shutdown(shutdown)
 }
-
-// unused but needed to satisfy import
-var _ pgxpool.Pool

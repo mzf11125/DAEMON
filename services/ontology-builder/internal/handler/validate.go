@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	dhttp "github.com/daemon-platform/daemon/packages/go-common/http"
 	"github.com/go-chi/chi/v5"
@@ -284,4 +285,102 @@ func objectTypeNames(manifest map[string]any) []string {
 		return ots
 	}
 	return nil
+}
+
+// ── Phase 2: Compile to disk + Migration handlers ─────────
+
+// CompileToDiskHandler is an HTTP handler that compiles the workspace and writes the
+// compiled JSON to the per-tenant output directory.
+func CompileToDiskHandler(pool *pgxpool.Pool, cfg *CompilerConfig) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		workspaceID := chi.URLParam(r, "workspaceId")
+		tenant := dhttp.TenantFromContext(r.Context())
+
+		var req struct {
+			ChangeSummary string `json:"changeSummary"`
+		}
+		json.NewDecoder(r.Body).Decode(&req)
+
+		// Build manifest from workspace
+		rawManifest := buildManifest(pool, r, workspaceID)
+		snapshot, _ := json.Marshal(rawManifest)
+
+		// Save version snapshot to DB
+		var maxVersion int
+		pool.QueryRow(r.Context(),
+			`SELECT COALESCE(MAX(version), 0) FROM ontology_versions WHERE workspace_id = $1`,
+			workspaceID,
+		).Scan(&maxVersion)
+		version := maxVersion + 1
+
+		pool.Exec(r.Context(),
+			`INSERT INTO ontology_versions (workspace_id, version, snapshot, change_summary, published, created_at)
+			 VALUES ($1, $2, $3, $4, false, NOW())`,
+			workspaceID, version, snapshot, req.ChangeSummary,
+		)
+		pool.Exec(r.Context(),
+			`UPDATE ontology_workspaces SET updated_at = NOW() WHERE id = $1`, workspaceID,
+		)
+
+		// Compile to disk
+		compiledPath, compiled, err := CompileToDisk(pool, workspaceID, tenant, cfg.OutputRoot)
+		if err != nil {
+			dhttp.WriteErrorRequest(w, r, http.StatusInternalServerError, "COMPILE_FAILED", err.Error())
+			return
+		}
+
+		dhttp.WriteJSON(w, http.StatusOK, map[string]any{
+			"version":      version,
+			"changeSummary": req.ChangeSummary,
+			"objectCount":  len(compiled.ObjectTypes),
+			"compiledPath": compiledPath,
+		})
+	}
+}
+
+// MigrationPreview returns DDL statements for schema changes.
+func MigrationPreview(pool *pgxpool.Pool) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		workspaceID := chi.URLParam(r, "workspaceId")
+		sqlList, err := GenerateMigrations(pool, workspaceID)
+		if err != nil {
+			dhttp.WriteErrorRequest(w, r, http.StatusInternalServerError, "MIGRATION_FAILED", err.Error())
+			return
+		}
+		dhttp.WriteJSON(w, http.StatusOK, map[string]any{
+			"workspaceId": workspaceID,
+			"sql":         sqlList,
+		})
+	}
+}
+
+// MigrationApply applies pending DDL migrations for the workspace.
+func MigrationApply(pool *pgxpool.Pool) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		workspaceID := chi.URLParam(r, "workspaceId")
+		sqlList, err := GenerateMigrations(pool, workspaceID)
+		if err != nil {
+			dhttp.WriteErrorRequest(w, r, http.StatusInternalServerError, "MIGRATION_FAILED", err.Error())
+			return
+		}
+
+		var applied []string
+		var errors []string
+		for _, s := range sqlList {
+			if s.Statement == "" || strings.HasPrefix(s.Statement, "--") {
+				continue
+			}
+			if _, err := pool.Exec(r.Context(), s.Statement); err != nil {
+				errors = append(errors, s.Statement+": "+err.Error())
+			} else {
+				applied = append(applied, s.Statement)
+			}
+		}
+
+		dhttp.WriteJSON(w, http.StatusOK, map[string]any{
+			"workspaceId": workspaceID,
+			"applied":     applied,
+			"errors":      errors,
+		})
+	}
 }

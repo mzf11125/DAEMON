@@ -59,6 +59,15 @@ func main() {
 	r.Use(middleware.Timeout(30 * time.Second))
 	dhttp.MountHealth(r, "ontology-service")
 	r.Get("/v1/ontology/v2/manifest", func(w http.ResponseWriter, r *http.Request) {
+		// Check for per-tenant compiled ontology first
+		tenant := dhttp.TenantFromContext(r.Context())
+		tenantManifest := filepath.Join(cfg.OntologyRoot, "tenant-"+tenant, "manifest.json")
+		if _, err := os.Stat(tenantManifest); err == nil {
+			if tenantM, err := loadManifest(filepath.Join(cfg.OntologyRoot, "tenant-"+tenant)); err == nil {
+				dhttp.WriteJSON(w, http.StatusOK, tenantM)
+				return
+			}
+		}
 		dhttp.WriteJSON(w, http.StatusOK, manifest)
 	})
 	r.Get("/v1/objects/{objectType}", listObjects(pool))

@@ -30,6 +30,32 @@ const EnumPropertySchema = PropertyBaseSchema.extend({
   values: z.array(z.string()).min(1),
 });
 
+// NEW: Geo point
+const GeoPointPropertySchema = PropertyBaseSchema.extend({
+  type: z.literal('geo_point'),
+});
+
+// NEW: Reference to another object type
+const ReferencePropertySchema = PropertyBaseSchema.extend({
+  type: z.literal('reference'),
+  targetObjectType: z.string().min(1),
+});
+
+// NEW: Array of any base type
+const ArrayPropertySchema = PropertyBaseSchema.extend({
+  type: z.literal('array'),
+  items: z.object({
+    type: z.enum(['string', 'number', 'boolean', 'date', 'timestamp', 'enum', 'reference']),
+    values: z.array(z.string()).optional(),
+    targetObjectType: z.string().optional(),
+  }),
+});
+
+// NEW: Free-form JSON
+const JsonPropertySchema = PropertyBaseSchema.extend({
+  type: z.literal('json'),
+});
+
 const PropertySchema = z.discriminatedUnion('type', [
   StringPropertySchema,
   NumberPropertySchema,
@@ -37,6 +63,10 @@ const PropertySchema = z.discriminatedUnion('type', [
   DatePropertySchema,
   TimestampPropertySchema,
   EnumPropertySchema,
+  GeoPointPropertySchema,
+  ReferencePropertySchema,
+  ArrayPropertySchema,
+  JsonPropertySchema,
 ]);
 
 export type Property = z.infer<typeof PropertySchema>;

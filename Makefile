@@ -115,6 +115,13 @@ migrate-legacy:
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/007_market_intel_pgvector.sql
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/008_action_proposals.sql
 	psql "$(DATABASE_URL)" -f infra/migrations/postgres/009_audit_event_class_and_archive_batches.sql || true
+	psql "$(DATABASE_URL)" -f infra/migrations/postgres/010_ontology_workspace.sql || true
+	psql "$(DATABASE_URL)" -f infra/migrations/postgres/011_seed_ontology_templates.sql || true
+
+# Ontology builder: apply workspace tables + seed templates (requires supabase up)
+migrate-ontology-builder:
+	psql "$(SEED_DATABASE_URL)" -f infra/migrations/postgres/010_ontology_workspace.sql
+	psql "$(SEED_DATABASE_URL)" -f infra/migrations/postgres/011_seed_ontology_templates.sql
 
 market-intel-install:
 	@ROOT="$(CURDIR)"; \
@@ -262,6 +269,9 @@ run-rules-engine:
 
 run-case-service:
 	cd services/case-service && go run ./cmd
+
+run-ontology-builder:
+	cd services/ontology-builder && go run ./cmd
 
 pnpm-workspace:
 	pnpm install

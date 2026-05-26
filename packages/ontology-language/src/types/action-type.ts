@@ -38,6 +38,33 @@ const ActionParameterSchema = z.discriminatedUnion('type', [
 
 export type ActionParameter = z.infer<typeof ActionParameterSchema>;
 
+// Pre-condition: validation before execution
+const PreConditionSchema = z.object({
+  type: z.enum(['FIELD_NOT_NULL', 'FIELD_EQUALS', 'FIELD_IN', 'OBJECT_EXISTS']),
+  field: z.string().optional(),
+  value: z.any().optional(),
+  targetObjectType: z.string().optional(),
+});
+
+// Post-condition: state change after execution
+const PostConditionSchema = z.object({
+  type: z.enum(['SET_FIELD', 'INCREMENT_FIELD', 'CREATE_LINK', 'AUDIT']),
+  field: z.string().optional(),
+  value: z.any().optional(),
+  linkType: z.string().optional(),
+  targetObjectType: z.string().optional(),
+});
+
+// Side-effect: external actions triggered
+const SideEffectSchema = z.object({
+  type: z.enum(['CREATE_NEO4J_LINK', 'SEND_NOTIFICATION', 'TRIGGER_WEBHOOK']),
+  config: z.record(z.any()),
+});
+
+export type PreCondition = z.infer<typeof PreConditionSchema>;
+export type PostCondition = z.infer<typeof PostConditionSchema>;
+export type SideEffect = z.infer<typeof SideEffectSchema>;
+
 export const ActionTypeDefinitionSchema = z.object({
   apiName: z.string().min(1),
   displayName: z.string().min(1),
@@ -45,6 +72,9 @@ export const ActionTypeDefinitionSchema = z.object({
   parameters: z.array(ActionParameterSchema),
   requiresApproval: z.boolean().default(true),
   description: z.string().optional(),
+  preConditions: z.array(PreConditionSchema).optional(),
+  postConditions: z.array(PostConditionSchema).optional(),
+  sideEffects: z.array(SideEffectSchema).optional(),
 });
 
 export const ActionTypeSchema = z.object({

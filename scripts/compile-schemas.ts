@@ -29,6 +29,11 @@ const YAML_TYPE_TO_V2: Record<string, string> = {
   boolean: "boolean",
   date: "date",
   timestamp: "datetime",
+  enum: "enum",
+  geo_point: "geo_point",
+  reference: "reference",
+  array: "array",
+  json: "json",
 };
 
 function rmrf(p: string) {
@@ -55,11 +60,25 @@ function objectToV2(def: ObjectTypeDefinition, apiName: string) {
     const v2Prop = (v2?.properties as { id: string; type: string }[] | undefined)?.find(
       (x) => x.id === p.name,
     );
-    return {
+    const baseProp: Record<string, unknown> = {
       id: p.name,
       type: v2Prop?.type ?? YAML_TYPE_TO_V2[p.type] ?? "string",
       ...(p.required ? { required: true } : {}),
     };
+
+    // Attach type-specific metadata
+    if (p.type === "enum" && "values" in p) {
+      baseProp.values = (p as { values: string[] }).values;
+    }
+    if (p.type === "reference" && "targetObjectType" in p) {
+      baseProp.targetObjectType = (p as { targetObjectType: string }).targetObjectType;
+    }
+    if (p.type === "array" && "items" in p) {
+      baseProp.items = (p as { items: unknown }).items;
+    }
+    // geo_point, json have no extra metadata
+
+    return baseProp;
   });
   return {
     apiName: def.apiName,

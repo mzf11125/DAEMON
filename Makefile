@@ -1,4 +1,4 @@
-.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track up-gateway down-gateway migrate migrate-legacy seed seed-sandbox seed-express-cargo test test-integration bootstrap-integration-local validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop prove-p3-geo prove-sandbox-sectors prove-traffic-engineering prove-logistics-nvocc prove-express-cargo-sim prove-staging-smoke train-propensity-express backtest-propensity-express prove-market-intel prove-market-intel-social prove-market-intel-rag prove-market-intel-hybrid prove-market-intel-research prove-market-intel-shodan prove-market-intel-security check-vendor-neutral check-sandbox-registry check-express-cargo-catalog ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke market-intel-install
+.PHONY: up down up-legacy up-apps down-apps up-merge-track down-merge-track up-gateway down-gateway docker-build docker-build-platform-api docker-build-ontology-service docker-build-ingestion-service docker-build-rules-engine docker-build-case-service docker-build-control-plane docker-push migrate migrate-legacy seed seed-sandbox seed-express-cargo test test-integration bootstrap-integration-local validate-ontology ontology-validate ontology-compile pipeline-all pipeline-raw run-platform-api run-ontology-service run-rules-engine run-case-service run-ingestion-service pnpm-workspace aip-build aip-eval aip-llm-build aip-orchestrator prove-aip-eval prove-operational-loop prove-p3-geo prove-sandbox-sectors prove-traffic-engineering prove-logistics-nvocc prove-express-cargo-sim prove-staging-smoke train-propensity-express backtest-propensity-express prove-market-intel prove-market-intel-social prove-market-intel-rag prove-market-intel-hybrid prove-market-intel-research prove-market-intel-shodan prove-market-intel-security check-vendor-neutral check-sandbox-registry check-express-cargo-catalog ontology-sync platform-check check-data demo supabase-up supabase-down supabase-status verify-auth-migration seed-control-plane agent-bridge-smoke market-intel-install dev dev-run console watch-platform-api watch-ontology-service watch-ingestion-service watch-rules-engine watch-case-service watch-all watch-test githooks hooks ci-local
 
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
@@ -42,6 +42,38 @@ up-gateway:
 
 down-gateway:
 	$(COMPOSE) --profile gateway down
+
+# ── Container build ──────────────────────────────────────────
+DOCKER_REGISTRY ?= ghcr.io/daemon-blockint-tech/daemon
+DOCKER_TAG      ?= latest
+DOCKER_PLATFORM ?= linux/amd64,linux/arm64
+
+docker-build:
+	@for svc in platform-api ontology-service ingestion-service rules-engine case-service; do \
+		echo ":: building daemon/$$svc:$(DOCKER_TAG)"; \
+		docker build -f "services/$$svc/Dockerfile" -t "daemon/$$svc:$(DOCKER_TAG)" .; \
+	done
+	@echo ":: docker-build done (5 images)"
+
+docker-build-platform-api:
+	docker build --platform $(DOCKER_PLATFORM) -f services/platform-api/Dockerfile -t daemon/platform-api:$(DOCKER_TAG) .
+docker-build-ontology-service:
+	docker build --platform $(DOCKER_PLATFORM) -f services/ontology-service/Dockerfile -t daemon/ontology-service:$(DOCKER_TAG) .
+docker-build-ingestion-service:
+	docker build --platform $(DOCKER_PLATFORM) -f services/ingestion-service/Dockerfile -t daemon/ingestion-service:$(DOCKER_TAG) .
+docker-build-rules-engine:
+	docker build --platform $(DOCKER_PLATFORM) -f services/rules-engine/Dockerfile -t daemon/rules-engine:$(DOCKER_TAG) .
+docker-build-case-service:
+	docker build --platform $(DOCKER_PLATFORM) -f services/case-service/Dockerfile -t daemon/case-service:$(DOCKER_TAG) .
+docker-build-control-plane:
+	docker build --platform $(DOCKER_PLATFORM) -f apps/control-plane/Dockerfile -t daemon/control-plane:$(DOCKER_TAG) .
+
+docker-push: docker-build
+	@for svc in platform-api ontology-service ingestion-service rules-engine case-service; do \
+		docker tag "daemon/$$svc:$(DOCKER_TAG)" "$(DOCKER_REGISTRY)/$$svc:$(DOCKER_TAG)"; \
+		docker push "$(DOCKER_REGISTRY)/$$svc:$(DOCKER_TAG)"; \
+	done
+	@echo ":: docker-push done"
 
 seed-control-plane:
 	./scripts/seed-control-plane-demo-tenant.sh
@@ -309,3 +341,90 @@ ingest-dune-demo:
 		-H "Content-Type: application/json" \
 		-H "X-Tenant-Id: tenant-demo" \
 		-d "$$(printf '%s' '{"connector":"dune-sql","params":{"mode":"query_id","query_id":%s,"column_map":{"observation_id":"id","asset_id":"wallet","label":"metric","value":"amount_usd","observed_at":"block_time"}}}' "$$DUNE_DEMO_QUERY_ID")"
+
+# ══════════════════════════════════════════════════════════════
+# Development automation
+# ══════════════════════════════════════════════════════════════
+
+# One-command dev environment: infra + migrate + seed + all pipelines.
+dev: up supabase-up migrate seed pipeline-all ontology-sync
+	@echo ""
+	@echo "═══ Dev environment ready ═══"
+	@echo "  make dev-run          — start all 5 Go services"
+	@echo "  make dev-watch        — start all services with auto-reload"
+	@echo "  make console          — start console-web UI"
+	@echo "  make platform-check   — verify endpoints"
+	@echo ""
+
+# Start all 5 Go services in background.
+dev-run:
+	@$(MAKE) run-platform-api &
+	@sleep 0.5
+	@$(MAKE) run-ontology-service &
+	@sleep 0.5
+	@$(MAKE) run-ingestion-service &
+	@sleep 0.5
+	@$(MAKE) run-rules-engine &
+	@sleep 0.5
+	@$(MAKE) run-case-service &
+	@echo "All 5 services starting (ports 8080–8084)"
+	@echo "  platform-api    → http://localhost:8080/health"
+	@echo "  ontology-svc    → http://localhost:8081/health"
+	@echo "  ingestion-svc   → http://localhost:8082/health"
+	@echo "  rules-engine    → http://localhost:8083/health"
+	@echo "  case-service    → http://localhost:8084/health"
+
+# Start console-web UI.
+console:
+	pnpm --filter @daemon/console-web dev
+
+# ── File watchers (auto-reload on save) ─────────────────────
+
+WATCHER = cd scripts/watcher && GOWORK=off go run . --repo=$(CURDIR)
+
+watch-platform-api:
+	$(WATCHER) --dir=services/platform-api -- make run-platform-api
+
+watch-ontology-service:
+	$(WATCHER) --dir=services/ontology-service -- make run-ontology-service
+
+watch-ingestion-service:
+	$(WATCHER) --dir=services/ingestion-service -- make run-ingestion-service
+
+watch-rules-engine:
+	$(WATCHER) --dir=services/rules-engine -- make run-rules-engine
+
+watch-case-service:
+	$(WATCHER) --dir=services/case-service -- make run-case-service
+
+# Watch a single package's tests on change.
+watch-test:
+	$(WATCHER) --dir=packages/go-common -- go test ./... -count=1
+
+# ── Git hooks ────────────────────────────────────────────────
+
+githooks:
+	./scripts/git-hooks/install.sh
+
+hooks: githooks
+
+# ── Full CI gate (what GitHub Actions runs, locally) ────────
+
+ci-local: ontology-sync
+	@echo "=== CI: go vet + test all modules ==="
+	@for dir in packages/go-common packages/pipeline-runner infra/seed \
+	  services/platform-api services/ontology-service services/ingestion-service \
+	  services/rules-engine services/case-service \
+	  pipelines/raw-ingest pipelines/transforms pipelines/features pipelines/quality \
+	  pipelines/propensity-train pipelines/audit-archival; do \
+	  echo "--- $$dir ---"; \
+	  (cd $$dir && go mod tidy && go vet ./... && go test ./... -count=1) || exit 1; \
+	done
+	pnpm install --frozen-lockfile || pnpm install
+	pnpm -r typecheck
+	./scripts/check-no-stub-handlers.sh
+	./scripts/check-maturation-policy.sh
+	./scripts/check-vendor-neutral-language.sh
+	./scripts/check-sandbox-registry-drift.sh
+	./scripts/check-express-cargo-catalog.sh
+	@echo "=== ci-local PASSED ==="

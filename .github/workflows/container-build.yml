@@ -179,6 +179,9 @@ jobs:
     if: github.event_name == 'push'
     needs: [build-and-push, control-plane]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - name: Download all SBOMs
         uses: actions/download-artifact@v4

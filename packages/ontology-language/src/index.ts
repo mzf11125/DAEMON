@@ -1,7 +1,7 @@
 // Types
 export type { ObjectType, ObjectTypeDefinition, Property } from './types/object-type.js';
 export type { LinkType, LinkTypeDefinition } from './types/link-type.js';
-export type { ActionType, ActionTypeDefinition } from './types/action-type.js';
+export type { ActionType, ActionTypeDefinition, PreCondition, PostCondition, SideEffect } from './types/action-type.js';
 export type { OntologySchema } from './types/ontology-schema.js';
 
 // Schemas (Zod — untuk re-use di package lain)

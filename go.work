@@ -13,6 +13,7 @@ use (
 	./pipelines/transforms
 	./services/case-service
 	./services/ingestion-service
+	./services/ontology-builder
 	./services/ontology-service
 	./services/platform-api
 	./services/rules-engine

@@ -1,0 +1,63 @@
+# Git
+.git
+.gitmodules
+
+# Node / pnpm
+node_modules
+**/node_modules
+apps/**/dist
+apps/**/.next
+pnpm-lock.yaml
+
+# Go build artifacts
+*.exe
+*.test
+*.out
+**/vendor
+
+# IDE / editor
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CI / env
+.env
+.env.*
+!.env.example
+
+# Docker
+.docker
+docker-compose.override.yml
+
+# Docs (large, not needed in images)
+docs
+
+# Test files
+**/*_test.go
+tests/
+
+# Pipeline scripts (not needed at runtime)
+scripts/
+.github/
+
+# Infra configs (not baked into images)
+infra/terraform/
+infra/helm/
+infra/keycloak/
+infra/caddy/
+infra/migrations/
+
+# Python venvs
+**/.venv
+**/__pycache__
+
+# Misc
+*.md
+README*
+LICENSE

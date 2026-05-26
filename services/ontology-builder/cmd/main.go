@@ -52,6 +52,11 @@ func main() {
 	objHandler := handler.NewObjectHandler(pool)
 	linkHandler := handler.NewLinkHandler(pool)
 	actionHandler := handler.NewActionHandler(pool)
+	ruleHandler := handler.NewRuleHandler(pool)
+	exportHandler := handler.NewExportHandler(pool)
+
+	// DB health check
+	r.Get("/health/db", handler.HealthDB(pool))
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/workspaces", wsHandler.List)
@@ -93,6 +98,19 @@ func main() {
 				r.Delete("/params/{paramId}", actionHandler.DeleteParam)
 			})
 
+			// Rules (Phase 3)
+			r.Get("/rules", ruleHandler.List)
+			r.Post("/rules", ruleHandler.Create)
+			r.Route("/rules/{ruleId}", func(r chi.Router) {
+				r.Get("/", ruleHandler.Get)
+				r.Put("/", ruleHandler.Update)
+				r.Delete("/", ruleHandler.Delete)
+				r.Get("/compile", ruleHandler.Compile)
+			})
+
+			// Export / Import (Phase 3)
+			r.Get("/export", exportHandler.Export)
+
 			// Validation & Compilation
 			r.Post("/validate", handler.ValidateWorkspace(pool))
 			r.Post("/compile/preview", handler.CompilePreview(pool))
@@ -105,6 +123,9 @@ func main() {
 			r.Get("/versions/{version}/diff", handler.VersionDiff(pool))
 			r.Post("/versions/{version}/rollback", handler.RollbackVersion(pool))
 		})
+
+		// Import (standalone, no workspace ID)
+		r.Post("/workspaces/import", exportHandler.Import)
 	})
 
 	r.Get("/v1/templates", handler.ListTemplates(pool))

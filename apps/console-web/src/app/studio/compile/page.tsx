@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { validateWorkspace, compileWorkspace } from "@/lib/studio-api";
 
@@ -19,6 +19,14 @@ async function getMigrationPreview(workspaceId: string) {
 }
 
 export default function CompilePage() {
+  return (
+    <Suspense fallback={<div style={{ color: "#666", padding: "2rem" }}>Loading...</div>}>
+      <CompilePageContent />
+    </Suspense>
+  );
+}
+
+function CompilePageContent() {
   const searchParams = useSearchParams();
   const workspaceId = searchParams.get("workspace") || "";
   const [validateResult, setValidateResult] = useState<any>(null);

@@ -1,11 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getObjects, createObject, deleteObject } from "@/lib/studio-api";
 import type { ObjectType } from "@/lib/studio-api";
 
 export default function ObjectsPage() {
+  return (
+    <Suspense fallback={<div style={{ color: "#666", padding: "2rem" }}>Loading...</div>}>
+      <ObjectsPageContent />
+    </Suspense>
+  );
+}
+
+function ObjectsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const workspaceId = searchParams.get("workspace") || "";

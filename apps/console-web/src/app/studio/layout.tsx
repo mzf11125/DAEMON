@@ -9,7 +9,9 @@ const NAV_ITEMS = [
   { href: "/studio/objects", label: "Objects", icon: "◆" },
   { href: "/studio/links", label: "Links", icon: "↗" },
   { href: "/studio/actions", label: "Actions", icon: "▶" },
+  { href: "/studio/rules", label: "Rules", icon: "⚑" },
   { href: "/studio/compile", label: "Compile", icon: "⚙" },
+  { href: "/studio/templates", label: "Templates", icon: "⎌" },
 ];
 
 export default function StudioLayout({ children }: { children: React.ReactNode }) {

@@ -88,7 +88,7 @@ func (h *WorkspaceHandler) List(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Create creates a new workspace.
+// Create creates a new workspace. If baseTemplateId is provided, deep-clones from the template.
 func (h *WorkspaceHandler) Create(w http.ResponseWriter, r *http.Request) {
 	tenant := dhttp.TenantFromContext(r.Context())
 	var req CreateWorkspaceRequest
@@ -117,6 +117,20 @@ func (h *WorkspaceHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Deep-clone from template if baseTemplateId is provided
+	if req.BaseTemplateID != nil && *req.BaseTemplateID != "" {
+		var snapshot []byte
+		err := h.pool.QueryRow(r.Context(),
+			`SELECT snapshot FROM ontology_templates WHERE id = $1`, *req.BaseTemplateID,
+		).Scan(&snapshot)
+		if err == nil && len(snapshot) > 0 {
+			var manifest map[string]any
+			if json.Unmarshal(snapshot, &manifest) == nil {
+				cloneTemplateContent(h.pool, r, id, manifest, now)
+			}
+		}
+	}
+
 	ws := Workspace{
 		ID:             id,
 		TenantID:       tenant,
@@ -128,6 +142,144 @@ func (h *WorkspaceHandler) Create(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt:      now,
 	}
 	dhttp.WriteJSON(w, http.StatusCreated, ws)
+}
+
+// cloneTemplateContent deep-clones object/link/action types from a template snapshot into a workspace.
+func cloneTemplateContent(pool *pgxpool.Pool, r *http.Request, workspaceID string, manifest map[string]any, now time.Time) {
+	// Import object types
+	if objTypes, ok := manifest["objectTypes"].([]any); ok {
+		for _, ot := range objTypes {
+			objMap, ok := ot.(map[string]any)
+			if !ok {
+				continue
+			}
+			apiName, _ := objMap["apiName"].(string)
+			displayName, _ := objMap["displayName"].(string)
+			if apiName == "" || displayName == "" {
+				continue
+			}
+			pk, _ := objMap["primaryKey"].(string)
+			if pk == "" {
+				pk = "id"
+			}
+			titleProp, _ := objMap["titleProperty"].(string)
+
+			objID := uuid.New().String()
+			_, err := pool.Exec(r.Context(),
+				`INSERT INTO ontology_object_types (id, workspace_id, api_name, display_name, primary_key, title_property, sort_order, created_at, updated_at)
+				 VALUES ($1,$2,$3,$4,$5,$6,0,$7,$7)`,
+				objID, workspaceID, apiName, displayName, pk, titleProp, now,
+			)
+			if err != nil {
+				continue
+			}
+
+			// Clone properties
+			if props, ok := objMap["properties"].([]any); ok {
+				for i, p := range props {
+					propMap, ok := p.(map[string]any)
+					if !ok {
+						continue
+					}
+					pName, _ := propMap["name"].(string)
+					pType, _ := propMap["type"].(string)
+					if pName == "" || pType == "" {
+						continue
+					}
+					required, _ := propMap["required"].(bool)
+					config := json.RawMessage("{}")
+					if cfg, ok := propMap["config"]; ok && cfg != nil {
+						cfgBytes, _ := json.Marshal(cfg)
+						config = cfgBytes
+					}
+					propID := uuid.New().String()
+					pool.Exec(r.Context(),
+						`INSERT INTO ontology_properties (id, object_type_id, name, type, required, config, sort_order, created_at, updated_at)
+						 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8)`,
+						propID, objID, pName, pType, required, config, i, now,
+					)
+				}
+			}
+		}
+	}
+
+	// Import link types
+	if linkTypes, ok := manifest["linkTypes"].([]any); ok {
+		for _, lt := range linkTypes {
+			linkMap, ok := lt.(map[string]any)
+			if !ok {
+				continue
+			}
+			apiName, _ := linkMap["apiName"].(string)
+			fromType, _ := linkMap["fromObjectType"].(string)
+			toType, _ := linkMap["toObjectType"].(string)
+			if apiName == "" || fromType == "" || toType == "" {
+				continue
+			}
+			cardinality, _ := linkMap["cardinality"].(string)
+			displayName := apiName
+			if dn, ok := linkMap["displayName"].(string); ok && dn != "" {
+				displayName = dn
+			}
+
+			linkID := uuid.New().String()
+			pool.Exec(r.Context(),
+				`INSERT INTO ontology_link_types (id, workspace_id, api_name, display_name, from_object_type, to_object_type, cardinality, created_at, updated_at)
+				 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8)`,
+				linkID, workspaceID, apiName, displayName, fromType, toType, cardinality, now,
+			)
+		}
+	}
+
+	// Import action types
+	if actTypes, ok := manifest["actionTypes"].([]any); ok {
+		for _, at := range actTypes {
+			actMap, ok := at.(map[string]any)
+			if !ok {
+				continue
+			}
+			apiName, _ := actMap["apiName"].(string)
+			displayName, _ := actMap["displayName"].(string)
+			targetType, _ := actMap["targetObjectType"].(string)
+			if apiName == "" || displayName == "" || targetType == "" {
+				continue
+			}
+			requiresApproval, _ := actMap["requiresApproval"].(bool)
+
+			actID := uuid.New().String()
+			pool.Exec(r.Context(),
+				`INSERT INTO ontology_action_types (id, workspace_id, api_name, display_name, target_object_type, requires_approval, created_at, updated_at)
+				 VALUES ($1,$2,$3,$4,$5,$6,$7,$7)`,
+				actID, workspaceID, apiName, displayName, targetType, requiresApproval, now,
+			)
+
+			if params, ok := actMap["parameters"].([]any); ok {
+				for _, p := range params {
+					paramMap, ok := p.(map[string]any)
+					if !ok {
+						continue
+					}
+					pName, _ := paramMap["name"].(string)
+					pType, _ := paramMap["type"].(string)
+					if pName == "" || pType == "" {
+						continue
+					}
+					required, _ := paramMap["required"].(bool)
+					config := json.RawMessage("{}")
+					if cfg, ok := paramMap["config"]; ok && cfg != nil {
+						cfgBytes, _ := json.Marshal(cfg)
+						config = cfgBytes
+					}
+					paramID := uuid.New().String()
+					pool.Exec(r.Context(),
+						`INSERT INTO ontology_action_params (id, action_type_id, name, type, required, config, sort_order)
+						 VALUES ($1,$2,$3,$4,$5,$6,0)`,
+						paramID, actID, pName, pType, required, config,
+					)
+				}
+			}
+		}
+	}
 }
 
 // Get returns a single workspace.

@@ -1,11 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getLinks, getObjects, createLink, deleteLink } from "@/lib/studio-api";
 import type { LinkType, ObjectType } from "@/lib/studio-api";
 
 export default function LinksPage() {
+  return (
+    <Suspense fallback={<div style={{ color: "#666", padding: "2rem" }}>Loading...</div>}>
+      <LinksPageContent />
+    </Suspense>
+  );
+}
+
+function LinksPageContent() {
   const searchParams = useSearchParams();
   const workspaceId = searchParams.get("workspace") || "";
   const [links, setLinks] = useState<LinkType[]>([]);

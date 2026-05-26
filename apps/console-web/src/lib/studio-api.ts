@@ -222,6 +222,151 @@ export async function deleteAction(workspaceId: string, actionId: string) {
   return true;
 }
 
+// ── Rules ───────────────────────────────────────────
+
+export interface RuleCondition {
+  field: string;
+  op: string; // eq, neq, gt, gte, lt, lte, in, contains, regex
+  value: any;
+}
+
+export interface RuleSignal {
+  severity: string; // LOW, MEDIUM, HIGH, CRITICAL
+  titleTemplate: string;
+  bodyTemplate?: string;
+}
+
+export interface Rule {
+  id: string;
+  workspaceId: string;
+  apiName: string;
+  displayName: string;
+  description?: string;
+  sourceObjectType: string;
+  schedule: string; // cron expression
+  conditionLogic: string; // AND | OR
+  conditions: RuleCondition[];
+  signal: RuleSignal;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getRules(workspaceId: string): Promise<Rule[]> {
+  const res = await fetch(`${BASE}/v1/workspaces/${workspaceId}/rules`, { headers: getHeaders() });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.rules || data.items || [];
+}
+
+export async function createRule(workspaceId: string, rule: {
+  apiName: string;
+  displayName: string;
+  description?: string;
+  sourceObjectType: string;
+  schedule: string;
+  conditionLogic?: string;
+  conditions: RuleCondition[];
+  signal: RuleSignal;
+}) {
+  const res = await fetch(`${BASE}/v1/workspaces/${workspaceId}/rules`, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify(rule),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to create rule");
+  }
+  return res.json();
+}
+
+export async function getRule(workspaceId: string, ruleId: string): Promise<Rule> {
+  const res = await fetch(`${BASE}/v1/workspaces/${workspaceId}/rules/${ruleId}`, { headers: getHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch rule");
+  return res.json();
+}
+
+export async function updateRule(workspaceId: string, ruleId: string, updates: Partial<Rule>) {
+  const res = await fetch(`${BASE}/v1/workspaces/${workspaceId}/rules/${ruleId}`, {
+    method: "PUT",
+    headers: getHeaders(),
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error("Failed to update rule");
+  return res.json();
+}
+
+export async function deleteRule(workspaceId: string, ruleId: string) {
+  const res = await fetch(`${BASE}/v1/workspaces/${workspaceId}/rules/${ruleId}`, {
+    method: "DELETE",
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to delete rule");
+  return true;
+}
+
+export async function compileRule(workspaceId: string, ruleId: string) {
+  const res = await fetch(`${BASE}/v1/workspaces/${workspaceId}/rules/${ruleId}/compile`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to compile rule");
+  return res.json();
+}
+
+// ── Templates (extended) ────────────────────────────
+
+export async function saveWorkspaceAsTemplate(workspaceId: string, opts: {
+  name: string;
+  displayName: string;
+  description?: string;
+  category?: string;
+  tags?: string[];
+}) {
+  const res = await fetch(`${BASE}/v1/templates`, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify({ workspaceId, ...opts }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to save template");
+  }
+  return res.json();
+}
+
+export async function deleteTemplate(templateId: string) {
+  const res = await fetch(`${BASE}/v1/templates/${templateId}`, {
+    method: "DELETE",
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to delete template");
+  return true;
+}
+
+// ── Workspace Export / Import ───────────────────────
+
+export async function exportWorkspace(workspaceId: string) {
+  const res = await fetch(`${BASE}/v1/workspaces/${workspaceId}/export`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to export workspace");
+  return res.json();
+}
+
+export async function importWorkspace(data: any) {
+  const res = await fetch(`${BASE}/v1/workspaces/import`, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to import workspace");
+  }
+  return res.json();
+}
+
 // ── Validation & Compile ─────────────────────────────
 
 export async function validateWorkspace(workspaceId: string) {

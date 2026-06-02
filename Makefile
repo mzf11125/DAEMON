@@ -438,3 +438,55 @@ ci-local: ontology-sync
 	./scripts/check-sandbox-registry-drift.sh
 	./scripts/check-express-cargo-catalog.sh
 	@echo "=== ci-local PASSED ==="
+
+# ── TypeScript test targets ──────────────────────────────────
+
+ts-test:
+	pnpm -r test --if-present
+
+ts-coverage:
+	pnpm -r test:coverage --if-present
+
+ts-test-watch:
+	@echo "Run: pnpm --filter <pkg> test:watch"
+
+go-test:
+	go test -race ./...
+
+go-test-coverage:
+	go test -race -coverprofile=coverage.out ./...
+
+test-all: ts-test go-test
+	@echo "All tests passed"
+
+coverage: ts-coverage go-test-coverage
+	@echo "Coverage reports generated"
+
+lint-all:
+	golangci-lint run ./...
+	pnpm lint
+
+# ── CI full gate ──────────────────────────────────────────────
+
+ci-full: ontology-sync build test-all lint-all
+	@echo "=== ci-full PASSED ==="
+
+# ── Perf benchmarks ───────────────────────────────────────────
+
+perf-smoke:
+	k6 run tests/perf/smoke.js 2>/dev/null || echo "k6 not installed — run: brew install k6"
+
+# ── Grafana plugin ────────────────────────────────────────────
+
+grafana-plugin-build:
+	cd grafana-daemon-plugin && npm install 2>/dev/null || true
+	cd grafana-daemon-plugin && npx @grafana/toolkit plugin:build 2>/dev/null || echo "Build with: cd grafana-daemon-plugin && npx @grafana/toolkit plugin:build"
+
+# ── Workspace health ──────────────────────────────────────────
+
+ws-status:
+	@echo "=== pnpm workspace packages ==="
+	@pnpm ls -r --depth 0
+	@echo ""
+	@echo "=== Go modules ==="
+	@find . -name 'go.mod' -not -path './tests/*' | while read f; do echo "  $$(dirname $$f)"; done

@@ -1,10 +1,22 @@
 # DAEMON
 
-Industry-agnostic operational intelligence platform: ingest data, model it in an ontology, evaluate rules, execute actions, and operate cases through a web cockpit.
+Industry-agnostic operational intelligence platform — **modular, Grafana-like dashboard ecosystem** built on the Ontology framework.
 
-The default domain is **enterprise operations** (manufacturing, logistics, healthcare ops, energy, and similar). Optional vertical packs live under `ontology/v2/examples/packs/`. Architecture follows data-plane + ontology + application-layer patterns without requiring a single vendor stack.
+DAEMON ingests data, models it in an ontology, evaluates rules, executes actions, and operates cases through a pluggable dashboard platform. It serves as the **universal source of truth** for enterprise operations, with an SDK + marketplace for extensions, and bidirectional Grafana interoperability.
 
-## What works today (v1 parity)
+> **[ROADMAP.md](ROADMAP.md)** — Phased plan for dashboard engine, SDK suite, marketplace, and Grafana integration.
+> **[AGENTS.md](AGENTS.md)** — Instructions for AI coding agents working on this repo.
+
+## Vision
+
+| Pillar                  | Description                                                                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dashboard platform**  | Pluggable panels, typed data sources, dashboard-as-code. Every visualization is a registered plugin.                                        |
+| **SDK suite**           | `@daemon/sdk` — one import for panel, data source, action, and plugin development.                                                          |
+| **Marketplace**         | Discover, install, and manage plugins. Tenant-scoped activation with version management.                                                    |
+| **Grafana integration** | Bidirectional — export ontology dashboards to Grafana JSON via `@grafana/grafana-foundation-sdk`, or import Grafana dashboards into Daemon. |
+
+## What works today (v1)
 
 - **Ontology v2** manifest, objects, and role-gated **actions** (`OpenCase`, `RecordDecision`, …)
 - **Operational loop**: signal → rules → open case (with `signalIds`) → record decision → audit trail → case read model
@@ -16,21 +28,23 @@ Traceability: [docs/traceability/operational-platform-parity-v1.md](docs/traceab
 
 ## Stack
 
-| Layer | Technology |
-|-------|------------|
-| Console | Next.js (`apps/console-web`) |
-| Services | Go 1.22+ (`services/*`) |
-| Metadata | Postgres via **Supabase** local (Auth + RLS) |
-| Analytics | ClickHouse (datasets) |
-| Graph | Neo4j 5 (optional links) |
-| Batch | Go CLIs (`pipelines/*`) |
-| Agent tools | MCP ontology server (`aip/mcp-ontology`) |
+| Layer         | Technology                                        |
+| ------------- | ------------------------------------------------- |
+| Console       | Next.js 15 (`apps/console-web`)                   |
+| Control plane | Fastify (`apps/control-plane`)                    |
+| Services      | Go 1.22+ (`services/*`)                           |
+| Metadata      | Postgres via **Supabase** local (Auth + RLS)      |
+| Analytics     | ClickHouse (datasets)                             |
+| Graph         | Neo4j 5 (optional links)                          |
+| Batch         | Go CLIs (`pipelines/*`)                           |
+| Agent tools   | MCP ontology server (`aip/mcp-ontology`)          |
+| SDK           | TypeScript monorepo — pnpm workspaces + Turborepo |
 
 ## Prerequisites
 
 - Docker (ClickHouse, Neo4j)
 - [Supabase CLI](https://supabase.com/docs/guides/cli) for local Postgres + Auth
-- Go 1.22+, Node.js 20+, `pnpm`
+- Go 1.22+, Node.js 20+, `pnpm` 9.15.0
 
 ## Quick start
 
@@ -75,6 +89,41 @@ Integration tests (Docker + stack; from repo root):
 make test-integration
 ```
 
+### TypeScript tests
+
+```bash
+# All TypeScript unit tests (15 packages)
+pnpm -r test --if-present
+
+# Coverage reports
+pnpm -r test:coverage --if-present
+
+# Full CI gate
+make ci-full
+```
+
+### Control-plane (port 4000)
+
+Requires local PostgreSQL on port 5433:
+
+```bash
+# One-time setup
+initdb -D .local/pgdata --username=daemon --auth=trust
+echo "port = 5433" >> .local/pgdata/postgresql.conf
+echo "listen_addresses = 'localhost'" >> .local/pgdata/postgresql.conf
+pg_ctl -D .local/pgdata -l .local/pgdata/logfile start
+createdb -h localhost -p 5433 -U daemon daemon_control
+createdb -h localhost -p 5433 -U daemon control_plane
+psql -h localhost -p 5433 -U daemon -d daemon_control -f apps/control-plane/src/db/migrations/0001_initial.sql
+psql -h localhost -p 5433 -U daemon -d control_plane -f apps/control-plane/src/db/migrations/0001_initial.sql
+
+# Run tests
+pnpm --filter @daemon/control-plane test
+
+# Start server
+pnpm --filter @daemon/control-plane dev
+```
+
 ### AIP (agents, MCP, golden eval)
 
 Requires **ontology-service** on `:8081` (and `:8080` / `:8084` for audit/case MCP tools).
@@ -97,13 +146,13 @@ make up-apps
 
 ## API
 
-| Service | Port | Role |
-|---------|------|------|
-| platform-api | 8080 | `/v1/me`, audit events |
-| ontology-service | 8081 | manifest, objects, actions, functions |
-| ingestion-service | 8082 | connector jobs |
-| rules-engine | 8083 | rule evaluation |
-| case-service | 8084 | case list/detail |
+| Service           | Port | Role                                  |
+| ----------------- | ---- | ------------------------------------- |
+| platform-api      | 8080 | `/v1/me`, audit events                |
+| ontology-service  | 8081 | manifest, objects, actions, functions |
+| ingestion-service | 8082 | connector jobs                        |
+| rules-engine      | 8083 | rule evaluation                       |
+| case-service      | 8084 | case list/detail                      |
 
 - OpenAPI: [api/openapi-v1.yaml](api/openapi-v1.yaml)
 - Contracts: [docs/api-contracts/README.md](docs/api-contracts/README.md)
@@ -113,21 +162,43 @@ Authenticated calls need `Authorization: Bearer <jwt>` and `X-Tenant-Id` (defaul
 
 ## Repository layout
 
-| Path | Purpose |
-|------|---------|
-| `apps/console-web` | Operator UI |
-| `services/*` | Go HTTP services |
-| `packages/go-common` | Shared auth, HTTP, DB helpers |
-| `packages/sdk-ts` | Browser/Node API client |
-| `ontology/v2` | Manifests, types, sector packs |
-| `pipelines/*` | Raw → transform → features → quality |
-| `infra/` | Docker Compose, migrations, seed |
-| `supabase/` | Local Supabase config |
-| `scripts/` | Smoke, auth seed, ontology validation |
-| `tests/integration` | HTTP integration tests |
-| `docs/` | Architecture, governance, integrations |
+```
+apps/
+├── console-web/          # Next.js 15 operator dashboard (port 3000)
+├── control-plane/        # Fastify control-plane server (port 4000)
+└── daemon-cli/           # Commander.js CLI
 
-More detail: [CONTRIBUTING.md](CONTRIBUTING.md), [docs/developer-tools/repo-layout.md](docs/developer-tools/repo-layout.md).
+packages/
+├── ontology-language/    # Core types (Zod) + YAML parser
+├── ontology-engine/      # Runtime: objects, actions, audit, schema registry
+├── ontology-sdk/         # OntologyClient, ObjectQueryBuilder, ActionProposer
+├── ontology-contracts/   # Manifest schema, canonical object/action lists
+├── ontology-functions/   # Pure functions (aggregate, summarize, match)
+├── plugin-sdk/           # PluginRegistry, SkillRegistry, DynamicAgentBuilder
+├── aip-agent/            # Agent orchestrator + MCP client
+├── sdk-ts/               # Browser/Node HTTP API client
+├── shared-types/         # Shared TS types
+├── ui-kit/               # React component library
+├── dashboard-engine/     # (NEW) PanelRegistry, DataSourceRegistry, DashboardBuilder
+├── sdk/                  # (NEW) Unified developer SDK barrel
+├── sdk-react/            # (NEW) React hooks + components
+├── sdk-node/             # (NEW) Node.js middleware + utilities
+└── grafana-codegen/      # (NEW) Ontology → Grafana dashboard generator
+
+aip/
+├── agent-service/        # Fastify HTTP bridge (port 3001)
+├── mcp-ontology/         # MCP server exposing ontology as LLM tools
+├── llm/                  # LLM gateway stub
+├── agents/               # Agent definitions
+├── prompts/              # System prompts
+└── evals/                # Evaluation cases + fixtures
+
+services/                 # Go microservices (8080-8084)
+ontology/                 # Ontology schema files (v2 compiled, v3 source YAML)
+infra/                    # Docker, migrations, k8s, terraform, helm
+pipelines/                # Data pipeline CLIs
+connectors/               # External data connectors
+```
 
 ## Documentation
 

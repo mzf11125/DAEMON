@@ -1,0 +1,2 @@
+pnpm typecheck
+pnpm -r test --if-present

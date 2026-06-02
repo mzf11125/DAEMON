@@ -1,0 +1,29 @@
+{
+  "name": "grafana-daemon-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DAEMON Ontology data source and panels for Grafana",
+  "scripts": {
+    "build": "grafana-toolkit plugin:build",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@grafana/data": "^11.0.0",
+    "@grafana/runtime": "^11.0.0",
+    "@grafana/ui": "^11.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@grafana/e2e": "^11.0.0",
+    "@grafana/toolkit": "^11.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.7.0"
+  }
+}

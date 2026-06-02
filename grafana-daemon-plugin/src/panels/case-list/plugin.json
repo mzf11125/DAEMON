@@ -1,0 +1,15 @@
+{
+  "type": "panel",
+  "name": "DAEMON Case List",
+  "id": "daemon-case-list-panel",
+  "info": {
+    "description": "Case management panel — view, filter, and drill into DAEMON cases",
+    "author": { "name": "DAEMON" },
+    "logos": { "small": "img/logo.svg", "large": "img/logo.svg" },
+    "version": "0.1.0"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=10.0.0",
+    "plugins": ["daemon-ontology-datasource"]
+  }
+}

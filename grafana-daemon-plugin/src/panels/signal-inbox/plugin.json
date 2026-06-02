@@ -1,0 +1,15 @@
+{
+  "type": "panel",
+  "name": "DAEMON Signal Inbox",
+  "id": "daemon-signal-inbox-panel",
+  "info": {
+    "description": "Real-time signal triage with inline case opening — powered by DAEMON Ontology",
+    "author": { "name": "DAEMON" },
+    "logos": { "small": "img/logo.svg", "large": "img/logo.svg" },
+    "version": "0.1.0"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=10.0.0",
+    "plugins": ["daemon-ontology-datasource"]
+  }
+}

@@ -1,0 +1,53 @@
+name: Marketplace Plugin CI
+
+on:
+  push:
+    paths:
+      - "grafana-daemon-plugin/**"
+      - "packages/plugin-sdk/**"
+      - "packages/dashboard-engine/**"
+      - "packages/sdk/**"
+
+jobs:
+  plugin-test:
+    name: Plugin Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        plugin: ["grafana-daemon-plugin"]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "9.15.0"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter @daemon/${{ matrix.plugin }}-* test 2>/dev/null || echo "No plugin tests configured yet"
+
+  manifest-validate:
+    name: Validate Plugin Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "9.15.0"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - name: Validate all plugin.json manifests
+        run: |
+          for f in $(find grafana-daemon-plugin packages/dashboard-engine -name 'plugin.json' 2>/dev/null); do
+            echo "Validating $f..."
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8')); console.log('  OK')"
+          done

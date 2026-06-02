@@ -27,3 +27,4 @@ ontology/v2-compiled/
 packages/ontology-language/dist/
 **/*.tsbuildinfo
 .pnpm-store/
+.local/

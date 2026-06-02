@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node --env-file=.env dist/index.js",
     "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

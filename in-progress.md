@@ -4,18 +4,7 @@
 
 ## ⬜ Pending — Do Not Forget
 
-### pnpm version: Pin to 9.15.0 globally
-
-System pnpm auto-upgraded to 11.5.0 which breaks the project lockfile. Currently using `npx pnpm@9.15.0` or `~/.local/bin/pnpm`. Consider:
-
-```bash
-# Already installed to ~/.local/bin
-export PATH="$HOME/.local/bin:$PATH"
-```
-
----
-
-## ✅ Completed (Sprint 0)
+_No pending items._
 
 | Task                                                                                                                                        | Date       |
 | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
@@ -32,6 +21,7 @@ export PATH="$HOME/.local/bin:$PATH"
 | Control-plane server running on port 4000                                                                                                   | 2026-06-02 |
 | ontology-engine: Created `objects`, `action_audit_log`, `schema_overrides`, `tenant_schemas` tables in `daemon_test` — all 14 tests passing | 2026-06-03 |
 | console-web: Removed stray `/home/zidan/pnpm-lock.yaml` — no more lockfile root warning                                                     | 2026-06-03 |
+| pnpm version pinning: Added `preinstall` check + `.npmrc` package-manager-strict + documented in AGENTS.md                                  | 2026-06-03 |
 
 ---
 

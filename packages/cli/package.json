@@ -1,5 +1,5 @@
 {
-  "name": "@daemon/cli",
+  "name": "@daemon/config-cli",
   "version": "0.1.0",
   "description": "Operator CLI for Daemon ontology platform",
   "type": "module",

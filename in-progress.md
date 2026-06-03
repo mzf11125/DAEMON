@@ -22,6 +22,11 @@ _No pending items._
 | ontology-engine: Created `objects`, `action_audit_log`, `schema_overrides`, `tenant_schemas` tables in `daemon_test` — all 14 tests passing | 2026-06-03 |
 | console-web: Removed stray `/home/zidan/pnpm-lock.yaml` — no more lockfile root warning                                                     | 2026-06-03 |
 | pnpm version pinning: Added `preinstall` check + `.npmrc` package-manager-strict + documented in AGENTS.md                                  | 2026-06-03 |
+| Created `grafana-development` branch from upstream/main                                                                               | 2026-06-03 |
+| Merged all local work into grafana-development (1227+ files)                                                                          | 2026-06-03 |
+| Fixed @daemon/cli naming conflict (renamed upstream to @daemon/config-cli)                                                             | 2026-06-03 |
+| All 21 test suites passing on grafana-development branch                                                                              | 2026-06-03 |
+| Pushed grafana-development to mzf11125/DAEMON                                                                                         | 2026-06-03 |
 
 ---
 
@@ -41,7 +46,7 @@ _No pending items._
 
 ## 🔜 Next
 
-- [ ] Fix ontology-engine migration (see Pending above)
+- [ ] Create PR from `mzf11125:grafana-development` → `daemon-blockint-tech:main`
 - [ ] Expand `@daemon/shared-types` with full SDK type catalog
 - [ ] Expand `@daemon/ui-kit` with 25+ components
 - [ ] Create `@daemon/dashboard-engine` package

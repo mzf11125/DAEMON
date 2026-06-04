@@ -171,11 +171,11 @@ flowchart TB
 
 ### v1 success criteria
 
-- [ ] `pnpm run check:ontology-pack` passes with extension pack present.
-- [ ] `pnpm run check:tenancy-config` passes with new domain.
-- [ ] Integration test: sample commercial + operational + junction ingest under logistics domain.
-- [ ] No logistics-specific types added to `configs/ontology/packs/foundation/`.
-- [ ] [08-semantic-governance-alignment.md](./08-semantic-governance-alignment.md) updated with pack id and mapping rows when implemented.
+- [x] `pnpm run check:ontology-pack` passes with extension pack present.
+- [x] `pnpm run check:tenancy-config` passes with new domain.
+- [x] Integration test: sample commercial + operational ingest under logistics domain (Account, Shipment, Manifest).
+- [x] No logistics-specific types added to `configs/ontology/packs/foundation/`.
+- [x] [08-semantic-governance-alignment.md](./08-semantic-governance-alignment.md) updated with pack id and mapping rows when implemented.
 
 ### Public entity checklist (generic names)
 

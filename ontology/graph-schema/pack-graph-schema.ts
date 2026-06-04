@@ -1,4 +1,35 @@
 import { loadFoundationPack, type LoadedOntologyPack } from "../packs/load-pack.js";
+import type { ResolvedPack } from "../packs/pack-resolver.js";
+
+export type PackGraphSchemaInput = LoadedOntologyPack | ResolvedPack;
+
+function isLoadedOntologyPack(
+  pack: PackGraphSchemaInput,
+): pack is LoadedOntologyPack {
+  return "manifest" in pack;
+}
+
+function schemaMeta(pack: PackGraphSchemaInput): {
+  ontologyId: string;
+  version: string;
+  entityTypes: string[];
+  relationTypes: string[];
+} {
+  if (isLoadedOntologyPack(pack)) {
+    return {
+      ontologyId: pack.manifest.ontologyId,
+      version: pack.manifest.version,
+      entityTypes: pack.manifest.entityTypes,
+      relationTypes: pack.manifest.relationTypes ?? ["Link"],
+    };
+  }
+  return {
+    ontologyId: pack.ontologyId,
+    version: pack.packVersion,
+    entityTypes: pack.entityTypes,
+    relationTypes: [...pack.relations.keys()],
+  };
+}
 
 export type GraphFieldSpec = {
   name: string;
@@ -35,7 +66,7 @@ const SYSTEM_NODE_PROPS = [
 
 const LINK_REL_PROPS = ["linkType", "tenantId", "domainId", "linkEntityId"] as const;
 
-function fieldSpecsFromPack(pack: LoadedOntologyPack): GraphEntitySchema[] {
+function fieldSpecsFromPack(pack: PackGraphSchemaInput): GraphEntitySchema[] {
   return [...pack.models.entries()].map(([entityType, model]) => ({
     entityType,
     fields: model.fields().map((f) => ({
@@ -47,10 +78,11 @@ function fieldSpecsFromPack(pack: LoadedOntologyPack): GraphEntitySchema[] {
 }
 
 export function buildPackGraphSchema(
-  pack: LoadedOntologyPack = loadFoundationPack(),
+  pack: PackGraphSchemaInput = loadFoundationPack(),
 ): PackGraphSchema {
+  const meta = schemaMeta(pack);
   const entities = fieldSpecsFromPack(pack);
-  const entityTypes = pack.manifest.entityTypes;
+  const entityTypes = meta.entityTypes;
 
   const constraintStatements = [
     `CREATE CONSTRAINT entity_scope_key IF NOT EXISTS
@@ -68,7 +100,7 @@ FOR (n:Entity) ON (n.tenantId, n.domainId, n.entityType)`,
     .join("\n\n");
 
   const promptSchemaSummary = [
-    `Ontology: ${pack.manifest.ontologyId} v${pack.manifest.version}`,
+    `Ontology: ${meta.ontologyId} v${meta.version}`,
     "",
     "Nodes:",
     "- Label :Entity plus type label per entityType",
@@ -89,11 +121,11 @@ FOR (n:Entity) ON (n.tenantId, n.domainId, n.entityType)`,
   ].join("\n");
 
   return {
-    ontologyId: pack.manifest.ontologyId,
-    version: pack.manifest.version,
+    ontologyId: meta.ontologyId,
+    version: meta.version,
     entityTypes,
     entities,
-    relationTypes: pack.manifest.relationTypes ?? ["Link"],
+    relationTypes: meta.relationTypes,
     constraintStatements,
     promptSchemaSummary,
   };
@@ -101,7 +133,7 @@ FOR (n:Entity) ON (n.tenantId, n.domainId, n.entityType)`,
 
 export function isAllowedEntityLabel(
   entityType: string,
-  pack: LoadedOntologyPack = loadFoundationPack(),
+  pack: PackGraphSchemaInput = loadFoundationPack(),
 ): boolean {
-  return pack.manifest.entityTypes.includes(entityType);
+  return schemaMeta(pack).entityTypes.includes(entityType);
 }

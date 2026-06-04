@@ -1,0 +1,11 @@
+entityType: Order
+fields:
+  - name: displayName
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  - name: externalRef
+    type: string
+    required: false

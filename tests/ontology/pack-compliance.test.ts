@@ -29,6 +29,31 @@ describe("foundation ontology pack", () => {
     assert.ok(resolved.junctions.has("CaseEvent"));
   });
 
+  it("merges logistics-commercial extension when domain declares extensionPack", () => {
+    const catalog = DomainCatalog.fromYamlFile();
+    const resolver = new PackResolver(catalog);
+    const tenant = {
+      id: "logistics-pilot",
+      displayName: "Logistics pilot",
+      enabledDomains: ["logistics"],
+    };
+    const resolved = resolver.resolve(tenant, "logistics");
+    assert.ok(resolved.entityTypes.includes("Party"));
+    assert.ok(resolved.entityTypes.includes("Account"));
+    assert.ok(resolved.entityTypes.includes("Shipment"));
+    assert.ok(resolved.models.has("Shipment"));
+    assert.ok(resolved.junctions.has("ShipmentLeg"));
+    const leg = resolved.junctions.get("ShipmentLeg")!;
+    const ok = leg.validateMembership({
+      junctionType: "ShipmentLeg",
+      leftEntityId: "s1",
+      rightEntityId: "m1",
+      leftEntityType: "Shipment",
+      rightEntityType: "Manifest",
+    });
+    assert.equal(ok.valid, true);
+  });
+
   it("merges aml-compliance extension when domain declares extensionPack", () => {
     const catalog = DomainCatalog.fromYamlFile();
     const resolver = new PackResolver(catalog);

@@ -52,4 +52,50 @@ describe("integration ontology propagation", () => {
     assert.equal(caseView!.countFor("closed"), 1);
     assert.equal(caseView!.countFor("open"), 0);
   });
+
+  it("logistics domain Shipment register then patch updates projection", () => {
+    const store = new OntologyRegistry();
+    const audit = new AuditPortAdapter(null);
+    const runtime = new DaemonRuntime({ store, audit });
+    const scope = { tenantId: "logistics-pilot", domainId: "logistics" };
+    const pack = runtime.packs.resolve(
+      runtime.tenants.require("logistics-pilot"),
+      "logistics",
+    );
+    const ont = ontologyId("foundation");
+    const id = entityId(`log-prop-${Date.now()}`);
+
+    runtime.registerEntity(
+      scope,
+      {
+        scope,
+        ontologyId: ont,
+        entityId: id,
+        entityType: "Shipment",
+        properties: {
+          displayName: "Before",
+          entityType: "Shipment",
+          status: "open",
+        },
+      },
+      pack,
+    );
+
+    store.patch({
+      scope,
+      ontologyId: ont,
+      entityId: id,
+      patch: { status: "closed" },
+    });
+
+    const view = runtime.projection.get(
+      scope.tenantId,
+      scope.domainId,
+      String(ont),
+      String(id),
+    );
+    assert.equal(view?.properties.status, "closed");
+    assert.equal(view?.version, 2);
+    assert.ok(audit.list(20).some((e) => e.action === "ontology.patch"));
+  });
 });

@@ -23,3 +23,12 @@ tenants:
     quotas:
       maxEntities: 250000
       maxWritesPerMinute: 1000
+  - id: logistics-pilot
+    displayName: Logistics pilot
+    kind: institution
+    enabledDomains:
+      - foundation
+      - logistics
+    quotas:
+      maxEntities: 100000
+      maxWritesPerMinute: 500

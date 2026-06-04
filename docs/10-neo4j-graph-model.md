@@ -1,13 +1,13 @@
-# Neo4j graph model (foundation pack)
+# Neo4j graph model (foundation + extension packs)
 
-Operational read model for natural-language graph queries. **SSOT** remains pack YAML; this document describes the Neo4j projection synced from Postgres and the write path.
+Operational read model for natural-language graph queries. **SSOT** remains pack YAML; this document describes the Neo4j projection synced from Postgres and the write path. Extension domains (e.g. `logistics`) merge additional entity type labels at sync and NL-query time via `PackResolver`.
 
 ## Node model
 
 | Element | Description |
 |---------|-------------|
 | Primary label | `Entity` — all ontology entities |
-| Type label | Secondary label per `entityType`: `Party`, `Organization`, `Case`, `Event`, `Link`, `Document` |
+| Type label | Secondary label per `entityType` from the **resolved pack** for the request domain — foundation: `Party`, `Organization`, `Case`, `Event`, `Link`, `Document`; logistics extension (domain `logistics`): `Account`, `Contact`, `Order`, `Shipment`, `TTK`, `Manifest` |
 | Identity | Composite key: `tenantId`, `domainId`, `ontologyId`, `entityId` |
 | Core properties | `entityType`, `version`, `updatedAt` plus pack fields copied from snapshot `properties` |
 

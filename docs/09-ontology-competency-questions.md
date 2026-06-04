@@ -4,9 +4,12 @@ These questions define what the natural-language ontology query path (`POST /v1/
 
 ## Scope
 
-- Pack: `foundation` ([`configs/ontology/packs/foundation/`](../configs/ontology/packs/foundation/))
+- **Foundation domain** — pack `foundation` only ([`configs/ontology/packs/foundation/`](../configs/ontology/packs/foundation/)).
+- **Logistics domain** — merged `foundation` + extension `logistics-commercial` when `domainId=logistics` and the tenant enables that domain ([`configs/ontology/domains/catalog.yaml`](../configs/ontology/domains/catalog.yaml)).
 - Tenancy: every answer is scoped to the caller's `tenantId` and `domainId` (never cross-tenant).
 - Execution: read-only Cypher with row limits and timeouts.
+
+NL query on `domainId=foundation` must **not** answer logistics-commercial questions (no `Shipment`, `Account`, etc. in the schema summary for that domain).
 
 ## Competency questions
 
@@ -22,6 +25,30 @@ These questions define what the natural-language ontology query path (`POST /v1/
 | CQ-08 | Which cases are linked to event `{eventId}`? | `Event` ↔ `LINK` ↔ `Case` |
 | CQ-09 | Find parties with `partyKind` `{kind}` that link to any open case | `Party` + `Case.status` filter via `LINK` |
 | CQ-10 | What documents are linked to case `{caseId}`? | `Case` → `LINK` → `Document` |
+
+## Logistics-commercial extension (domain `logistics`, P0)
+
+Requires extension pack `logistics-commercial` merged for the caller's domain. Use type labels from the domain-aware schema summary (`Account`, `Shipment`, etc.).
+
+| ID | Question (natural language) | Expected graph pattern |
+|----|----------------------------|------------------------|
+| LQ-01 | Which **Account** record has id `{accountId}`? | Match `Entity:Account` by `entityId` |
+| LQ-02 | What **Contacts** reference account `{accountId}`? | `Account` → `LINK` → `Contact` (or property filter on `accountRef`) |
+| LQ-03 | What **Shipments** belong to order `{orderId}`? | `Order` → `LINK` → `Shipment` or `orderRef` on `Shipment` |
+| LQ-04 | Which **Manifest** rows connect to shipment `{shipmentId}`? | `Shipment` ↔ `Manifest` via `LINK` or shared junction membership in properties |
+| LQ-05 | What **TTK** documents reference shipment `{shipmentId}`? | `Shipment` → `LINK` → `TTK` |
+| LQ-06 | List shipments with status `{status}` | Filter `Shipment` by `status` |
+| LQ-07 | How many links does shipment `{shipmentId}` have? | Count `LINK` from `Shipment` |
+
+### Negative competency (logistics domain, v1)
+
+Do **not** claim answers (return empty or explain out-of-scope) until P1 pack entities and graph scope exist:
+
+- Transport-planning / **Trip** allocation, **Dispatch**, **RoutingDecision**
+- **Signal** stages, TP-engine outputs, pipeline stages (**Lead**, **Opportunity**, **Pipeline**, etc.)
+- Financial journal entries, cost-center profitability, chargeable-weight rules on **ShipmentLeg**
+
+Operational KPIs and live execution state remain in downstream operational systems; DAEMON holds semantic registration and read projection only.
 
 ## Few-shot examples (for LLM prompts)
 

@@ -102,9 +102,12 @@ PDFs (Charter, Ontology Master, Technology OS) remain human reference only — n
 
 | Artifact | Path | Status |
 |----------|------|--------|
-| Public PRD stub | [PRD-logistics-commercial-extension.md](./PRD-logistics-commercial-extension.md) | Draft — defines R1/R2 scope without institution-specific names |
-| Pack (planned) | `configs/ontology/packs/extensions/logistics-commercial/` | Not started |
-| Domain (planned) | `logistics` in `configs/ontology/domains/catalog.yaml` | Not started |
+| Public PRD stub | [PRD-logistics-commercial-extension.md](./PRD-logistics-commercial-extension.md) | Draft — R1/R2 P0 implemented; P1 entities deferred |
+| Extension pack | `configs/ontology/packs/extensions/logistics-commercial/` | **In scope (v0.1.0 P0)** — Account, Contact, Order, Shipment, TTK, Manifest, ShipmentLeg junction |
+| Domain | `logistics` in `configs/ontology/domains/catalog.yaml` | **Enabled** — tenant `logistics-pilot` in `configs/tenancy.yaml` |
+| Propagation | `configs/governance/propagation.yaml` (`logistics-entity-register` / `logistics-entity-patch`) | **In scope** |
+| Competency (public) | [09-ontology-competency-questions.md](./09-ontology-competency-questions.md) | Logistics section (P0) |
+| Graph / NL | `buildPackGraphSchema` + ontology-query chain per tenant/domain | **Domain-aware** for logistics |
 
 Do not add logistics entity literals to `foundation` until the extension pack is approved and merged per the public PRD stub.
 

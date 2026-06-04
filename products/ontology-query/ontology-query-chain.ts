@@ -27,15 +27,19 @@ export type OntologyQueryChainOptions = {
   store: Neo4jGraphStore;
   llm?: TextLlm;
   includeCypherInResponse?: boolean;
+  /** When set, schema summary follows merged pack for the request domain (extensions included). */
+  resolveSchemaSummary?: (scope: OntologyScope) => string;
 };
 
 export class OntologyQueryChain {
-  private readonly schemaSummary = buildPackGraphSchema().promptSchemaSummary;
+  private readonly defaultSchemaSummary =
+    buildPackGraphSchema().promptSchemaSummary;
 
   constructor(private readonly options: OntologyQueryChainOptions) {}
 
   static fromEnv(
     store: Neo4jGraphStore,
+    options: Omit<OntologyQueryChainOptions, "store" | "llm"> = {},
     env: NodeJS.ProcessEnv = process.env,
   ): OntologyQueryChain {
     const llm = chatOpenRouterAsLlm(createChatOpenRouter(env));
@@ -46,18 +50,22 @@ export class OntologyQueryChain {
       store,
       llm,
       includeCypherInResponse,
+      ...options,
     });
   }
 
   async ask(input: AskOntologyQuestionInput): Promise<AskOntologyQuestionResult> {
     const llm = this.options.llm ?? chatOpenRouterAsLlm(createChatOpenRouter());
+    const schemaSummary =
+      this.options.resolveSchemaSummary?.(input.scope) ??
+      this.defaultSchemaSummary;
     const final = await runOntologyQueryGraph(
       { store: this.options.store, llm },
       {
         question: input.question,
         tenantId: input.scope.tenantId,
         domainId: input.scope.domainId,
-        schemaSummary: this.schemaSummary,
+        schemaSummary,
         cypher: undefined,
         cypherParams: {
           tenantId: input.scope.tenantId,

@@ -9,3 +9,9 @@ domains:
       - foundation
     extensionPack: aml-compliance
     description: Optional AML-oriented extensions (loaded when enabled for tenant).
+  - id: logistics
+    label: Logistics commercial extension
+    packIds:
+      - foundation
+    extensionPack: logistics-commercial
+    description: Dual-domain logistics commercial and operational entities (P0) on foundation.

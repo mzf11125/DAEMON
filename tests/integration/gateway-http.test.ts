@@ -285,6 +285,73 @@ describe("gateway HTTP", () => {
     }
   });
 
+  it("ingests logistics-commercial P0 entities on logistics domain", async () => {
+    const { baseUrl, close } = await createGatewayTestApp({
+      DAEMON_INGEST_SKIP_UPSTREAM: "1",
+      DAEMON_AUTH_MODE: "dev",
+    });
+    try {
+      const res = await fetch(`${baseUrl}/v1/ingest/records`, {
+        method: "POST",
+        headers: authHeaders({
+          "x-daemon-tenant": "logistics-pilot",
+          "x-daemon-domain": "logistics",
+        }),
+        body: JSON.stringify({
+          sourceId: "logistics-p0",
+          records: [
+            {
+              ontologyId: FOUNDATION,
+              entityId: "log-acct-1",
+              entityType: "Account",
+              properties: {
+                displayName: "Pilot Account",
+                entityType: "Account",
+                status: "active",
+              },
+            },
+            {
+              ontologyId: FOUNDATION,
+              entityId: "log-ship-1",
+              entityType: "Shipment",
+              properties: {
+                displayName: "Pilot Shipment",
+                entityType: "Shipment",
+                status: "open",
+                orderRef: "ord-1",
+              },
+            },
+            {
+              ontologyId: FOUNDATION,
+              entityId: "log-mnf-1",
+              entityType: "Manifest",
+              properties: {
+                displayName: "Pilot Manifest",
+                entityType: "Manifest",
+                status: "draft",
+              },
+            },
+          ],
+        }),
+      });
+      assert.equal(res.status, 201);
+      const readShip = await fetch(
+        `${baseUrl}/v1/read/entities/log-ship-1?ontologyId=${FOUNDATION}`,
+        {
+          headers: authHeaders({
+            "x-daemon-tenant": "logistics-pilot",
+            "x-daemon-domain": "logistics",
+          }),
+        },
+      );
+      assert.equal(readShip.status, 200);
+      const body = (await readShip.json()) as { entityType: string };
+      assert.equal(body.entityType, "Shipment");
+    } finally {
+      await close();
+    }
+  });
+
   it("rejects unknown entity type with 400", async () => {
     const { baseUrl, close } = await createGatewayTestApp({
       DAEMON_INGEST_SKIP_UPSTREAM: "1",

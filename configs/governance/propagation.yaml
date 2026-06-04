@@ -46,3 +46,28 @@ rules:
       - read-model-projection
       - audit-loop
       - neo4j-graph-sync
+  - id: logistics-entity-register
+    trigger: register
+    entityTypes:
+      - Account
+      - Contact
+      - Order
+      - Shipment
+      - TTK
+      - Manifest
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+  - id: logistics-entity-patch
+    trigger: patch
+    entityTypes:
+      - Account
+      - Contact
+      - Order
+      - Shipment
+      - TTK
+      - Manifest
+    propagate:
+      - read-model-projection
+      - audit-loop
+      - neo4j-graph-sync

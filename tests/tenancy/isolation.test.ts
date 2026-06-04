@@ -71,6 +71,42 @@ describe("tenant and domain isolation", () => {
     assert.equal(foundation?.properties.displayName, "Foundation view");
     assert.equal(aml?.properties.displayName, "AML view");
   });
+
+  it("logistics domain isolates shipment records from foundation domain", () => {
+    const reg = new OntologyRegistry();
+    const id = entityId("ship-iso-1");
+    const ont = ontologyId("foundation");
+    reg.register({
+      scope: { tenantId: "logistics-pilot", domainId: "foundation" },
+      ontologyId: ont,
+      entityId: id,
+      entityType: "Party",
+      properties: { displayName: "Foundation party", entityType: "Party" },
+    });
+    reg.register({
+      scope: { tenantId: "logistics-pilot", domainId: "logistics" },
+      ontologyId: ont,
+      entityId: id,
+      entityType: "Shipment",
+      properties: {
+        displayName: "Logistics shipment",
+        entityType: "Shipment",
+        status: "open",
+      },
+    });
+    const party = reg.get(
+      { tenantId: "logistics-pilot", domainId: "foundation" },
+      ont,
+      id,
+    );
+    const shipment = reg.get(
+      { tenantId: "logistics-pilot", domainId: "logistics" },
+      ont,
+      id,
+    );
+    assert.equal(party?.properties.displayName, "Foundation party");
+    assert.equal(shipment?.properties.displayName, "Logistics shipment");
+  });
 });
 
 describe("tenant policy boundaries (ABAC + RLS)", () => {

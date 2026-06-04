@@ -5,6 +5,7 @@ import {
   OntologyQueryChain,
   isOntologyQueryEnabled,
 } from "@daemon/ontology-query";
+import { buildPackGraphSchema } from "@daemon/ontology/graph-schema/pack-graph-schema.js";
 import { DaemonRuntime } from "../platform/daemon-runtime";
 import type { TenantContextHeaders } from "../platform/tenant-context";
 
@@ -35,7 +36,13 @@ export class QueryService {
       tenantId: ctx.tenantId,
       domainId: ctx.domainId,
     };
-    const chain = OntologyQueryChain.fromEnv(store);
+    const chain = OntologyQueryChain.fromEnv(store, {
+      resolveSchemaSummary: (scope) => {
+        const tenant = this.runtime.tenants.require(scope.tenantId);
+        const pack = this.runtime.packs.resolve(tenant, scope.domainId);
+        return buildPackGraphSchema(pack).promptSchemaSummary;
+      },
+    });
     return chain.ask({
       question: body.question,
       scope,

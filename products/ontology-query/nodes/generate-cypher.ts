@@ -2,11 +2,12 @@ import type { TextLlm } from "../llm.js";
 import { extractCypherBlock } from "../llm.js";
 import type { OntologyQueryStateType } from "../state.js";
 
-const SYSTEM = `You generate read-only Neo4j Cypher for a foundation ontology graph.
+const SYSTEM = `You generate read-only Neo4j Cypher for an ontology graph projection.
 Rules:
 - Output ONLY a single Cypher query (optionally in a cypher fenced block).
 - Use parameters $tenantId and $domainId on every node and LINK match.
-- Use labels :Entity and type labels :Party, :Case, :Organization, :Event, :Document, :Link.
+- Use label :Entity plus exactly one type label per node from the Graph schema section (e.g. :Party, :Case, :Shipment, :Account).
+- Do not invent type labels that are not listed in the Graph schema.
 - Relationship type is :LINK.
 - No CREATE, MERGE, SET, DELETE, DROP, or admin procedures.
 - Include LIMIT 50 unless the user asks for a count only.`;

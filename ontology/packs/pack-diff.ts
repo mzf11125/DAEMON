@@ -1,6 +1,7 @@
 import { EntityModel, type FieldSpec } from "../models/entities/entity-model.js";
 import type { SchemaChangeType } from "../governance/governance-policy-loader.js";
 import type { LoadedOntologyPack } from "./load-pack.js";
+import { assertValidExtensionPackId } from "./extension-pack-id.js";
 import {
   loadFoundationPack,
   loadExtensionPack,
@@ -173,11 +174,8 @@ export function loadBaselinePack(packId: string): LoadedOntologyPack {
   if (packId === "foundation") {
     return loadFoundationPack();
   }
-  const extRoot = extensionPackRoot(packId);
-  if (existsSync(join(extRoot, "pack.yaml"))) {
-    return loadExtensionPack(packId);
-  }
-  return loadFoundationPack();
+  assertValidExtensionPackId(packId);
+  return loadExtensionPack(packId);
 }
 
 export interface ProposedPackOverrides {

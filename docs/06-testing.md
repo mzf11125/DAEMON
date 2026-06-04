@@ -73,6 +73,8 @@ export DAEMON_NEO4J_PASSWORD=daemon-dev-neo4j
 # Optional read-only role for query execution (defaults to credentials above)
 # export DAEMON_NEO4J_QUERY_USER=...
 # export DAEMON_NEO4J_QUERY_PASSWORD=...
+# export DAEMON_NEO4J_QUERY_TIMEOUT_MS=5000
+# export DAEMON_NEO4J_MAX_ROWS=100
 ```
 
 Backfill Postgres snapshots into Neo4j (after migrate):

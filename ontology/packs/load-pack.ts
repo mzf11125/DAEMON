@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { parse as parseYaml } from "yaml";
 import { configsPath } from "../paths.js";
+import { assertValidExtensionPackId } from "./extension-pack-id.js";
 import { EntityModel, type EntityModelDefinition } from "../models/entities/entity-model.js";
 import {
   RelationModel,
@@ -33,6 +34,7 @@ export function foundationPackRoot(): string {
 }
 
 export function extensionPackRoot(extensionId: string): string {
+  assertValidExtensionPackId(extensionId);
   return configsPath("ontology", "packs", "extensions", extensionId);
 }
 

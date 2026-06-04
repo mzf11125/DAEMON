@@ -18,6 +18,13 @@ export type ReadQueryOptions = {
 const DEFAULT_MAX_ROWS = 100;
 const DEFAULT_TIMEOUT_MS = 5_000;
 
+function parsePositiveInt(value: string | undefined): number | undefined {
+  if (!value) return undefined;
+  const n = Number.parseInt(value, 10);
+  if (!Number.isFinite(n) || n <= 0) return undefined;
+  return n;
+}
+
 function sanitizeTypeLabel(entityType: string | undefined): string | null {
   if (!entityType) return null;
   if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(entityType)) return null;
@@ -80,7 +87,17 @@ export class Neo4jGraphStore {
       env.DAEMON_NEO4J_PASSWORD ??
       "";
     if (!password) return null;
-    return new Neo4jGraphStore({ uri, user, password });
+    const queryTimeoutMs =
+      parsePositiveInt(env.DAEMON_NEO4J_QUERY_TIMEOUT_MS) ?? DEFAULT_TIMEOUT_MS;
+    const maxRows =
+      parsePositiveInt(env.DAEMON_NEO4J_MAX_ROWS) ?? DEFAULT_MAX_ROWS;
+    return new Neo4jGraphStore({
+      uri,
+      user,
+      password,
+      queryTimeoutMs,
+      maxRows,
+    });
   }
 
   async close(): Promise<void> {

@@ -59,6 +59,7 @@ MERGE (a)-[r:LINK { linkType: $linkType, tenantId: $t, domainId: $d }]->(b)
 - Sync writes scope on every node and relationship.
 - Query layer always binds `$tenantId` and `$domainId` from gateway `TenantContextService`.
 - Optional read-only Bolt user: `DAEMON_NEO4J_QUERY_USER` / password (falls back to admin creds in dev).
+- Read-query limits: `DAEMON_NEO4J_QUERY_TIMEOUT_MS` (default `5000`), `DAEMON_NEO4J_MAX_ROWS` (default `100`). Cypher from the ontology-query chain is validated in `products/ontology-query/validate-cypher.ts` (max 16 384 characters, read-only, single statement, `$tenantId` / `$domainId` required).
 
 ## Dev stack
 

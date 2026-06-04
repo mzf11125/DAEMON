@@ -1,5 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import type { PolicyDecision } from "@daemon/platform-types";
+import {
+  isPolicySkipUpstream,
+  isProductionPolicyMode,
+  requiresUpstreamPolicyDecision,
+} from "./policy-mode.js";
 
 function devDefaultDecision(action: string, resource: string): PolicyDecision {
   const allowed =
@@ -12,25 +17,51 @@ function devDefaultDecision(action: string, resource: string): PolicyDecision {
   };
 }
 
+function denyClosed(reason: string): PolicyDecision {
+  return { effect: "deny", reason };
+}
+
 @Injectable()
 export class PolicyService {
   async check(action: string, resource: string): Promise<PolicyDecision> {
-    const url = process.env.POLICY_ENGINE_URL;
-    const skipUpstream =
-      process.env.DAEMON_POLICY_SKIP_UPSTREAM === "1" ||
-      process.env.DAEMON_POLICY_SKIP_UPSTREAM === "true";
+    const env = process.env;
+    const url = env.POLICY_ENGINE_URL;
+    const skipUpstream = isPolicySkipUpstream(env);
+    const prod = isProductionPolicyMode(env);
+    const sensitive = requiresUpstreamPolicyDecision(action, resource);
+
+    if (prod && !url) {
+      return denyClosed("policy-engine-unconfigured");
+    }
+
+    if (prod && sensitive && skipUpstream) {
+      return denyClosed("upstream-policy-required");
+    }
+
+    let upstreamAttempted = false;
     if (url && !skipUpstream) {
+      upstreamAttempted = true;
       try {
         const res = await fetch(`${url}/check`, {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ action, resource }),
         });
-        if (res.ok) return (await res.json()) as PolicyDecision;
+        if (res.ok) {
+          return (await res.json()) as PolicyDecision;
+        }
       } catch {
-        // Policy engine not reachable — fall back so local dev works without :8082
+        // unreachable — fail closed in production, dev fallback otherwise
+      }
+      if (prod) {
+        return denyClosed("policy-engine-unreachable");
       }
     }
-    return devDefaultDecision(action, resource);
+
+    if (!prod && (!url || skipUpstream || upstreamAttempted)) {
+      return devDefaultDecision(action, resource);
+    }
+
+    return denyClosed("policy-denied");
   }
 }

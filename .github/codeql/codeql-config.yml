@@ -1,7 +1,7 @@
 name: daemon-sdk
 disable-default-queries: true
 queries:
-  - uses: .github/codeql/important-only.qls
+  - uses: important-only.qls
 paths-ignore:
   - "**/node_modules/**"
   - "**/dist/**"

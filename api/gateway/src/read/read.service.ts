@@ -1,21 +1,32 @@
 import { Injectable } from "@nestjs/common";
-import { ReadRouter } from "@daemon/read-write-loops/reads/read-router.js";
 import { entityId, ontologyId } from "@daemon/platform-types";
-import { globalRegistry } from "@daemon/ontology";
+import { DaemonRuntime } from "../platform/daemon-runtime";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 
 @Injectable()
 export class ReadService {
-  private readonly router = new ReadRouter();
+  constructor(private readonly runtime: DaemonRuntime) {}
 
-  ensureSeed() {
-    if (!globalRegistry.get(ontologyId("default"), entityId("ent-1"))) {
-      globalRegistry.register(ontologyId("default"), { name: "Seed" }, entityId("ent-1"));
+  ensureSeed(ctx: TenantContextHeaders) {
+    const scope = { tenantId: ctx.tenantId, domainId: ctx.domainId };
+    const ont = ontologyId("foundation");
+    const id = entityId("ent-1");
+    if (!this.runtime.store.get(scope, ont, id)) {
+      this.runtime.store.register({
+        scope,
+        ontologyId: ont,
+        properties: { name: "Seed", entityType: "Party" },
+        entityId: id,
+        entityType: "Party",
+      });
     }
   }
 
-  getEntity(ont: string, id: string) {
-    this.ensureSeed();
-    return this.router.route({
+  getEntity(ctx: TenantContextHeaders, ont: string, id: string) {
+    this.ensureSeed(ctx);
+    return this.runtime.reads.route({
+      tenantId: ctx.tenantId,
+      domainId: ctx.domainId,
       ontologyId: ontologyId(ont),
       entityId: entityId(id),
     });

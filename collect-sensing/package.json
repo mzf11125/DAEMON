@@ -6,7 +6,11 @@
   "main": "./dist/orchestrator/ingestion-orchestrator.js",
   "types": "./dist/orchestrator/ingestion-orchestrator.d.ts",
   "exports": {
-    ".": "./dist/orchestrator/ingestion-orchestrator.js"
+    ".": "./dist/orchestrator/ingestion-orchestrator.js",
+    "./orchestrator/source-catalog": "./dist/orchestrator/source-catalog.js",
+    "./connectors/connector-factory": "./dist/connectors/connector-factory.js",
+    "./normalization/record-normalizer": "./dist/normalization/record-normalizer.js",
+    "./paths": "./dist/paths.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -14,7 +18,8 @@
     "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@daemon/platform-types": "workspace:*"
+    "@daemon/platform-types": "workspace:*",
+    "yaml": "^2.6.1"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

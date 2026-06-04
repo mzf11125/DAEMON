@@ -20,6 +20,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run spec:check
+      - run: pnpm run check:architecture
+      - run: pnpm run check:tenancy-config
+      - run: pnpm run check:ontology-pack
+      - run: pnpm run check:governance-policies
       - run: pnpm run build
       - run: pnpm run test
       - run: pnpm run test:repo
@@ -76,9 +80,13 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
-      - name: Repo integration tests
+      - name: Apply database migrations
         env:
           DAEMON_POSTGRES_URL: postgresql://daemon:daemon@localhost:5432/daemon
+        run: pnpm run db:migrate
+      - name: Repo integration tests
+        env:
+          DAEMON_POSTGRES_URL: postgresql://daemon_app:daemon_app@localhost:5432/daemon
           DAEMON_REDIS_URL: redis://localhost:6379
           DAEMON_INTEGRATION_REQUIRED: "1"
         run: pnpm run test:repo

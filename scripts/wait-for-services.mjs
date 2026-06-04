@@ -5,16 +5,21 @@ const redisUrl = process.env.DAEMON_REDIS_URL ?? "redis://127.0.0.1:6379";
 
 async function waitPg(maxMs = 60_000) {
   const { default: pg } = await import("pg");
-  const client = new pg.Client({ connectionString: pgUrl });
   const start = Date.now();
   while (Date.now() - start < maxMs) {
+    const client = new pg.Client({ connectionString: pgUrl });
     try {
       await client.connect();
       await client.query("SELECT 1");
       await client.end();
       return;
     } catch {
-      await new Promise((r) => setTimeout(r, 1000));
+      try {
+        await client.end();
+      } catch {
+        /* not connected */
+      }
+      await new Promise((r) => setTimeout(r, 500));
     }
   }
   throw new Error(`postgres not ready: ${pgUrl}`);

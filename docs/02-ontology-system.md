@@ -24,7 +24,9 @@ graph TB
 - **Semantic layer** (`ontology/semantic-layer/`): meaning resolution and term normalization.
 - **Vector layer** (`ontology/vector-layer/`): embedding and similarity lookups, optionally backed by the Rust vector shim.
 - **Logic layer** (`ontology/logic-layer/`): rule evaluation and inference over registered entities.
-- **Projections** (`ontology/projections/`): read-model builders fed from registry events.
+- **Projections** (`ontology/projections/`): read-model builders fed from registry events. `EntityReadModelProjection` is attached in `DaemonRuntime` and updated by `PropagationExecutor` on register/patch (see `configs/governance/propagation.yaml`).
+- **Pack SSOT** (`configs/ontology/packs/foundation/`): entities under `entities/`, relations under `relations/` (e.g. `Link`), junctions under `junctions/` (e.g. `CaseEvent`). Loaded by `loadFoundationPack()` and validated by `pnpm run check:ontology-pack`.
+- **Governance** (`ontology/governance/`): `OntologyGovernance` validates entities, links, and junctions; `GovernancePolicyLoader` enforces breaking schema changes from `configs/policies/governance-policies.yaml` (CLI: `daemon-cli ontology validate-schema-change`).
 
 ## Cross-language registry
 

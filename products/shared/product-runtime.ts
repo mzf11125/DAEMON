@@ -1,5 +1,6 @@
 import type { PolicyDecision } from "@daemon/platform-types";
 import { DaemonError, ErrorCodes } from "@daemon/platform-types";
+import { globalRegistry } from "@daemon/ontology";
 import { ReadRouter } from "@daemon/read-write-loops/reads/read-router.js";
 import { CommandGateway } from "@daemon/read-write-loops/writes/command-gateway.js";
 import { LoopOrchestrator } from "@daemon/read-write-loops/loop-controller/loop-orchestrator.js";
@@ -27,8 +28,8 @@ export interface ProductRuntimeOptions {
  * guardrails, and the read–write loop used by automations.
  */
 export class ProductRuntime {
-  readonly reads = new ReadRouter();
-  readonly writes = new CommandGateway();
+  readonly reads = new ReadRouter(globalRegistry);
+  readonly writes = new CommandGateway(globalRegistry);
   readonly policy: PolicyEngine;
   readonly promptGuard: PromptGuard;
 

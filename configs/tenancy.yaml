@@ -1,6 +1,25 @@
 tenants:
   - id: default
     displayName: Default
+    kind: platform
+    enabledDomains:
+      - foundation
     quotas:
       maxEntities: 1000000
       maxWritesPerMinute: 5000
+  - id: inst-alpha
+    displayName: Institution Alpha
+    kind: institution
+    enabledDomains:
+      - foundation
+    quotas:
+      maxEntities: 500000
+      maxWritesPerMinute: 2000
+  - id: ent-beta
+    displayName: Enterprise Beta
+    kind: enterprise
+    enabledDomains:
+      - foundation
+    quotas:
+      maxEntities: 250000
+      maxWritesPerMinute: 1000

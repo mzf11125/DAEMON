@@ -1,0 +1,11 @@
+entityType: Organization
+fields:
+  - name: legalName
+    type: string
+    required: true
+  - name: jurisdiction
+    type: string
+    required: false
+  - name: sector
+    type: string
+    required: false

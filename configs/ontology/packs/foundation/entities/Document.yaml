@@ -1,0 +1,11 @@
+entityType: Document
+fields:
+  - name: title
+    type: string
+    required: true
+  - name: mimeType
+    type: string
+    required: false
+  - name: uri
+    type: string
+    required: false

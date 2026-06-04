@@ -13,7 +13,12 @@
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish",
     "validate-config": "node packages/cli/dist/cli.js validate-config",
-    "test:repo": "pnpm run build && node --test --import tsx tests/policy/policy-fixture.test.ts tests/ontology/registry.test.ts tests/contract/api-contract.test.ts tests/e2e/ingest-read-write.test.ts tests/e2e/ingest-read-write-http.test.ts tests/integration/stores.integration.test.ts tests/integration/audit-postgres.integration.test.ts tests/integration/gateway-http.test.ts external-systems/adapters/system-adapter.test.ts toolchain/plugins/plugin-host.test.ts",
+    "check:architecture": "node scripts/check-context-boundaries.mjs",
+    "check:tenancy-config": "node scripts/check-tenancy-config.mjs",
+    "check:ontology-pack": "node scripts/validate-ontology-pack.mjs",
+    "check:governance-policies": "node scripts/check-governance-policies.mjs",
+    "db:migrate": "pnpm run build --filter @daemon/data-platform && DAEMON_POSTGRES_URL=${DAEMON_POSTGRES_URL:-postgresql://daemon:daemon@127.0.0.1:5432/daemon} node --import tsx data-platform/migrations/run-migrations.ts",
+    "test:repo": "pnpm run build && pnpm exec turbo run build --force --filter=@daemon/data-platform --filter=@daemon/ontology && node --test --import tsx tests/policy/policy-fixture.test.ts tests/ontology/registry.test.ts tests/ontology/pack-compliance.test.ts ontology/store/durable-ontology-store.test.ts tests/tenancy/isolation.test.ts tests/architecture/daemon-runtime.test.ts tests/contract/api-contract.test.ts tests/e2e/ingest-read-write.test.ts tests/e2e/ingest-read-write-http.test.ts tests/integration/stores.integration.test.ts tests/integration/audit-postgres.integration.test.ts tests/integration/ontology-durability.integration.test.ts tests/integration/ontology-propagation.integration.test.ts tests/integration/ontology-rls.integration.test.ts tests/integration/gateway-http.test.ts external-systems/adapters/system-adapter.test.ts toolchain/plugins/plugin-host.test.ts",
     "spec:check": "node scripts/spec-check.mjs",
     "spec:manifest": "node scripts/spec-check.mjs --manifest",
     "release:check": "pnpm run build && cd packages/platform-types && npm pack --dry-run && cd ../sdk && npm pack --dry-run && cd ../cli && npm pack --dry-run"

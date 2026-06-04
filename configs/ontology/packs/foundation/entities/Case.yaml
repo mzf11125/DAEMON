@@ -1,0 +1,11 @@
+entityType: Case
+fields:
+  - name: title
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  - name: openedAt
+    type: string
+    required: false

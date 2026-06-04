@@ -15,6 +15,7 @@
     "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@daemon/ontology": "workspace:*",
     "@daemon/platform-types": "workspace:*",
     "yaml": "^2.6.1"
   },

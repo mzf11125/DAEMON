@@ -8,7 +8,12 @@ import { DaemonError, ErrorCodes } from "@daemon/platform-types";
 import { StateMachine, type LoopState } from "./state-machine.js";
 
 export interface ReadPort {
-  route(req: { ontologyId: OntologyId; entityId: EntityId }): unknown;
+  route(req: {
+    tenantId?: string;
+    domainId?: string;
+    ontologyId: OntologyId;
+    entityId: EntityId;
+  }): unknown;
 }
 
 export interface PolicyPort {
@@ -18,6 +23,8 @@ export interface PolicyPort {
 export interface WritePort {
   submit(cmd: {
     session: DaemonSession;
+    tenantId?: string;
+    domainId?: string;
     ontologyId: OntologyId;
     entityId: EntityId;
     patch: Record<string, unknown>;
@@ -35,6 +42,8 @@ export interface OutboundPort {
 
 export interface LoopRequest {
   session: DaemonSession;
+  tenantId?: string;
+  domainId?: string;
   ontologyId: OntologyId;
   entityId: EntityId;
   patch: Record<string, unknown>;
@@ -74,6 +83,8 @@ export class LoopOrchestrator {
 
     advance("reading");
     const current = this.reads.route({
+      tenantId: req.tenantId,
+      domainId: req.domainId,
       ontologyId: req.ontologyId,
       entityId: req.entityId,
     });
@@ -93,6 +104,8 @@ export class LoopOrchestrator {
     advance("writing");
     const result = this.writes.submit({
       session: req.session,
+      tenantId: req.tenantId,
+      domainId: req.domainId,
       ontologyId: req.ontologyId,
       entityId: req.entityId,
       patch: req.patch,

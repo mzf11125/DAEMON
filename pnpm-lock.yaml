@@ -74,6 +74,15 @@ importers:
       '@daemon/action-runtime':
         specifier: workspace:*
         version: link:../../action-runtime
+      '@daemon/collect-sensing':
+        specifier: workspace:*
+        version: link:../../collect-sensing
+      '@daemon/context-ports':
+        specifier: workspace:*
+        version: link:../../packages/context-ports
+      '@daemon/data-platform':
+        specifier: workspace:*
+        version: link:../../data-platform
       '@daemon/observability':
         specifier: workspace:*
         version: link:../../observability
@@ -89,6 +98,9 @@ importers:
       '@daemon/read-write-loops':
         specifier: workspace:*
         version: link:../../read-write-loops
+      '@daemon/security-governance':
+        specifier: workspace:*
+        version: link:../../security-governance
       '@nestjs/common':
         specifier: ^10.4.15
         version: 10.4.22(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -217,6 +229,9 @@ importers:
       '@daemon/platform-types':
         specifier: workspace:*
         version: link:../packages/platform-types
+      yaml:
+        specifier: ^2.6.1
+        version: 2.9.0
     devDependencies:
       typescript:
         specifier: ^5.7.2
@@ -224,6 +239,9 @@ importers:
 
   data-platform:
     dependencies:
+      '@daemon/context-ports':
+        specifier: workspace:*
+        version: link:../packages/context-ports
       pg:
         specifier: ^8.13.1
         version: 8.21.0
@@ -262,9 +280,18 @@ importers:
 
   ontology:
     dependencies:
+      '@daemon/context-ports':
+        specifier: workspace:*
+        version: link:../packages/context-ports
+      '@daemon/data-platform':
+        specifier: workspace:*
+        version: link:../data-platform
       '@daemon/platform-types':
         specifier: workspace:*
         version: link:../packages/platform-types
+      yaml:
+        specifier: ^2.6.1
+        version: 2.9.0
     devDependencies:
       typescript:
         specifier: ^5.7.2
@@ -272,6 +299,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@daemon/ontology':
+        specifier: workspace:*
+        version: link:../../ontology
       '@daemon/platform-types':
         specifier: workspace:*
         version: link:../platform-types
@@ -282,6 +312,16 @@ importers:
       '@types/node':
         specifier: ^22.10.2
         version: 22.19.19
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  packages/context-ports:
+    dependencies:
+      '@daemon/platform-types':
+        specifier: workspace:*
+        version: link:../platform-types
+    devDependencies:
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
@@ -335,6 +375,9 @@ importers:
 
   read-write-loops:
     dependencies:
+      '@daemon/context-ports':
+        specifier: workspace:*
+        version: link:../packages/context-ports
       '@daemon/ontology':
         specifier: workspace:*
         version: link:../ontology
@@ -348,6 +391,9 @@ importers:
 
   security-governance:
     dependencies:
+      '@daemon/context-ports':
+        specifier: workspace:*
+        version: link:../packages/context-ports
       '@daemon/data-platform':
         specifier: workspace:*
         version: link:../data-platform

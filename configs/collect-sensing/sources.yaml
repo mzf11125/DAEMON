@@ -1,0 +1,19 @@
+# Ingest source catalog — connector + normalization → gateway ontology upsert.
+# File paths are relative to repository root (DAEMON_REPO_ROOT or cwd).
+sources:
+  - id: demo-parties
+    enabled: true
+    connector:
+      type: file
+      format: jsonl
+      path: tests/fixtures/ingest/parties.jsonl
+    normalize:
+      ontologyId: foundation
+      entityType: Party
+      mapping:
+        partyId: partyId
+        name: displayName
+        partyKind: partyKind
+      idField: partyId
+      meta:
+        source: demo-parties

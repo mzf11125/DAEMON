@@ -2,6 +2,8 @@ import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import type { INestApplication } from "@nestjs/common";
 import { AppModule } from "../../api/gateway/dist/app.module.js";
+import { DaemonExceptionFilter } from "../../api/gateway/dist/daemon-exception.filter.js";
+import { resetDaemonRuntimeForTests } from "../../api/gateway/src/platform/daemon-runtime.js";
 
 export type GatewayTestApp = {
   app: INestApplication;
@@ -14,8 +16,19 @@ export async function createGatewayTestApp(
   env: NodeJS.ProcessEnv = process.env,
 ): Promise<GatewayTestApp> {
   const prev = { ...process.env };
-  Object.assign(process.env, env);
+  const testEnv = { ...env };
+  // Gateway HTTP tests use in-memory ontology unless the caller sets DAEMON_POSTGRES_URL.
+  const usePostgres = "DAEMON_POSTGRES_URL" in env;
+  if (!usePostgres) {
+    delete testEnv.DAEMON_POSTGRES_URL;
+  }
+  resetDaemonRuntimeForTests();
+  Object.assign(process.env, testEnv);
+  if (!usePostgres) {
+    delete process.env.DAEMON_POSTGRES_URL;
+  }
   const app = await NestFactory.create(AppModule, { logger: false });
+  app.useGlobalFilters(new DaemonExceptionFilter());
   await app.listen(0);
   const server = app.getHttpServer();
   const addr = server.address();

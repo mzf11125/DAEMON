@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { globalRegistry } from "@daemon/ontology";
 import { DaemonError, ErrorCodes, entityId, ontologyId } from "@daemon/platform-types";
+import { DaemonRuntime } from "../platform/daemon-runtime";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 
 export interface JobResult {
   jobId: string;
@@ -16,38 +17,36 @@ export interface IngestResult extends JobResult {
 export interface IngestRecord {
   ontologyId: string;
   entityId?: string;
+  entityType?: string;
   properties: Record<string, unknown>;
 }
 
-/**
- * Thin HTTP proxy onto the Go ingest orchestrator. The base URL is taken from
- * `DAEMON_INGEST_URL` (default `http://127.0.0.1:8081`). All upstream failures
- * are surfaced as {@link DaemonError} with an `UPSTREAM` code so the gateway
- * returns a consistent error envelope.
- */
 @Injectable()
 export class IngestService {
   private readonly baseUrl: string;
   private readonly skipUpstream: boolean;
 
-  constructor(env: NodeJS.ProcessEnv) {
+  constructor(
+    private readonly runtime: DaemonRuntime,
+    env: NodeJS.ProcessEnv,
+  ) {
     this.baseUrl = (env.DAEMON_INGEST_URL ?? "http://127.0.0.1:8081").replace(/\/+$/, "");
     this.skipUpstream =
       env.DAEMON_INGEST_SKIP_UPSTREAM === "1" ||
       env.DAEMON_INGEST_SKIP_UPSTREAM === "true";
   }
 
-  /** Nest and tests should use this; avoids DI on `process.env`. */
-  static create(env: NodeJS.ProcessEnv = process.env): IngestService {
-    return new IngestService(env);
+  static create(
+    runtime: DaemonRuntime,
+    env: NodeJS.ProcessEnv = process.env,
+  ): IngestService {
+    return new IngestService(runtime, env);
   }
 
-  /** Start an ingest job for `sourceId`. */
   async startJob(sourceId: string): Promise<JobResult> {
     return this.post<JobResult>("/v1/jobs", { sourceId });
   }
 
-  /** Fetch a previously started job by id. */
   async getJob(jobId: string): Promise<JobResult> {
     const res = await fetch(`${this.baseUrl}/v1/jobs/${encodeURIComponent(jobId)}`);
     if (res.status === 404) {
@@ -59,12 +58,26 @@ export class IngestService {
     return (await res.json()) as JobResult;
   }
 
-  /** Forward a batch of normalized records to the orchestrator. */
-  async ingestRecords(sourceId: string, records: IngestRecord[]): Promise<IngestResult> {
+  async ingestRecords(
+    ctx: TenantContextHeaders,
+    sourceId: string,
+    records: IngestRecord[],
+  ): Promise<IngestResult> {
     if (records.length === 0) {
       throw new DaemonError(ErrorCodes.VALIDATION, "records must not be empty", 400);
     }
-    this.registerOntologyRecords(records);
+    return this.persistIngestRecords(ctx, sourceId, records);
+  }
+
+  /**
+   * Validates, upserts ontology entities, flushes durable writes, optionally forwards to Go.
+   */
+  async persistIngestRecords(
+    ctx: TenantContextHeaders,
+    sourceId: string,
+    records: IngestRecord[],
+  ): Promise<IngestResult> {
+    await this.registerOntologyRecords(ctx, records);
     if (this.skipUpstream) {
       return {
         jobId: `local-${sourceId}`,
@@ -76,19 +89,37 @@ export class IngestService {
     return this.post<IngestResult>("/ingest/records", { sourceId, records });
   }
 
-  private registerOntologyRecords(records: IngestRecord[]): void {
+  private async registerOntologyRecords(
+    ctx: TenantContextHeaders,
+    records: IngestRecord[],
+  ): Promise<void> {
+    const scope = { tenantId: ctx.tenantId, domainId: ctx.domainId };
+    const tenant = this.runtime.tenants.require(ctx.tenantId);
+    const pack = this.runtime.packs.resolve(tenant, ctx.domainId);
     let seq = 0;
     for (const record of records) {
       if (!record.ontologyId) continue;
       seq += 1;
       const ent =
         record.entityId ?? `${record.ontologyId}-ingest-${Date.now()}-${seq}`;
-      globalRegistry.register(
-        ontologyId(record.ontologyId),
-        record.properties ?? {},
-        entityId(ent),
+      const entityType =
+        record.entityType ??
+        (typeof record.properties.entityType === "string"
+          ? record.properties.entityType
+          : undefined);
+      this.runtime.upsertEntity(
+        scope,
+        {
+          scope,
+          ontologyId: ontologyId(record.ontologyId),
+          properties: record.properties ?? {},
+          entityId: entityId(ent),
+          entityType,
+        },
+        pack,
       );
     }
+    await this.runtime.flushDurableWrites();
   }
 
   private async post<T>(path: string, body: unknown): Promise<T> {

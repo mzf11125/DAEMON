@@ -6,6 +6,9 @@ export interface AuditEntry {
   subjectId: string;
   resource: string;
   outcome: "allow" | "deny";
+  tenantId?: string;
+  domainId?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export class AuditLog {

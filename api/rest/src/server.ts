@@ -17,6 +17,9 @@ import {
 } from "@daemon/observability/metrics/http-metrics.js";
 import { resolveSession } from "./session.js";
 import { openApiDocument } from "./openapi.js";
+import { OntologyGovernance } from "@daemon/ontology/governance/ontology-governance.js";
+import type { SchemaChangeDescriptor } from "@daemon/ontology/governance/governance-policy-loader.js";
+import { diffPackChange } from "@daemon/ontology/packs/pack-diff.js";
 
 interface WriteBody {
   entityId: string;
@@ -147,6 +150,46 @@ async function handle(
         404,
       );
     }
+  }
+
+  if (method === "POST" && path === "/v1/governance/pack/validate-change") {
+    const body = await readJson<
+      SchemaChangeDescriptor & {
+        proposedPackDir?: string;
+        proposedOverrides?: {
+          entities?: Record<
+            string,
+            { fields: { name: string; type: string; required?: boolean }[] }
+          >;
+        };
+      }
+    >(req);
+    if (!body?.packId) {
+      throw new DaemonError(ErrorCodes.VALIDATION, "packId is required", 400);
+    }
+    const governance = OntologyGovernance.load();
+    let diff;
+    if (body.proposedPackDir || body.proposedOverrides) {
+      diff = diffPackChange({
+        packId: body.packId,
+        proposedPackDir: body.proposedPackDir,
+        proposedOverrides: body.proposedOverrides,
+      });
+    } else if (!body.changeType || body.breaking === undefined) {
+      throw new DaemonError(
+        ErrorCodes.VALIDATION,
+        "proposedPackDir, proposedOverrides, or legacy changeType+breaking required",
+        400,
+      );
+    }
+    const gate = governance.assertSchemaChange({ ...body, diff });
+    return sendJson(res, 200, {
+      allowed: gate.allowed,
+      reason: gate.reason,
+      obligations: gate.obligations,
+      auditAction: gate.auditAction,
+      diff: gate.diff,
+    });
   }
 
   if (method === "POST" && path === "/v1/automations/run") {

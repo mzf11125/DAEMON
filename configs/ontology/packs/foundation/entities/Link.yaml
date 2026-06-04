@@ -1,0 +1,11 @@
+entityType: Link
+fields:
+  - name: linkType
+    type: string
+    required: true
+  - name: fromEntityId
+    type: string
+    required: true
+  - name: toEntityId
+    type: string
+    required: true

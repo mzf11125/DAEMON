@@ -8,9 +8,13 @@ import { IngestModule } from "./ingest/ingest.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
 import { AutomationsModule } from "./automations/automations.module";
 import { ObservabilityModule } from "./observability/observability.module";
+import { PlatformModule } from "./platform/platform.module";
+import { GovernanceModule } from "./governance/governance.module";
 
 @Module({
   imports: [
+    PlatformModule,
+    GovernanceModule,
     ObservabilityModule,
     AuthModule,
     HealthModule,

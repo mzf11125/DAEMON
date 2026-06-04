@@ -35,3 +35,15 @@ Audit uses an in-memory backend for fast unit tests, and `PostgresAuditLog` when
 ## Approval and escalation
 
 External writes and schema changes route through approval gates. Policy denials and external writes trigger escalation channels defined in governance policy.
+
+## Wired vs config-only (commercial SSOT)
+
+| Config / capability | CI check | Runtime |
+|---------------------|----------|---------|
+| `governance-policies.yaml` approval gates | `pnpm run check:governance-policies` | `OntologyGovernance.assertSchemaChange` / `enforceSchemaChange`; CLI `ontology validate-schema-change` |
+| `propagation.yaml` | `check:governance-policies` (targets) | `PropagationExecutor` on registry register/patch via `DaemonRuntime` |
+| `action-catalog.yaml` | `check:governance-policies` (gateway `@PolicyCheck` pairs) | `PolicyEngine` at gateway startup via `loadActionCatalogPolicyRules()`; optional `onCommitted` workflow steps after loop commit |
+| Pack relations/junctions | `check:ontology-pack` | Link validation on ingest/register; junction validation when junction ingest exists |
+| Postgres RLS (`app.tenant_id`) | integration test when Postgres up | `withTenantSession` on journal upserts |
+
+Audit actions for ontology paths include `ontology.register`, `ontology.patch`, and `ontology.schema.change` (when schema gates run).

@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateConfig } from "./validate-config.js";
+import { validateSchemaChange } from "./validate-schema-change.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
@@ -18,7 +19,29 @@ async function main(): Promise<void> {
     }
     case "ontology":
       if (args[0] === "lint") {
-        console.log("ontology lint: no violations");
+        await run("node", [path.join(repoRoot, "scripts/validate-ontology-pack.mjs")]);
+        break;
+      }
+      if (args[0] === "validate-schema-change") {
+        const proposedDirIdx = args.indexOf("--proposed-dir");
+        const proposedPackDir =
+          proposedDirIdx >= 0 ? args[proposedDirIdx + 1] : undefined;
+        const changeType = (args.find((a) =>
+          ["field_add", "field_remove", "type_rename"].includes(a),
+        ) ?? (proposedPackDir ? undefined : "field_remove")) as
+          | "field_add"
+          | "field_remove"
+          | "type_rename"
+          | undefined;
+        const breaking = args.includes("--breaking") ? true : undefined;
+        const approved = args.includes("--approved");
+        validateSchemaChange({
+          packId: "foundation",
+          changeType,
+          breaking,
+          proposedPackDir,
+          approvals: approved ? ["approver-1", "approver-2"] : [],
+        });
         break;
       }
       throw new Error(`unknown ontology subcommand: ${args.join(" ")}`);
@@ -31,11 +54,19 @@ async function main(): Promise<void> {
           DAEMON_REDIS_URL: "redis://127.0.0.1:6379",
         });
         console.log("Dev stack is up (postgres, redis, nats, otel-collector)");
+        console.log(
+          "Migrations: DAEMON_POSTGRES_URL=postgresql://daemon:daemon@127.0.0.1:5432/daemon pnpm run db:migrate",
+        );
+        console.log(
+          "Integration: DAEMON_POSTGRES_URL=postgresql://daemon_app:daemon_app@127.0.0.1:5432/daemon pnpm run test:repo",
+        );
         break;
       }
       throw new Error(`unknown dev subcommand: ${args.join(" ")}`);
     default:
-      console.error("Usage: daemon-cli validate-config | ontology lint | dev up");
+      console.error(
+        "Usage: daemon-cli validate-config | ontology lint | ontology validate-schema-change [field_add|field_remove|type_rename] [--breaking] [--approved] [--proposed-dir <path>] | dev up",
+      );
       process.exit(1);
   }
 }

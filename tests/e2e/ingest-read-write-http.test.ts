@@ -1,11 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { globalRegistry } from "@daemon/ontology";
+import { globalRegistry, defaultScope } from "@daemon/ontology";
 import { entityId, ontologyId } from "@daemon/platform-types";
 import { createGatewayTestApp, DEV_API_KEY } from "../helpers/gateway-test-app.js";
 import { startMockIngestServer } from "../helpers/mock-ingest-server.js";
 
-const ONT = "e2e-http";
+const ONT = "foundation";
 const ENT = "e2e-http-entity";
 
 describe("e2e HTTP path", () => {
@@ -29,7 +29,18 @@ describe("e2e HTTP path", () => {
         headers,
         body: JSON.stringify({
           sourceId: "e2e",
-          records: [{ ontologyId: ONT, entityId: ENT, properties: { status: "seed" } }],
+          records: [
+            {
+              ontologyId: ONT,
+              entityId: ENT,
+              entityType: "Party",
+              properties: {
+                displayName: "E2E Party",
+                entityType: "Party",
+                status: "seed",
+              },
+            },
+          ],
         }),
       });
       assert.equal(ingestRes.status, 201);
@@ -52,7 +63,11 @@ describe("e2e HTTP path", () => {
       });
       assert.equal(writeRes.status, 201);
 
-      const record = globalRegistry.get(ontologyId(ONT), entityId(ENT));
+      const record = globalRegistry.get(
+        defaultScope(),
+        ontologyId(ONT),
+        entityId(ENT),
+      );
       assert.equal(record?.properties.status, "active");
     } finally {
       await close();

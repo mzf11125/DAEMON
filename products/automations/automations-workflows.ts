@@ -44,9 +44,10 @@ export class AutomationsWorkflows {
     session: DaemonSession,
     steps: WorkflowStep[],
     loop?: AutomationLoopInput,
+    options?: { loopFirst?: boolean },
   ): Promise<AutomationRunResult> {
     const loopRequest = loop ? this.toLoopRequest(session, loop) : undefined;
-    return this.tasks.run(steps, loopRequest);
+    return this.tasks.run(steps, loopRequest, options);
   }
 
   /** Evaluate whether a patch satisfies approval rules (no write). */

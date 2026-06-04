@@ -1,0 +1,37 @@
+# Semantic propagation rules (Technology OS alignment). Internal reference only.
+version: "1.0"
+rules:
+  - id: case-register
+    trigger: register
+    entityTypes: [Case]
+    propagate:
+      - read-model-projection
+      - materialized-view:case-by-status
+  - id: case-patch
+    trigger: patch
+    entityTypes: [Case]
+    propagate:
+      - read-model-projection
+      - audit-loop
+      - materialized-view:case-by-status
+  - id: party-patch
+    trigger: patch
+    entityTypes: [Party, Organization]
+    propagate:
+      - read-model-projection
+      - materialized-view:party-by-kind
+  - id: link-register
+    trigger: register
+    entityTypes: [Link]
+    propagate:
+      - read-model-projection
+      - graph-edge-sync
+  - id: default-register
+    trigger: register
+    propagate:
+      - read-model-projection
+  - id: default-patch
+    trigger: patch
+    propagate:
+      - read-model-projection
+      - audit-loop

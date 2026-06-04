@@ -3,18 +3,54 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "typesVersions": {
+    "*": {
+      "operational-store": ["./dist/operational-store/postgres-client.d.ts"],
+      "cache": ["./dist/cache/redis-client.d.ts"],
+      "graph-store": ["./dist/graph-store/postgres-graph-store.d.ts"],
+      "operational-store/entity-journal": [
+        "./dist/operational-store/entity-journal.d.ts"
+      ],
+      "operational-store/tenant-session": [
+        "./dist/operational-store/tenant-session.d.ts"
+      ],
+      "event-bus": ["./dist/event-bus/nats-publisher.d.ts"],
+      "migrations": ["./dist/migrations/run-migrations.d.ts"]
+    }
+  },
   "exports": {
-    "./operational-store": "./dist/operational-store/postgres-client.js",
+    "./operational-store": {
+      "types": "./dist/operational-store/postgres-client.d.ts",
+      "import": "./dist/operational-store/postgres-client.js",
+      "default": "./dist/operational-store/postgres-client.js"
+    },
+    "./operational-store/entity-journal": {
+      "types": "./dist/operational-store/entity-journal.d.ts",
+      "import": "./dist/operational-store/entity-journal.js",
+      "default": "./dist/operational-store/entity-journal.js"
+    },
+    "./operational-store/tenant-session": {
+      "types": "./dist/operational-store/tenant-session.d.ts",
+      "import": "./dist/operational-store/tenant-session.js",
+      "default": "./dist/operational-store/tenant-session.js"
+    },
     "./cache": "./dist/cache/redis-client.js",
     "./graph-store": "./dist/graph-store/postgres-graph-store.js",
-    "./event-bus": "./dist/event-bus/nats-publisher.js"
+    "./event-bus": "./dist/event-bus/nats-publisher.js",
+    "./migrations": {
+      "types": "./dist/migrations/run-migrations.d.ts",
+      "import": "./dist/migrations/run-migrations.js",
+      "default": "./dist/migrations/run-migrations.js"
+    }
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "node --test --import tsx operational-store/postgres-client.test.ts cache/redis-client.test.ts graph-store/postgres-graph-store.test.ts event-bus/nats-publisher.test.ts",
-    "lint": "tsc -p tsconfig.json --noEmit"
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "db:migrate": "node --import tsx migrations/run-migrations.ts"
   },
   "dependencies": {
+    "@daemon/context-ports": "workspace:*",
     "pg": "^8.13.1",
     "redis": "^4.7.0"
   },

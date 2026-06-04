@@ -5,6 +5,8 @@
   "type": "module",
   "exports": {
     "./reads/read-router.js": "./dist/reads/read-router.js",
+    "./reads/read-parity.js": "./dist/reads/read-parity.js",
+    "./reads/read-parity-metrics.js": "./dist/reads/read-parity-metrics.js",
     "./writes/command-gateway.js": "./dist/writes/command-gateway.js",
     "./loop-controller/loop-orchestrator.js": "./dist/loop-controller/loop-orchestrator.js",
     "./loop-controller/approval-gates.js": "./dist/loop-controller/approval-gates.js"
@@ -15,6 +17,7 @@
     "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@daemon/context-ports": "workspace:*",
     "@daemon/ontology": "workspace:*",
     "@daemon/platform-types": "workspace:*"
   },

@@ -5,6 +5,10 @@ export interface DaemonClientConfig {
   baseUrl: string;
   fetch?: typeof fetch;
   getSession?: () => Promise<DaemonSession | null>;
+  /** Multi-tenant scope; sent as `X-Daemon-Tenant` (default: gateway uses `default`). */
+  tenantId?: string;
+  /** Domain scope; sent as `X-Daemon-Domain` (default: gateway uses `foundation`). */
+  domainId?: string;
 }
 
 export class DaemonClient {
@@ -57,6 +61,12 @@ export class DaemonClient {
     };
     if (session) {
       headers["x-daemon-session"] = JSON.stringify(session);
+    }
+    if (this.config.tenantId) {
+      headers["x-daemon-tenant"] = this.config.tenantId;
+    }
+    if (this.config.domainId) {
+      headers["x-daemon-domain"] = this.config.domainId;
     }
     const res = await this.fetchFn(`${this.config.baseUrl}${path}`, {
       ...init,

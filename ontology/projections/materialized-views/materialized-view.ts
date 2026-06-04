@@ -54,7 +54,7 @@ export class MaterializedView {
 
   attach(registry: OntologyRegistry): void {
     this.detach();
-    this.unsubscribe = registry.subscribe((event) => this.apply(event));
+    this.unsubscribe = registry.subscribeEvents((event) => this.apply(event));
   }
 
   detach(): void {

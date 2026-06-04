@@ -1,0 +1,11 @@
+domains:
+  - id: foundation
+    label: Foundation
+    packId: foundation
+    description: Core cross-sector ontology primitives.
+  - id: aml-compliance
+    label: AML compliance extension
+    packIds:
+      - foundation
+    extensionPack: aml-compliance
+    description: Optional AML-oriented extensions (loaded when enabled for tenant).

@@ -1,0 +1,19 @@
+actions:
+  - id: read
+    resource: entity
+    effect: allow
+  - id: write
+    resource: entity
+    effect: allow
+    onCommitted:
+      - workflow: entity-write-audit
+        action: workflow.execute
+  - id: ingest
+    resource: ingest-record
+    effect: allow
+  - id: ingest
+    resource: ingest-job
+    effect: allow
+  - id: ingest
+    resource: ingest-source
+    effect: allow

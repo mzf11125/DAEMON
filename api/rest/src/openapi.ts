@@ -3,12 +3,22 @@
  * read/write contract so the same handlers can be validated against a single
  * schema in {@link file://../../../tests/contract/api-contract.test.ts}.
  */
+
+/** Scoped v1 operations accept optional tenant/domain headers (full enforcement on Nest gateway). */
+const TENANCY_HEADER_PARAMS = [
+  { $ref: "#/components/parameters/DaemonTenantHeader" },
+  { $ref: "#/components/parameters/DaemonDomainHeader" },
+] as const;
+
 export const openApiDocument = {
   openapi: "3.1.0",
   info: {
     title: "Daemon REST API",
     version: "0.1.0",
-    description: "Read/write access to the Daemon ontology registry over HTTP.",
+    description:
+      "Read/write access to the Daemon ontology registry over HTTP. " +
+      "Optional headers X-Daemon-Tenant and X-Daemon-Domain scope requests; the NestJS gateway enforces tenant registry and enabled domains. " +
+      "REST may read X-Daemon-Tenant for session defaults but does not fully mirror gateway domain validation.",
   },
   paths: {
     "/health": {
@@ -32,6 +42,7 @@ export const openApiDocument = {
         operationId: "readEntity",
         summary: "Resolve an entity by id",
         parameters: [
+          ...TENANCY_HEADER_PARAMS,
           {
             name: "id",
             in: "path",
@@ -42,7 +53,7 @@ export const openApiDocument = {
             name: "ontologyId",
             in: "query",
             required: false,
-            schema: { type: "string", default: "default" },
+            schema: { type: "string", default: "foundation" },
           },
         ],
         responses: {
@@ -70,6 +81,7 @@ export const openApiDocument = {
         operationId: "analyticsSearchReport",
         summary: "Search entities and return an analytics report",
         parameters: [
+          ...TENANCY_HEADER_PARAMS,
           { name: "q", in: "query", schema: { type: "string" } },
           { name: "ontologyId", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "integer" } },
@@ -94,6 +106,7 @@ export const openApiDocument = {
         operationId: "analyticsSearchEntities",
         summary: "Search entities (raw records)",
         parameters: [
+          ...TENANCY_HEADER_PARAMS,
           { name: "q", in: "query", schema: { type: "string" } },
           { name: "ontologyId", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "integer" } },
@@ -120,6 +133,7 @@ export const openApiDocument = {
         operationId: "analyticsDashboard",
         summary: "Build a dashboard spec for an ontology",
         parameters: [
+          ...TENANCY_HEADER_PARAMS,
           { name: "ontologyId", in: "query", schema: { type: "string" } },
           { name: "breakdownField", in: "query", schema: { type: "string" } },
         ],
@@ -139,6 +153,7 @@ export const openApiDocument = {
       post: {
         operationId: "automationsRun",
         summary: "Run workflow steps and optionally commit a write loop",
+        parameters: [...TENANCY_HEADER_PARAMS],
         requestBody: {
           required: true,
           content: {
@@ -163,6 +178,7 @@ export const openApiDocument = {
       post: {
         operationId: "automationsEvaluate",
         summary: "Evaluate approval requirements for a patch",
+        parameters: [...TENANCY_HEADER_PARAMS],
         requestBody: {
           required: true,
           content: {
@@ -187,6 +203,7 @@ export const openApiDocument = {
       post: {
         operationId: "automationsApprove",
         summary: "Commit an approval-gated write loop",
+        parameters: [...TENANCY_HEADER_PARAMS],
         requestBody: {
           required: true,
           content: {
@@ -207,10 +224,35 @@ export const openApiDocument = {
         },
       },
     },
+    "/v1/governance/pack/validate-change": {
+      post: {
+        operationId: "validatePackSchemaChange",
+        summary: "Evaluate a proposed pack/schema change against governance policies",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/SchemaChangeRequest" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Gate evaluation result",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/SchemaChangeGate" },
+              },
+            },
+          },
+        },
+      },
+    },
     "/v1/write": {
       post: {
         operationId: "writeEntity",
         summary: "Apply a patch to an entity",
+        parameters: [...TENANCY_HEADER_PARAMS],
         requestBody: {
           required: true,
           content: {
@@ -241,6 +283,24 @@ export const openApiDocument = {
     },
   },
   components: {
+    parameters: {
+      DaemonTenantHeader: {
+        name: "X-Daemon-Tenant",
+        in: "header",
+        required: false,
+        schema: { type: "string", default: "default" },
+        description:
+          "Tenant id from configs/tenancy.yaml (e.g. default, inst-alpha, ent-beta).",
+      },
+      DaemonDomainHeader: {
+        name: "X-Daemon-Domain",
+        in: "header",
+        required: false,
+        schema: { type: "string", default: "foundation" },
+        description:
+          "Domain id from configs/ontology/domains/catalog.yaml; must be enabled for the tenant on the gateway.",
+      },
+    },
     schemas: {
       Health: {
         type: "object",
@@ -332,6 +392,11 @@ export const openApiDocument = {
             },
           },
           loop: { $ref: "#/components/schemas/WriteCommand" },
+          loopFirst: {
+            type: "boolean",
+            description:
+              "When true with loop, run write loop before workflow steps (LOOP then WF). Default false.",
+          },
         },
       },
       AutomationsEvaluateRequest: {
@@ -365,6 +430,89 @@ export const openApiDocument = {
           requiresApproval: { type: "boolean" },
           approved: { type: "boolean" },
           reasons: { type: "array", items: { type: "string" } },
+        },
+      },
+      SchemaChangeRequest: {
+        type: "object",
+        required: ["packId"],
+        properties: {
+          packId: { type: "string" },
+          proposedPackDir: {
+            type: "string",
+            description: "Relative path under configs/ontology/packs for proposed pack YAML",
+          },
+          proposedOverrides: {
+            type: "object",
+            properties: {
+              entities: {
+                type: "object",
+                additionalProperties: {
+                  type: "object",
+                  properties: {
+                    fields: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          name: { type: "string" },
+                          type: { type: "string" },
+                          required: { type: "boolean" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          changeType: {
+            type: "string",
+            enum: [
+              "field_add",
+              "field_remove",
+              "type_rename",
+              "relation_add",
+              "relation_remove",
+              "junction_add",
+              "junction_remove",
+            ],
+          },
+          breaking: { type: "boolean" },
+          semverBump: { type: "string", enum: ["major", "minor", "patch"] },
+          approvals: { type: "array", items: { type: "string" } },
+        },
+      },
+      PackDiffSummary: {
+        type: "object",
+        properties: {
+          breaking: { type: "boolean" },
+          semverBump: { type: "string", enum: ["major", "minor", "patch"] },
+          changes: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                changeType: { type: "string" },
+                entityType: { type: "string" },
+                field: { type: "string" },
+                detail: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      SchemaChangeGate: {
+        type: "object",
+        required: ["allowed", "auditAction"],
+        properties: {
+          allowed: { type: "boolean" },
+          reason: { type: "string" },
+          obligations: { type: "array", items: { type: "string" } },
+          auditAction: {
+            type: "string",
+            enum: ["ontology.schema.change", "ontology.schema.change.pending"],
+          },
+          diff: { $ref: "#/components/schemas/PackDiffSummary" },
         },
       },
     },

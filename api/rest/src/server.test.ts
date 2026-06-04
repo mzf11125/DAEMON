@@ -38,8 +38,26 @@ test("openapi document is served", async () => {
   await withServer(async (base) => {
     const res = await fetch(`${base}/openapi.json`);
     assert.equal(res.status, 200);
-    const doc = (await res.json()) as { openapi: string };
+    const doc = (await res.json()) as {
+      openapi: string;
+      components?: {
+        parameters?: Record<string, { name?: string }>;
+      };
+      paths?: Record<
+        string,
+        { post?: { parameters?: Array<{ $ref?: string }> }; get?: { parameters?: unknown[] } }
+      >;
+    };
     assert.equal(doc.openapi, "3.1.0");
+    assert.ok(doc.components?.parameters?.DaemonTenantHeader);
+    assert.ok(doc.components?.parameters?.DaemonDomainHeader);
+    assert.equal(doc.components?.parameters?.DaemonTenantHeader?.name, "X-Daemon-Tenant");
+    const writeParams = doc.paths?.["/v1/write"]?.post?.parameters ?? [];
+    const refs = writeParams
+      .filter((p): p is { $ref: string } => typeof (p as { $ref?: string }).$ref === "string")
+      .map((p) => p.$ref);
+    assert.ok(refs.includes("#/components/parameters/DaemonTenantHeader"));
+    assert.ok(refs.includes("#/components/parameters/DaemonDomainHeader"));
   });
 });
 

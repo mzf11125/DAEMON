@@ -1,0 +1,15 @@
+ontologyId: foundation
+version: 0.1.0
+description: PPATK darkweb intel — marketplaces, vendors, hidden services, and attribution evidence.
+entityTypes:
+  - DarkwebMarketplace
+  - DarkwebVendor
+  - DarkwebListing
+  - OnionService
+  - PgpKey
+junctionTypes:
+  - VendorListing
+  - VendorWalletLink
+  - VendorPartyAttribution
+  - ListingMention
+  - VendorPgpKey

@@ -1,0 +1,11 @@
+entityType: Persona
+fields:
+  - { name: handle, type: string, required: true }
+  - { name: platform, type: string, required: true }    # x, instagram, tiktok, fb, linkedin, github, discord, telegram
+  - { name: profileUrl, type: string }
+  - { name: createdAt, type: string }
+  - { name: bio, type: string }
+  - { name: followerCount, type: number }
+  - { name: indicators, type: object }                  # phone, email, pfp-hash, writing-style-vec ids
+  - { name: lastObservedAt, type: string }
+  - { name: verified, type: boolean }

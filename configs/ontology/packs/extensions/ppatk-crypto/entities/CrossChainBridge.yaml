@@ -1,0 +1,7 @@
+entityType: CrossChainBridge
+fields:
+  - { name: protocol, type: string, required: true }     # wormhole, layerzero, stargate, thorchain, allbridge, axelar
+  - { name: sourceChain, type: string, required: true }
+  - { name: destChain, type: string, required: true }
+  - { name: contractAddress, type: string }
+  - { name: averageLatencySec, type: number }

@@ -1,0 +1,11 @@
+junctionType: LabelTarget
+endpoints:
+  - Label
+  - Party
+  - Wallet
+  - FinancialAccount
+  - OnChainTransaction
+  - Document
+  - IPAddress
+  - Domain
+  - Persona

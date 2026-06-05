@@ -1,0 +1,8 @@
+entityType: PublicMention
+fields:
+  - { name: sourceUrl, type: string, required: true }
+  - { name: sourceKind, type: string }                   # news, blog, sec-filing, court-doc, social
+  - { name: publishedAt, type: string }
+  - { name: language, type: string }
+  - { name: excerpt, type: string }
+  - { name: sentiment, type: string }

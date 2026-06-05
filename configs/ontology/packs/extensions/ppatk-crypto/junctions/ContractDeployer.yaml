@@ -1,0 +1,4 @@
+junctionType: ContractDeployer
+endpoints:
+  - SmartContract
+  - Wallet

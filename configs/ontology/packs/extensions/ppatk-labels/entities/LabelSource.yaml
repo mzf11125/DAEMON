@@ -1,0 +1,7 @@
+entityType: LabelSource
+fields:
+  - { name: name, type: string, required: true }
+  - { name: vendor, type: string }
+  - { name: feedUrl, type: string }
+  - { name: trustTier, type: string }                    # tier-1-court, tier-2-regulator, tier-3-vendor, tier-4-community
+  - { name: lastSyncedAt, type: string }

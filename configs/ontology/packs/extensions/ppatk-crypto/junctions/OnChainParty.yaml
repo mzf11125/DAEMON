@@ -1,0 +1,4 @@
+junctionType: OnChainParty
+endpoints:
+  - OnChainTransaction
+  - Wallet

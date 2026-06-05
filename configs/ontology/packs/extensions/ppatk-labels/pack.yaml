@@ -1,0 +1,11 @@
+ontologyId: foundation
+version: 0.1.0
+description: PPATK flagging and labelling — cross-domain semantic tags and operational flags with provenance.
+entityTypes:
+  - Label
+  - Flag
+  - LabelSource
+junctionTypes:
+  - LabelTarget
+  - FlagTarget
+  - LabelProvenance

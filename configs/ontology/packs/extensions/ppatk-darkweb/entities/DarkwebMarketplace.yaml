@@ -1,0 +1,9 @@
+entityType: DarkwebMarketplace
+fields:
+  - { name: name, type: string, required: true }
+  - { name: onionAddress, type: string }
+  - { name: status, type: string }                       # active, seized, exit-scammed, dormant
+  - { name: categories, type: object }
+  - { name: firstSeenAt, type: string }
+  - { name: lastSeenAt, type: string }
+  - { name: cryptosAccepted, type: object }              # btc, xmr, ltc

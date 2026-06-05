@@ -1,0 +1,9 @@
+entityType: DataLeak
+fields:
+  - { name: leakName, type: string, required: true }
+  - { name: sourceUrl, type: string }
+  - { name: leakDate, type: string }
+  - { name: recordCount, type: number }
+  - { name: dataTypes, type: object }                    # email, phone, password-hash, nik, pii
+  - { name: sha256, type: string }
+  - { name: classification, type: string }               # public-known, restricted, court-only

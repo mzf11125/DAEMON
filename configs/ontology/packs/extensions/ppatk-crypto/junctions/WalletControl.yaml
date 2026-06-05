@@ -1,0 +1,4 @@
+junctionType: WalletControl
+endpoints:
+  - Party
+  - Wallet

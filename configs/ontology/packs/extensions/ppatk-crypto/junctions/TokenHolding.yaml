@@ -1,0 +1,4 @@
+junctionType: TokenHolding
+endpoints:
+  - Wallet
+  - TokenAsset

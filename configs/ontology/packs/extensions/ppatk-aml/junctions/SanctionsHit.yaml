@@ -1,0 +1,4 @@
+junctionType: SanctionsHit
+endpoints:
+  - Party
+  - SanctionsListEntry

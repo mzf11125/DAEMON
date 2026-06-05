@@ -1,0 +1,5 @@
+junctionType: C2Link
+endpoints:
+  - MalwareSample
+  - Domain
+  - IPAddress

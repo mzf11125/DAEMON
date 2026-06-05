@@ -1,0 +1,12 @@
+entityType: IPAddress
+fields:
+  - { name: address, type: string, required: true }
+  - { name: version, type: number }                     # 4 or 6
+  - { name: asn, type: number }
+  - { name: asnName, type: string }
+  - { name: geoCountry, type: string }
+  - { name: isTorExit, type: boolean }
+  - { name: isVpn, type: boolean }
+  - { name: isResidentialProxy, type: boolean }
+  - { name: firstSeenAt, type: string }
+  - { name: lastSeenAt, type: string }

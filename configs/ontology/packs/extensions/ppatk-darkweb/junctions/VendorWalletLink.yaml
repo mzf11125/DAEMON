@@ -1,0 +1,4 @@
+junctionType: VendorWalletLink
+endpoints:
+  - DarkwebVendor
+  - Wallet

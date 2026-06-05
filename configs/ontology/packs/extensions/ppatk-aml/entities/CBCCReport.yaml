@@ -1,0 +1,9 @@
+entityType: CBCCReport
+fields:
+  - { name: reportId, type: string, required: true }
+  - { name: filedAt, type: string, required: true }
+  - { name: portOfEntry, type: string }
+  - { name: declaredAmount, type: number }
+  - { name: declaredCurrency, type: string }
+  - { name: direction, type: string }                    # inbound, outbound
+  - { name: status, type: string }

@@ -1,0 +1,7 @@
+entityType: BeneficialOwner
+fields:
+  - { name: displayName, type: string, required: true }
+  - { name: ownershipPct, type: number }
+  - { name: controlBasis, type: string }                 # ownership, voting, signing-authority, founder
+  - { name: declaredAt, type: string }
+  - { name: source, type: string }                       # ahu, internal-kyc, court-order

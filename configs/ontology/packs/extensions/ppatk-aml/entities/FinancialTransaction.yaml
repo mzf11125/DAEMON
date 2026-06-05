@@ -1,0 +1,13 @@
+entityType: FinancialTransaction
+fields:
+  - { name: externalRef, type: string, required: true }
+  - { name: valueDate, type: string, required: true }
+  - { name: amount, type: number, required: true }
+  - { name: currency, type: string, required: true }
+  - { name: amountIdrEquivalent, type: number }
+  - { name: channel, type: string }                      # rtgs, skn, bi-fast, swift, atm, internet-banking, agent
+  - { name: txKind, type: string }                       # transfer, cash-deposit, cash-withdrawal, fx, settlement
+  - { name: crossBorder, type: boolean }
+  - { name: correspondentBic, type: string }
+  - { name: purpose, type: string }
+  - { name: rawPayload, type: object }

@@ -1,0 +1,4 @@
+junctionType: PersonaIdentityLink
+endpoints:
+  - Persona
+  - Party

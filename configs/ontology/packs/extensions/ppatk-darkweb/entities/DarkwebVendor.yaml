@@ -1,0 +1,10 @@
+entityType: DarkwebVendor
+fields:
+  - { name: handle, type: string, required: true }
+  - { name: marketplaces, type: object }
+  - { name: reputationScore, type: number }
+  - { name: salesEstimate, type: number }
+  - { name: categories, type: object }
+  - { name: firstSeenAt, type: string }
+  - { name: lastSeenAt, type: string }
+  - { name: attributionTier, type: string }              # unknown, weak, strong, confirmed-by-court

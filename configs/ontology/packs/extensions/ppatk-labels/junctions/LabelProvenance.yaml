@@ -1,0 +1,4 @@
+junctionType: LabelProvenance
+endpoints:
+  - Label
+  - LabelSource

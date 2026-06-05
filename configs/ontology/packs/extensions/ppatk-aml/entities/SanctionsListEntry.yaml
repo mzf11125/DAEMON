@@ -1,0 +1,12 @@
+entityType: SanctionsListEntry
+fields:
+  - { name: listName, type: string, required: true }     # dttot, un-1267, un-1988, ofac-sdn, eu-csl, hmt-uk
+  - { name: listVersion, type: string }
+  - { name: listedName, type: string, required: true }
+  - { name: aliases, type: object }
+  - { name: dob, type: string }
+  - { name: nationality, type: string }
+  - { name: identifiers, type: object }                  # passport, nik, npwp, wallet addr
+  - { name: listedAt, type: string }
+  - { name: delistedAt, type: string }
+  - { name: programs, type: object }                     # tf, npwmd, narco, cyber, etc

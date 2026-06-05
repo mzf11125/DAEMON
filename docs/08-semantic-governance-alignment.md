@@ -102,12 +102,14 @@ PDFs (Charter, Ontology Master, Technology OS) remain human reference only — n
 
 | Artifact | Path | Status |
 |----------|------|--------|
-| Public PRD stub | [PRD-logistics-commercial-extension.md](./PRD-logistics-commercial-extension.md) | Draft — R1/R2 P0 implemented; P1 entities deferred |
-| Extension pack | `configs/ontology/packs/extensions/logistics-commercial/` | **In scope (v0.1.0 P0)** — Account, Contact, Order, Shipment, TTK, Manifest, ShipmentLeg junction |
+| Public PRD stub | [PRD-logistics-commercial-extension.md](./PRD-logistics-commercial-extension.md) | R1/R2 P0+P1 implemented (v0.2.0) |
+| Extension pack | `configs/ontology/packs/extensions/logistics-commercial/` | **In scope (v0.2.0)** — 16 entity types + `ShipmentLeg` junction (P0+P1 per client definition) |
 | Domain | `logistics` in `configs/ontology/domains/catalog.yaml` | **Enabled** — tenant `logistics-pilot` in `configs/tenancy.yaml` |
-| Propagation | `configs/governance/propagation.yaml` (`logistics-entity-register` / `logistics-entity-patch`) | **In scope** |
-| Competency (public) | [09-ontology-competency-questions.md](./09-ontology-competency-questions.md) | Logistics section (P0) |
+| Propagation | `configs/governance/propagation.yaml` (`logistics-entity-register` / `logistics-entity-patch`) | **In scope** — all v0.2.0 entity types |
+| Competency (public) | [09-ontology-competency-questions.md](./09-ontology-competency-questions.md) | Logistics LQ-01–LQ-17 (P0+P1) |
 | Graph / NL | `buildPackGraphSchema` + ontology-query chain per tenant/domain | **Domain-aware** for logistics |
+| Pack resolution API | `GET /v1/ontology/pack-resolution` | Returns `packId`, `packVersion`, `entityTypes` per tenant/domain |
+| DSDK console | [apps/dsdk-console/](../apps/dsdk-console/) | Logistics entity types via pack-resolution |
 
 Do not add logistics entity literals to `foundation` until the extension pack is approved and merged per the public PRD stub.
 

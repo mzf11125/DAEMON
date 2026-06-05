@@ -90,6 +90,47 @@ describe("DSDK production smoke (gateway surfaces)", () => {
         headers: authHeaders(),
       });
       assert.equal(schedules.status, 200);
+
+      const logisticsPack = await fetch(`${baseUrl}/v1/ontology/pack-resolution`, {
+        headers: authHeaders({
+          "x-daemon-tenant": "logistics-pilot",
+          "x-daemon-domain": "logistics",
+        }),
+      });
+      assert.equal(logisticsPack.status, 200);
+      const logisticsBody = (await logisticsPack.json()) as {
+        packId?: string;
+        packVersion?: string;
+        entityTypes?: string[];
+      };
+      assert.equal(logisticsBody.packId, "logistics-commercial");
+      assert.ok(logisticsBody.packVersion);
+      assert.ok(logisticsBody.entityTypes?.includes("Lead"));
+      assert.ok(logisticsBody.entityTypes?.includes("Trip"));
+
+      const logisticsIngest = await fetch(`${baseUrl}/v1/ingest/records`, {
+        method: "POST",
+        headers: authHeaders({
+          "x-daemon-tenant": "logistics-pilot",
+          "x-daemon-domain": "logistics",
+        }),
+        body: JSON.stringify({
+          sourceId: "smoke-logistics-p1",
+          records: [
+            {
+              ontologyId: "foundation",
+              entityId: "smoke-lead-1",
+              entityType: "Lead",
+              properties: {
+                displayName: "Smoke Lead",
+                entityType: "Lead",
+                status: "new",
+              },
+            },
+          ],
+        }),
+      });
+      assert.ok(logisticsIngest.status === 201 || logisticsIngest.status === 200);
     } finally {
       await close();
     }

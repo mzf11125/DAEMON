@@ -128,22 +128,36 @@ if (existsSync(junctionsDir)) {
   }
 }
 
-const amlDir = join(root, "configs", "ontology", "packs", "extensions", "aml-compliance");
-const amlManifestPath = join(amlDir, "pack.yaml");
-if (existsSync(amlManifestPath)) {
-  const aml = parseYaml(readFileSync(amlManifestPath, "utf8"));
-  if (aml.ontologyId !== "foundation") {
-    fail("aml-compliance extension ontologyId must be foundation");
+function validateExtensionPack(packId) {
+  const extDir = join(root, "configs", "ontology", "packs", "extensions", packId);
+  const manifestPath = join(extDir, "pack.yaml");
+  if (!existsSync(manifestPath)) {
+    fail(`${packId} extension pack.yaml missing`);
+    return;
   }
-  for (const t of aml.entityTypes ?? []) {
+  const manifest = parseYaml(readFileSync(manifestPath, "utf8"));
+  if (manifest.ontologyId !== "foundation") {
+    fail(`${packId} extension ontologyId must be foundation`);
+  }
+  for (const t of manifest.entityTypes ?? []) {
     if (requiredEntities.includes(t)) {
-      fail(`aml-compliance extension must not redefine foundation entity ${t}`);
+      fail(`${packId} extension must not redefine foundation entity ${t}`);
     }
-    const entityPath = join(amlDir, "entities", `${t}.yaml`);
+    const entityPath = join(extDir, "entities", `${t}.yaml`);
     if (!existsSync(entityPath)) {
-      fail(`aml-compliance missing entity file ${t}.yaml`);
+      fail(`${packId} missing entity file ${t}.yaml`);
     }
   }
+  for (const t of manifest.junctionTypes ?? []) {
+    const jPath = join(extDir, "junctions", `${t}.yaml`);
+    if (!existsSync(jPath)) {
+      fail(`${packId} missing junction file ${t}.yaml`);
+    }
+  }
+}
+
+for (const packId of ["aml-compliance", "logistics-commercial"]) {
+  validateExtensionPack(packId);
 }
 
 if (failed) process.exit(1);

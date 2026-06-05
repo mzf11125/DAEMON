@@ -11,6 +11,9 @@ const PROPAGATION_TARGETS = new Set([
   "audit-loop",
   "graph-edge-sync",
   "neo4j-graph-sync",
+  "semantic-vector-index",
+  "lakehouse-bronze",
+  "lakehouse-silver",
   "materialized-view:case-by-status",
   "materialized-view:party-by-kind",
 ]);

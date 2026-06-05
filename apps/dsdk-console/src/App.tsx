@@ -148,6 +148,20 @@ export function App() {
                 type="button"
                 disabled={loading}
                 onClick={() =>
+                  run("logistics-pack", () =>
+                    createDaemonClient({
+                      tenantId: "logistics-pilot",
+                      domainId: "logistics",
+                    }).ontologyPackResolution({ packBranch: "main" }),
+                  )
+                }
+              >
+                Logistics entity types
+              </button>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() =>
                   run("search", () => client.search({ q: "Party", limit: 5 }))
                 }
               >

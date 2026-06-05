@@ -86,7 +86,7 @@ Gateway routes **product-router** operations through [products/product-shell/pro
 | `pipeline-builder` | [products/pipeline-builder/](../products/pipeline-builder/) | Pipeline Builder (DAG) | `POST /v1/pipelines/:pipelineId/run` |
 | `aip-evals` | [products/aip-evals/](../products/aip-evals/) | AIP Evals | `POST /v1/evals/run`, `GET /v1/evals/runs` |
 
-**Console:** [apps/dsdk-console](../apps/dsdk-console/) — enterprise shell over `@daemon/sdk` (not OSDK-generated).
+**Console:** [apps/dsdk-console](../apps/dsdk-console/) — enterprise shell over `@daemon/sdk` (pack-resolution, search, lakehouse, pipelines, evals; **Logistics entity types** lists `logistics-commercial` via `logistics-pilot` / `logistics` headers).
 
 ### SDK entry points for products
 
@@ -130,7 +130,7 @@ Foundry’s MMDP emphasizes Iceberg, virtual catalogs, streaming compute, and co
 
 | Foundry | daemon-sdk |
 |---------|------------|
-| Data Health monitoring views | `check:sources`, `check:governance-policies` |
+| Data Health monitoring views | `GET /v1/data-health/summary`, `check:sources`, `check:governance-policies` |
 | Workflow Lineage / AIP observability | Audit journal, propagation audit-loop, integration tests |
 | Metrics export to dataset | Query bronze/summary APIs; no log-export pipeline |
 

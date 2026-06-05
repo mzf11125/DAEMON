@@ -43,6 +43,19 @@ describe("foundation ontology pack", () => {
     assert.ok(resolved.entityTypes.includes("Shipment"));
     assert.ok(resolved.entityTypes.includes("Opportunity"));
     assert.ok(resolved.entityTypes.includes("Conversation"));
+    for (const p1 of [
+      "Lead",
+      "Pipeline",
+      "Activity",
+      "AccountPlan",
+      "Signal",
+      "Trip",
+      "Dispatch",
+      "RoutingDecision",
+    ]) {
+      assert.ok(resolved.entityTypes.includes(p1), `missing P1 type ${p1}`);
+      assert.ok(resolved.models.has(p1), `missing P1 model ${p1}`);
+    }
     assert.ok(resolved.models.has("Shipment"));
     assert.ok(resolved.models.has("Opportunity"));
     assert.ok(resolved.junctions.has("ShipmentLeg"));

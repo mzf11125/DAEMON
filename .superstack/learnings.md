@@ -151,3 +151,10 @@
 - **Source:** dsdk-gap-production-e2e
 - **Files:** toolchain/mcp/ontology-mcp/server.mjs, docs/17-platform-decision-map.md
 - **Date:** 2026-06-04
+
+### logistics-commercial-pack-v0-2
+- **Insight:** Client-definition P1 adds eight OM entities to `logistics-commercial` v0.2.0; `GET /v1/ontology/pack-resolution` scopes by `X-Daemon-Tenant` / `X-Daemon-Domain` (not `domainId` query); response includes `packId` aligned with SDK `PackResolution`.
+- **Confidence:** 9/10
+- **Source:** client-definition-build
+- **Files:** configs/ontology/packs/extensions/logistics-commercial/, scripts/validate-ontology-pack.mjs, api/gateway/src/ontology/ontology-pack.service.ts
+- **Date:** 2026-06-05

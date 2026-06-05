@@ -25,11 +25,13 @@ export class OntologyPackService {
       packBranch: branch,
       environment: env,
     });
+    const packId = domain.extensionPack ?? resolved.ontologyId;
     return {
       tenantId: ctx.tenantId,
       domainId: ctx.domainId,
       environment: resolved.environment,
       packBranch: resolved.packBranch,
+      packId,
       extensionPack: domain.extensionPack ?? null,
       ontologyId: resolved.ontologyId,
       packVersion: resolved.packVersion,

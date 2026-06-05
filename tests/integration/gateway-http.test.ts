@@ -286,6 +286,74 @@ describe("gateway HTTP", () => {
     }
   });
 
+  it("ingests logistics-commercial P1 entities on logistics domain", async () => {
+    const { baseUrl, close } = await createGatewayTestApp({
+      DAEMON_INGEST_SKIP_UPSTREAM: "1",
+      DAEMON_AUTH_MODE: "dev",
+    });
+    try {
+      const res = await fetch(`${baseUrl}/v1/ingest/records`, {
+        method: "POST",
+        headers: authHeaders({
+          "x-daemon-tenant": "logistics-pilot",
+          "x-daemon-domain": "logistics",
+        }),
+        body: JSON.stringify({
+          sourceId: "logistics-p1",
+          records: [
+            {
+              ontologyId: FOUNDATION,
+              entityId: "log-lead-1",
+              entityType: "Lead",
+              properties: {
+                displayName: "Pilot Lead",
+                entityType: "Lead",
+                status: "new",
+                accountRef: "log-acct-1",
+              },
+            },
+            {
+              ontologyId: FOUNDATION,
+              entityId: "log-trip-1",
+              entityType: "Trip",
+              properties: {
+                tripCode: "TRIP-001",
+                entityType: "Trip",
+                status: "planned",
+              },
+            },
+            {
+              ontologyId: FOUNDATION,
+              entityId: "log-signal-1",
+              entityType: "Signal",
+              properties: {
+                signalType: "expansion",
+                entityType: "Signal",
+                stage: "qualified",
+                accountRef: "log-acct-1",
+              },
+            },
+          ],
+        }),
+      });
+      assert.equal(res.status, 201);
+      const readLead = await fetch(
+        `${baseUrl}/v1/read/entities/log-lead-1?ontologyId=${FOUNDATION}`,
+        {
+          headers: authHeaders({
+            "x-daemon-tenant": "logistics-pilot",
+            "x-daemon-domain": "logistics",
+          }),
+        },
+      );
+      assert.equal(readLead.status, 200);
+      const body = (await readLead.json()) as { entityType: string };
+      assert.equal(body.entityType, "Lead");
+    } finally {
+      await close();
+    }
+  });
+
   it("ingests logistics-commercial P0 entities on logistics domain", async () => {
     const { baseUrl, close } = await createGatewayTestApp({
       DAEMON_INGEST_SKIP_UPSTREAM: "1",

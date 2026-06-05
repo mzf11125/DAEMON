@@ -79,7 +79,7 @@ The **commercial ontology SSOT epic** (foundation relations, junctions, propagat
 | KR1 | Extension pack declares commercial + operational + junction types | ≥12 types CI-valid |
 | KR2 | Propagation rules exist for each v1 type or documented exception | 100% of v1 types |
 | KR3 | Production ingest of pack `entityType` only via gateway + validator | No unvalidated types |
-| KR4 | Public docs and competency updated for foundation + extension boundary | Stub → implemented checklist |
+| KR4 | Public docs and competency updated for foundation + extension boundary | Implemented (v0.2.0 P0+P1) |
 
 ---
 
@@ -121,8 +121,8 @@ The **commercial ontology SSOT epic** (foundation relations, junctions, propagat
 | P0 | Domain catalog entry + tenancy tests |
 | P0 | Pack allowlist / resolver merge tests (mirror `aml-compliance` pattern) |
 | P0 | Propagation rules per v1 entity type |
-| P1 | Neo4j label sync + graph model doc updates |
-| P1 | Competency questions for logistics-commercial (public subset after review) |
+| P1 | Neo4j label sync + graph model doc updates — **shipped** (v0.2.0) |
+| P1 | Competency questions for logistics-commercial (public subset after review) — **shipped** LQ-10–LQ-17 |
 | P2 | Federated read from operational SSOT |
 | P2 | Additional governed actions beyond existing ingest/write/query |
 
@@ -176,6 +176,8 @@ flowchart TB
 - [x] Integration test: sample commercial + operational ingest under logistics domain (Account, Shipment, Manifest).
 - [x] No logistics-specific types added to `configs/ontology/packs/foundation/`.
 - [x] [08-semantic-governance-alignment.md](./08-semantic-governance-alignment.md) updated with pack id and mapping rows when implemented.
+- [x] Extension pack v0.2.0 includes P1 entities (Lead, Pipeline, Activity, AccountPlan, Signal, Trip, Dispatch, RoutingDecision).
+- [x] `logistics-commercial` validated in `pnpm run check:ontology-pack` alongside `aml-compliance`.
 
 ### Public entity checklist (generic names)
 

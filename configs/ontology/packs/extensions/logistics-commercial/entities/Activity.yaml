@@ -1,0 +1,11 @@
+entityType: Activity
+fields:
+  - name: activityType
+    type: string
+    required: true
+  - name: occurredAt
+    type: string
+    required: false
+  - name: accountRef
+    type: string
+    required: false

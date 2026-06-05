@@ -40,24 +40,37 @@ Requires extension pack `logistics-commercial` merged for the caller's domain. U
 | LQ-06 | List shipments with status `{status}` | Filter `Shipment` by `status` |
 | LQ-07 | How many links does shipment `{shipmentId}` have? | Count `LINK` from `Shipment` |
 
-## Logistics-commercial extension (domain `logistics`, P1)
+## Logistics-commercial extension (domain `logistics`, P0 continued)
 
 | ID | Question (natural language) | Expected graph pattern |
 |----|----------------------------|------------------------|
 | LQ-08 | Which **Opportunity** records reference account `{accountId}`? | `Opportunity` with `accountRef` or `LINK` → `Account` |
-| LQ-09 | What **Conversation** rows tie to opportunity `{opportunityId}`? | `Conversation` with `opportunityRef` or `LINK` → `Opportunity` |
+| LQ-09 | What **Conversation** rows tie to account `{accountId}`? | `Conversation` with `accountRef` or `LINK` → `Account` |
+
+## Logistics-commercial extension (domain `logistics`, P1 — pack v0.2.0)
+
+| ID | Question (natural language) | Expected graph pattern |
+|----|----------------------------|------------------------|
+| LQ-10 | Which **Lead** records reference account `{accountId}`? | `Lead` with `accountRef` or `LINK` → `Account` |
+| LQ-11 | What **Pipeline** stage is account `{accountId}` in? | `Pipeline` with `accountRef` / `stage` filter |
+| LQ-12 | List **Activity** rows for account `{accountId}` since `{date}` | `Activity` with `accountRef` and `occurredAt` |
+| LQ-13 | Which **AccountPlan** covers account `{accountId}` for period `{period}`? | `AccountPlan` with `accountRef` / `period` |
+| LQ-14 | What **Signal** rows exist for account `{accountId}` at stage `{stage}`? | `Signal` with `accountRef` / `stage` |
+| LQ-15 | Which **Trip** has code `{tripCode}`? | Match `Entity:Trip` by `tripCode` or `entityId` |
+| LQ-16 | What **Dispatch** rows reference manifest `{manifestId}`? | `Dispatch` with `manifestRef` or `LINK` → `Manifest` |
+| LQ-17 | List **RoutingDecision** rows for shipment `{shipmentId}` | `RoutingDecision` with `shipmentRef` |
 
 Pack resolution supports `packBranch` / `environment` query params on `GET /v1/ontology/pack-resolution` (see [17-platform-decision-map.md](./17-platform-decision-map.md)).
 
 ### Negative competency (logistics domain, v1)
 
-Do **not** claim answers (return empty or explain out-of-scope) until later pack entities and graph scope exist:
+Do **not** claim answers (return empty or explain out-of-scope) for:
 
-- Transport-planning / **Trip** allocation, **Dispatch**, **RoutingDecision**
-- **Signal** stages, TP-engine outputs, pipeline stages (**Lead**, **Pipeline**, etc.)
-- Financial journal entries, cost-center profitability, chargeable-weight rules on **ShipmentLeg**
+- TP-engine pricing outputs, shadow-before-go-live rating, chargeable-weight on **ShipmentLeg**
+- Financial journal entries, cost-center profitability, Layer 6+ people/performance entities
+- Live operational KPIs (uptime %, adoption) — remain in downstream operational SSOT
 
-Operational KPIs and live execution state remain in downstream operational systems; DAEMON holds semantic registration and read projection only.
+Operational execution state and ANTERO decision factory outputs are not replaced by NL query; DAEMON holds semantic registration and read projection only.
 
 ## Few-shot examples (for LLM prompts)
 

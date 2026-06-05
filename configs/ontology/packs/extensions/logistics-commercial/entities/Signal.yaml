@@ -1,0 +1,11 @@
+entityType: Signal
+fields:
+  - name: signalType
+    type: string
+    required: true
+  - name: stage
+    type: string
+    required: false
+  - name: accountRef
+    type: string
+    required: false

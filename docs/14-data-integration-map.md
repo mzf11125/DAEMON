@@ -65,7 +65,7 @@ Public documentation trees that informed this taxonomy (educational only; no end
 
 ## Deferred (document only)
 
-Dataset branching UI (git-style), full Parquet/Iceberg engine, JDBC sync agents, Flink streaming, marketplace sync packaging, and private-link agent installers remain **out of scope** for v1; DSDK implements cron ingest, media metadata, JSONL export, pipeline-builder API, and `apps/dsdk-console` instead.
+Dataset branching UI (git-style), full Parquet/Iceberg engine, JDBC sync agents, Flink streaming, marketplace sync packaging, and private-link agent installers remain **out of scope** for v1. **Implemented in repo:** cron ingest schedules, media metadata, JSONL/Iceberg-metadata lakehouse export, `GET /v1/data-health/summary`, pipeline-builder API, AIP evals HTTP, ontology pack-resolution, and `apps/dsdk-console` (including logistics entity-type listing).
 
 ## Related docs
 

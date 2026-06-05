@@ -34,6 +34,8 @@ describe("pack-graph-schema", () => {
     assert.equal(schema.ontologyId, "foundation");
     assert.ok(schema.entityTypes.includes("Shipment"));
     assert.ok(schema.entityTypes.includes("Account"));
+    assert.ok(schema.entityTypes.includes("Lead"));
+    assert.ok(schema.entityTypes.includes("Trip"));
     assert.ok(schema.promptSchemaSummary.includes("Shipment"));
     const shipment = schema.entities.find((e) => e.entityType === "Shipment");
     assert.ok(shipment?.fields.some((f) => f.name === "status"));

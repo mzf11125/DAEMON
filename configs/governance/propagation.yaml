@@ -59,10 +59,18 @@ rules:
       - Contact
       - Opportunity
       - Conversation
+      - Lead
+      - Pipeline
+      - Activity
+      - AccountPlan
+      - Signal
       - Order
       - Shipment
       - TTK
+      - Trip
       - Manifest
+      - Dispatch
+      - RoutingDecision
     propagate:
       - read-model-projection
       - neo4j-graph-sync
@@ -73,10 +81,18 @@ rules:
       - Contact
       - Opportunity
       - Conversation
+      - Lead
+      - Pipeline
+      - Activity
+      - AccountPlan
+      - Signal
       - Order
       - Shipment
       - TTK
+      - Trip
       - Manifest
+      - Dispatch
+      - RoutingDecision
     propagate:
       - read-model-projection
       - audit-loop

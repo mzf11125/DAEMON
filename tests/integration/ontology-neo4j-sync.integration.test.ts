@@ -77,4 +77,40 @@ describe("ontology neo4j sync (integration)", () => {
 
     await store.close();
   });
+
+  it("upserts logistics Trip with extension type label", async (t) => {
+    const store = await skipUnlessNeo4jReady(t);
+    if (!store) return;
+
+    const tenants = TenantRegistry.fromYamlFile();
+    const resolver = new PackResolver(DomainCatalog.fromYamlFile());
+    const pack = resolver.resolve(tenants.require("logistics-pilot"), "logistics");
+    const schema = buildPackGraphSchema(pack);
+    assert.ok(schema.entityTypes.includes("Trip"));
+    await store.ensureSchema(schema.constraintStatements);
+
+    const sync = new Neo4jGraphSync(store);
+    const record = {
+      tenantId: logisticsScope.tenantId,
+      domainId: logisticsScope.domainId,
+      ontologyId: ont,
+      entityId: entityId("neo4j-sync-trip-1"),
+      entityType: "Trip",
+      properties: {
+        tripCode: "TRIP-NEO4J-1",
+        entityType: "Trip",
+        status: "planned",
+      },
+      version: 1,
+      updatedAt: new Date().toISOString(),
+    };
+
+    sync.sync(record, logisticsScope);
+    await new Promise((r) => setTimeout(r, 800));
+
+    const count = await store.countEntities(logisticsScope);
+    assert.ok(count >= 1);
+
+    await store.close();
+  });
 });

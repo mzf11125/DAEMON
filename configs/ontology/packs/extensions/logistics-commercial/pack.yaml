@@ -1,14 +1,22 @@
 ontologyId: foundation
-version: 0.1.0
+version: 0.2.0
 description: Logistics commercial extension — dual-domain commercial and operational entities on foundation.
 entityTypes:
   - Account
   - Contact
   - Opportunity
   - Conversation
+  - Lead
+  - Pipeline
+  - Activity
+  - AccountPlan
+  - Signal
   - Order
   - Shipment
   - TTK
+  - Trip
   - Manifest
+  - Dispatch
+  - RoutingDecision
 junctionTypes:
   - ShipmentLeg

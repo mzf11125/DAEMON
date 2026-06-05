@@ -45,7 +45,7 @@ flowchart LR
 | Batch / incremental / streaming builds | Batch ingest + bronze append; streaming **deferred** | No Flink-style stream product |
 | Outputs to datasets | `daemon_lakehouse_bronze` / silver | Postgres, not Iceberg datasets |
 | Outputs to object types | Ingest validates pack, then `register` | No “publish to ontology” wizard |
-| Data expectations / health checks | `check:governance-policies`, `check:sources`, integration tests | No Data Health application |
+| Data expectations / health checks | `GET /v1/data-health/summary`, `check:governance-policies`, integration tests | No standalone Data Health UI app |
 | LLM-assisted transforms | — | — |
 
 For syncs, branching, builds, schedules, Iceberg, CDC, and virtual tables, see the topic table in [14-data-integration-map.md](./14-data-integration-map.md).

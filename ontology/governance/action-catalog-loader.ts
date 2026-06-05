@@ -32,6 +32,10 @@ export const REQUIRED_GATEWAY_POLICY_PAIRS: { action: string; resource: string }
   { action: "ingest", resource: "ingest-source" },
   { action: "ingest", resource: "ingest-record" },
   { action: "query", resource: "ontology-nl" },
+  { action: "read", resource: "ontology" },
+  { action: "read", resource: "lakehouse" },
+  { action: "write", resource: "pipeline" },
+  { action: "read", resource: "eval" },
 ];
 
 export function parseActionCatalog(raw: unknown): ActionCatalogManifest {

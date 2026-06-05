@@ -38,3 +38,36 @@ actions:
   - id: read
     resource: function-invoke
     effect: allow
+  - id: ingest
+    resource: ingest-schedule
+    effect: allow
+  - id: ingest
+    resource: ingest-webhook
+    effect: allow
+  - id: read
+    resource: data-health
+    effect: allow
+  - id: write
+    resource: lakehouse-export
+    effect: allow
+  - id: read
+    resource: media
+    effect: allow
+  - id: write
+    resource: media
+    effect: allow
+  - id: read
+    resource: ontology
+    effect: allow
+  - id: read
+    resource: ontology-pack
+    effect: allow
+  - id: write
+    resource: pipeline
+    effect: allow
+  - id: write
+    resource: eval
+    effect: allow
+  - id: read
+    resource: eval
+    effect: allow

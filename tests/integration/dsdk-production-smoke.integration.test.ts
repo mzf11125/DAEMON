@@ -1,8 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createGatewayTestApp, DEV_API_KEY } from "../helpers/gateway-test-app.js";
-
-const postgresUrl = process.env.DAEMON_POSTGRES_URL;
+import { skipUnlessPostgresReady } from "../helpers/postgres-integration.js";
 
 function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
   return {
@@ -14,10 +13,8 @@ function authHeaders(extra: Record<string, string> = {}): Record<string, string>
 
 describe("DSDK production smoke (gateway surfaces)", () => {
   it("data-health, pack-resolution, lakehouse export, pipeline and eval stubs", async (t) => {
-    if (!postgresUrl) {
-      t.skip("DAEMON_POSTGRES_URL required");
-      return;
-    }
+    const postgresUrl = await skipUnlessPostgresReady(t);
+    if (!postgresUrl) return;
     const { baseUrl, close } = await createGatewayTestApp({
       DAEMON_POSTGRES_URL: postgresUrl,
       DAEMON_INGEST_SKIP_UPSTREAM: "1",

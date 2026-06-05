@@ -25,6 +25,10 @@ const REQUIRED_GATEWAY_POLICY_PAIRS = [
   { action: "ingest", resource: "ingest-source" },
   { action: "ingest", resource: "ingest-record" },
   { action: "query", resource: "ontology-nl" },
+  { action: "read", resource: "ontology" },
+  { action: "read", resource: "lakehouse" },
+  { action: "write", resource: "pipeline" },
+  { action: "read", resource: "eval" },
 ];
 
 function fail(msg) {

@@ -1,9 +1,9 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createGatewayTestApp, DEV_API_KEY } from "../helpers/gateway-test-app.js";
+import { skipUnlessPostgresReady } from "../helpers/postgres-integration.js";
 
 const FOUNDATION = "foundation";
-const postgresUrl = process.env.DAEMON_POSTGRES_URL;
 const repoRoot = process.env.DAEMON_REPO_ROOT ?? process.cwd();
 
 function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
@@ -22,10 +22,8 @@ async function assertOkJson<T>(res: Response): Promise<T> {
 
 describe("foundry parity golden e2e", () => {
   it("demo-parties run → lakehouse events → read entity (no ingest skip, no domain mocks)", async (t) => {
-    if (!postgresUrl) {
-      t.skip("DAEMON_POSTGRES_URL required");
-      return;
-    }
+    const postgresUrl = await skipUnlessPostgresReady(t);
+    if (!postgresUrl) return;
     if (process.env.DAEMON_INTEGRATION_REQUIRED !== "1" && !process.env.CI) {
       t.skip("set DAEMON_INTEGRATION_REQUIRED=1 or run in CI");
       return;

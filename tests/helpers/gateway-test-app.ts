@@ -4,6 +4,7 @@ import type { INestApplication } from "@nestjs/common";
 import { AppModule } from "../../api/gateway/dist/app.module.js";
 import { DaemonExceptionFilter } from "../../api/gateway/dist/daemon-exception.filter.js";
 import { resetDaemonRuntimeForTests } from "../../api/gateway/src/platform/daemon-runtime.js";
+import { resolvePostgresUrlForTests } from "./postgres-integration.js";
 
 export type GatewayTestApp = {
   app: INestApplication;
@@ -17,14 +18,19 @@ export async function createGatewayTestApp(
 ): Promise<GatewayTestApp> {
   const prev = { ...process.env };
   const testEnv = { ...env };
-  // Gateway HTTP tests use in-memory ontology unless the caller sets DAEMON_POSTGRES_URL.
-  const usePostgres = "DAEMON_POSTGRES_URL" in env;
-  if (!usePostgres) {
-    delete testEnv.DAEMON_POSTGRES_URL;
+  // Use durable Postgres only when the URL is configured and accepting connections.
+  const requested = testEnv.DAEMON_POSTGRES_URL;
+  if (requested) {
+    const ready = await resolvePostgresUrlForTests(String(requested));
+    if (ready) {
+      testEnv.DAEMON_POSTGRES_URL = ready;
+    } else {
+      delete testEnv.DAEMON_POSTGRES_URL;
+    }
   }
   resetDaemonRuntimeForTests();
   Object.assign(process.env, testEnv);
-  if (!usePostgres) {
+  if (!testEnv.DAEMON_POSTGRES_URL) {
     delete process.env.DAEMON_POSTGRES_URL;
   }
   const app = await NestFactory.create(AppModule, { logger: false });

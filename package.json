@@ -33,6 +33,19 @@
     "node": ">=20"
   },
   "packageManager": "pnpm@9.15.0",
+  "pnpm": {
+    "overrides": {
+      "multer": "^2.1.1",
+      "glob@>=10.2.0 <11": "^10.5.0",
+      "tmp": "^0.2.7",
+      "picomatch": "^4.0.4",
+      "qs": "^6.15.2",
+      "ajv@>=8.0.0": "^8.18.0",
+      "webpack": "^5.104.1",
+      "file-type": "^21.3.2",
+      "uuid": ">=14.0.0"
+    }
+  },
   "devDependencies": {
     "@daemon/cli": "workspace:*",
     "@daemon/api-gateway": "workspace:*",
@@ -42,9 +55,9 @@
     "@daemon/platform-types": "workspace:*",
     "@daemon/read-write-loops": "workspace:*",
     "@daemon/data-platform": "workspace:*",
-    "@nestjs/common": "^10.4.15",
-    "@nestjs/core": "^10.4.15",
-    "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/common": "^11.1.24",
+    "@nestjs/core": "^11.1.24",
+    "@nestjs/platform-express": "^11.1.24",
     "reflect-metadata": "^0.2.2",
     "pg": "^8.13.1",
     "redis": "^4.7.0",

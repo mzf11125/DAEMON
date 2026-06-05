@@ -1,9 +1,9 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createGatewayTestApp, DEV_API_KEY } from "../helpers/gateway-test-app.js";
+import { skipUnlessPostgresReady } from "../helpers/postgres-integration.js";
 
 const FOUNDATION = "foundation";
-const postgresUrl = process.env.DAEMON_POSTGRES_URL;
 
 function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
   return {
@@ -15,10 +15,8 @@ function authHeaders(extra: Record<string, string> = {}): Record<string, string>
 
 describe("integration lakehouse bronze", () => {
   it("upsert writes bronze row and GET /v1/lakehouse/events lists it", async (t) => {
-    if (!postgresUrl) {
-      t.skip("DAEMON_POSTGRES_URL required");
-      return;
-    }
+    const postgresUrl = await skipUnlessPostgresReady(t);
+    if (!postgresUrl) return;
     const entityId = `bronze-${Date.now()}`;
     const { baseUrl, close } = await createGatewayTestApp({
       DAEMON_POSTGRES_URL: postgresUrl,

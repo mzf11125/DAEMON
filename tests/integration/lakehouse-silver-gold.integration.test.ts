@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import { createGatewayTestApp, DEV_API_KEY } from "../helpers/gateway-test-app.js";
 import { PostgresClient } from "@daemon/data-platform/operational-store";
 import { withTenantSession } from "@daemon/data-platform/operational-store/tenant-session";
+import { skipUnlessPostgresReady } from "../helpers/postgres-integration.js";
 
 const FOUNDATION = "foundation";
-const postgresUrl = process.env.DAEMON_POSTGRES_URL;
 const TENANT = "inst-alpha";
 
 function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
@@ -18,10 +18,8 @@ function authHeaders(extra: Record<string, string> = {}): Record<string, string>
 
 describe("integration lakehouse silver and gold", () => {
   it("register upserts silver and summary returns gold rollups", async (t) => {
-    if (!postgresUrl) {
-      t.skip("DAEMON_POSTGRES_URL required");
-      return;
-    }
+    const postgresUrl = await skipUnlessPostgresReady(t);
+    if (!postgresUrl) return;
     const entityId = `silver-${Date.now()}`;
     const { baseUrl, close } = await createGatewayTestApp({
       DAEMON_POSTGRES_URL: postgresUrl,

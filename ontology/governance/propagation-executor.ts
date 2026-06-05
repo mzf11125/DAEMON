@@ -40,6 +40,12 @@ export interface PropagationTargets {
   };
 }
 
+/** Fire-and-forget propagation; failures must not become unhandled rejections. */
+function voidAsync(work: void | Promise<void> | undefined): void {
+  if (work === undefined) return;
+  void Promise.resolve(work).catch(() => undefined);
+}
+
 const KNOWN_TARGETS = new Set([
   "read-model-projection",
   "audit-loop",
@@ -133,13 +139,15 @@ export class PropagationExecutor {
       this.targets.neo4jGraphSync.sync(ctx.record, ctx.scope);
     }
     if (target === "semantic-vector-index") {
-      void this.targets.ontologySearch?.indexAsync(ctx.record, ctx.scope);
+      voidAsync(this.targets.ontologySearch?.indexAsync(ctx.record, ctx.scope));
     }
     if (target === "lakehouse-bronze") {
-      void this.targets.lakehouseBronze?.append(ctx.scope, ctx.record, ctx.trigger);
+      voidAsync(
+        this.targets.lakehouseBronze?.append(ctx.scope, ctx.record, ctx.trigger),
+      );
     }
     if (target === "lakehouse-silver") {
-      void this.targets.lakehouseSilver?.upsert(ctx.scope, ctx.record);
+      voidAsync(this.targets.lakehouseSilver?.upsert(ctx.scope, ctx.record));
     }
   }
 }

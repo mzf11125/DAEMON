@@ -7,6 +7,22 @@ function isRlsAppUrl(url: string): boolean {
   return /daemon_app/i.test(url);
 }
 
+/** Ping Postgres; returns the URL when accepting connections, otherwise undefined. */
+export async function resolvePostgresUrlForTests(
+  url: string | undefined,
+): Promise<string | undefined> {
+  if (!url) return undefined;
+  const pg = new PostgresClient({ connectionString: url });
+  try {
+    const ping = await pg.ping();
+    return ping.ok ? url : undefined;
+  } catch {
+    return undefined;
+  } finally {
+    await pg.close();
+  }
+}
+
 /**
  * Skip the current test when Postgres is not configured or not accepting connections.
  * Returns the connection URL when ready.
@@ -19,22 +35,14 @@ export async function skipUnlessPostgresReady(
     t.skip("DAEMON_POSTGRES_URL not set — start compose.dev.yaml");
     return undefined;
   }
-  const pg = new PostgresClient({ connectionString: url });
-  try {
-    const ping = await pg.ping();
-    if (!ping.ok) {
-      t.skip(`Postgres not reachable (${url})`);
-      return undefined;
-    }
-  } catch {
+  const ready = await resolvePostgresUrlForTests(url);
+  if (!ready) {
     t.skip(
       "Postgres not reachable — run `pnpm run dev:up` or unset DAEMON_POSTGRES_URL",
     );
     return undefined;
-  } finally {
-    await pg.close();
   }
-  return url;
+  return ready;
 }
 
 /**
@@ -48,26 +56,16 @@ export async function skipUnlessPostgresAppReady(
   const appUrl =
     envUrl && isRlsAppUrl(envUrl) ? envUrl : POSTGRES_APP_URL;
 
-  const pg = new PostgresClient({ connectionString: appUrl });
-  try {
-    const ping = await pg.ping();
-    if (!ping.ok) {
-      if (!envUrl) {
-        t.skip("Postgres not reachable — start compose.dev.yaml");
-        return undefined;
-      }
-      t.skip(
-        "RLS app role not reachable — run db:migrate then export DAEMON_POSTGRES_URL=postgresql://daemon_app:daemon_app@127.0.0.1:5432/daemon",
-      );
+  const ready = await resolvePostgresUrlForTests(appUrl);
+  if (!ready) {
+    if (!envUrl) {
+      t.skip("Postgres not reachable — start compose.dev.yaml");
       return undefined;
     }
-  } catch {
     t.skip(
       "RLS app role not reachable — run `pnpm run dev:up`, `pnpm run db:migrate`, and use daemon_app for DAEMON_POSTGRES_URL",
     );
     return undefined;
-  } finally {
-    await pg.close();
   }
-  return appUrl;
+  return ready;
 }

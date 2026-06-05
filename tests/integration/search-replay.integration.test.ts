@@ -5,9 +5,9 @@ import {
   DEV_API_KEY,
 } from "../helpers/gateway-test-app.js";
 import { resetDaemonRuntimeForTests } from "../../api/gateway/src/platform/daemon-runtime.js";
+import { skipUnlessPostgresReady } from "../helpers/postgres-integration.js";
 
 const FOUNDATION = "foundation";
-const postgresUrl = process.env.DAEMON_POSTGRES_URL;
 
 function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
   return {
@@ -19,10 +19,8 @@ function authHeaders(extra: Record<string, string> = {}): Record<string, string>
 
 describe("integration search index replay", () => {
   it("search works after gateway restart without re-ingest", async (t) => {
-    if (!postgresUrl) {
-      t.skip("DAEMON_POSTGRES_URL required");
-      return;
-    }
+    const postgresUrl = await skipUnlessPostgresReady(t);
+    if (!postgresUrl) return;
     const entityId = `replay-search-${Date.now()}`;
     const uniqueName = `ReplayUniqueMarker${entityId}`;
     const tenantHeaders = authHeaders({

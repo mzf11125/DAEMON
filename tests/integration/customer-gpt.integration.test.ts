@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createGatewayTestApp, DEV_API_KEY } from "../helpers/gateway-test-app.js";
+import { skipUnlessPostgresReady } from "../helpers/postgres-integration.js";
 
 const FOUNDATION = "foundation";
 
@@ -76,11 +77,8 @@ describe("integration customer GPT", () => {
   });
 
   it("persists session citations across gateway restart", async (t) => {
-    const postgresUrl = process.env.DAEMON_POSTGRES_URL;
-    if (!postgresUrl) {
-      t.skip("DAEMON_POSTGRES_URL required");
-      return;
-    }
+    const postgresUrl = await skipUnlessPostgresReady(t);
+    if (!postgresUrl) return;
     const entityId = `gpt-sess-${Date.now()}`;
     const sessionId = `sess-persist-${Date.now()}`;
     const env = {

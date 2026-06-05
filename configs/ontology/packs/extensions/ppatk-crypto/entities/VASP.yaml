@@ -1,0 +1,9 @@
+entityType: VASP
+fields:
+  - { name: legalName, type: string, required: true }
+  - { name: jurisdiction, type: string }
+  - { name: licenseStatus, type: string }                # licensed-id-bappebti, licensed-id-ojk, licensed-foreign, unlicensed, restricted
+  - { name: travelRuleProtocol, type: string }           # trisa, openvasp, sumsub, none
+  - { name: domains, type: object }
+  - { name: knownHotWallets, type: object }
+  - { name: registeredAt, type: string }

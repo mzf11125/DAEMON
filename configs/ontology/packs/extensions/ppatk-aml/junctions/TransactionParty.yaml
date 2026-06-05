@@ -1,0 +1,4 @@
+junctionType: TransactionParty
+endpoints:
+  - FinancialTransaction
+  - Party

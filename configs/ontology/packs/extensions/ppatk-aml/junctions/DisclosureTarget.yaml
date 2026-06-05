@@ -1,0 +1,4 @@
+junctionType: DisclosureTarget
+endpoints:
+  - Disclosure
+  - Case

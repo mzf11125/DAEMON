@@ -1,0 +1,19 @@
+ontologyId: foundation
+version: 0.1.0
+description: PPATK network and threat intel — IP/domain/cert pivots, ASN context, malware samples, MITRE ATT&CK TTPs.
+entityTypes:
+  - IPAddress
+  - Domain
+  - Certificate
+  - ASN
+  - MalwareSample
+  - ThreatActor
+  - Campaign
+junctionTypes:
+  - DomainResolution
+  - CertSan
+  - IpAsn
+  - C2Link
+  - WalletInfraLink
+  - SampleActor
+  - CampaignActor

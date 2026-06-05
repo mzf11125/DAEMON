@@ -1,0 +1,4 @@
+junctionType: CertSan
+endpoints:
+  - Certificate
+  - Domain

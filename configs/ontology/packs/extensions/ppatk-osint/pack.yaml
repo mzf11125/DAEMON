@@ -1,0 +1,16 @@
+ontologyId: foundation
+version: 0.1.0
+description: PPATK OSINT enrichment — online personas, corporate registries, leaks, and identity attribution evidence.
+entityTypes:
+  - Persona
+  - CorporateRecord
+  - DataLeak
+  - PublicMention
+  - GeoLocation
+junctionTypes:
+  - PersonaIdentityLink
+  - PersonaPersonaLink
+  - CorporateOfficer
+  - CorporateUBO
+  - LeakMention
+  - PersonaWallet

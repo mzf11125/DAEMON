@@ -1,0 +1,17 @@
+ontologyId: foundation
+version: 0.1.0
+description: PPATK blockchain/VASP intelligence extension — on-chain entities and VASP/Travel-Rule primitives.
+entityTypes:
+  - Wallet
+  - OnChainTransaction
+  - VASP
+  - CrossChainBridge
+  - SmartContract
+  - TokenAsset
+junctionTypes:
+  - WalletControl
+  - OnChainParty
+  - BridgeHop
+  - FiatOnRamp
+  - ContractDeployer
+  - TokenHolding

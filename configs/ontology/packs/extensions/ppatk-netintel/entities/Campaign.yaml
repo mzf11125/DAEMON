@@ -1,0 +1,8 @@
+entityType: Campaign
+fields:
+  - { name: name, type: string, required: true }
+  - { name: startAt, type: string }
+  - { name: endAt, type: string }
+  - { name: targetSectors, type: object }
+  - { name: targetCountries, type: object }
+  - { name: description, type: string }

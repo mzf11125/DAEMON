@@ -1,0 +1,4 @@
+junctionType: AccountHolder
+endpoints:
+  - Party
+  - FinancialAccount

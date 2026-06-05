@@ -1,0 +1,4 @@
+junctionType: BridgeHop
+endpoints:
+  - OnChainTransaction
+  - CrossChainBridge

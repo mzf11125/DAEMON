@@ -1,0 +1,9 @@
+entityType: STRReport
+fields:
+  - { name: reportId, type: string, required: true }     # goAML reference
+  - { name: filedAt, type: string, required: true }
+  - { name: reasonCode, type: string }                   # PerKa PPATK typology code
+  - { name: narrative, type: string }
+  - { name: priority, type: string }                     # routine, urgent
+  - { name: status, type: string }                       # received, under-analysis, disseminated, closed
+  - { name: goAmlXml, type: object }

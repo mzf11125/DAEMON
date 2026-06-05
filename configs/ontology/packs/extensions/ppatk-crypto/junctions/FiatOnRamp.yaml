@@ -1,0 +1,4 @@
+junctionType: FiatOnRamp
+endpoints:
+  - OnChainTransaction
+  - FinancialTransaction

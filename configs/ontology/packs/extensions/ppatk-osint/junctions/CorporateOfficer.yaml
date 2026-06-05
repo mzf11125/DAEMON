@@ -1,0 +1,4 @@
+junctionType: CorporateOfficer
+endpoints:
+  - CorporateRecord
+  - Party

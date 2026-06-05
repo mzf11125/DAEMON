@@ -1,0 +1,4 @@
+junctionType: VendorPgpKey
+endpoints:
+  - DarkwebVendor
+  - PgpKey

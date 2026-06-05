@@ -1,0 +1,6 @@
+junctionType: LeakMention
+endpoints:
+  - DataLeak
+  - Party
+  - Persona
+  - FinancialAccount

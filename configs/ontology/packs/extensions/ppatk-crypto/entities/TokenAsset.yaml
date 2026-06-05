@@ -1,0 +1,9 @@
+entityType: TokenAsset
+fields:
+  - { name: symbol, type: string, required: true }
+  - { name: chain, type: string, required: true }
+  - { name: contractAddress, type: string }
+  - { name: decimals, type: number }
+  - { name: standard, type: string }                     # erc20, erc721, spl, trc20, bep20
+  - { name: stablecoinPeg, type: string }
+  - { name: privacyFeatures, type: object }              # for XMR/ZEC analog flags

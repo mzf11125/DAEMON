@@ -1,0 +1,9 @@
+entityType: PgpKey
+fields:
+  - { name: fingerprint, type: string, required: true }
+  - { name: keyId, type: string }
+  - { name: userIds, type: object }
+  - { name: createdAt, type: string }
+  - { name: expiresAt, type: string }
+  - { name: keyAlgo, type: string }
+  - { name: keySize, type: number }

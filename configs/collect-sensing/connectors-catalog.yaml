@@ -34,3 +34,233 @@ connectorTypes:
     requiredConfig: [topic, brokers]
     requiredEnv: []
     policyTier: internal
+
+  # ---- PPATK AML core connectors ----
+  - type: goaml-xml
+    label: goAML XML report ingest (PPATK STR/CTR/CBCC)
+    capabilities: [batch, xml, schema-validated]
+    requiredConfig: [intakePath, goAmlVersion]
+    requiredEnv: []
+    policyTier: regulated
+  - type: swift-mt
+    label: SWIFT MT message ingest (MT103/MT202/MT700)
+    capabilities: [batch, stream, swift]
+    requiredConfig: [endpoint, bic]
+    requiredEnv: [DAEMON_SWIFT_KEY]
+    policyTier: regulated
+  - type: pjk-host-to-host
+    label: PJK host-to-host pipeline
+    capabilities: [stream, batch, mtls]
+    requiredConfig: [pjkId, endpoint]
+    requiredEnv: [DAEMON_PJK_MTLS_CERT]
+    policyTier: regulated
+  - type: sipesat-feed
+    label: SIPESAT (Sistem Informasi Pengguna Jasa Terpadu)
+    capabilities: [batch, rest]
+    requiredConfig: [endpoint]
+    requiredEnv: [DAEMON_SIPESAT_TOKEN]
+    policyTier: regulated
+
+  # ---- PPATK sanctions / watchlist connectors ----
+  - type: dttot-feed
+    label: DTTOT (Daftar Terduga Teroris & Organisasi Teroris) feed
+    capabilities: [batch, csv, xml]
+    requiredConfig: [feedUrl]
+    requiredEnv: []
+    policyTier: restricted
+  - type: un-sanctions-feed
+    label: UN 1267/1988/2253 consolidated sanctions list
+    capabilities: [batch, xml]
+    requiredConfig: [feedUrl]
+    requiredEnv: []
+    policyTier: restricted
+  - type: ofac-sdn-feed
+    label: OFAC SDN list (incl. crypto annex)
+    capabilities: [batch, csv, xml]
+    requiredConfig: [feedUrl]
+    requiredEnv: []
+    policyTier: restricted
+
+  # ---- PPATK crypto / blockchain connectors ----
+  - type: blockchain-rpc
+    label: Blockchain JSON-RPC node (eth/bsc/polygon/arb/op/base)
+    capabilities: [stream, batch, eth-rpc]
+    requiredConfig: [chain, rpcUrl]
+    requiredEnv: [DAEMON_RPC_KEY]
+    policyTier: internal
+  - type: bitcoin-esplora
+    label: Bitcoin Esplora/Electrum indexer
+    capabilities: [batch, stream]
+    requiredConfig: [endpoint]
+    requiredEnv: []
+    policyTier: internal
+  - type: solana-helius
+    label: Solana RPC + Helius enhanced API
+    capabilities: [stream, batch]
+    requiredConfig: [endpoint]
+    requiredEnv: [DAEMON_HELIUS_KEY]
+    policyTier: internal
+  - type: tron-grid
+    label: TronGrid full-node ingest
+    capabilities: [stream, batch]
+    requiredConfig: [endpoint]
+    requiredEnv: [DAEMON_TRON_KEY]
+    policyTier: internal
+  - type: chain-indexer
+    label: Multi-chain indexer (Dune/Allium/Covalent)
+    capabilities: [batch, sql]
+    requiredConfig: [vendor, query]
+    requiredEnv: [DAEMON_INDEXER_KEY]
+    policyTier: internal
+  - type: mempool-stream
+    label: Mempool/unconfirmed-tx stream
+    capabilities: [stream]
+    requiredConfig: [chain, endpoint]
+    requiredEnv: []
+    policyTier: internal
+  - type: vasp-label-feed
+    label: VASP/cluster label feed (Chainalysis/TRM/Elliptic)
+    capabilities: [batch, rest]
+    requiredConfig: [vendor]
+    requiredEnv: [DAEMON_LABEL_VENDOR_KEY]
+    policyTier: restricted
+
+  # ---- PPATK darkweb connectors (sensitive) ----
+  - type: tor-crawler
+    label: Tor hidden-services crawler
+    capabilities: [batch, html, screenshot]
+    requiredConfig: [seedFile, socks5]
+    requiredEnv: []
+    policyTier: sensitive
+  - type: i2p-crawler
+    label: I2P eepsite crawler
+    capabilities: [batch, html]
+    requiredConfig: [seedFile, i2pProxy]
+    requiredEnv: []
+    policyTier: sensitive
+  - type: paste-monitor
+    label: Paste site monitor (Pastebin/Ghostbin/Doxbin)
+    capabilities: [stream, batch]
+    requiredConfig: [keywords]
+    requiredEnv: []
+    policyTier: sensitive
+  - type: telegram-public-channel
+    label: Telegram public-channel passive ingest
+    capabilities: [stream, batch]
+    requiredConfig: [channelList]
+    requiredEnv: [DAEMON_TELEGRAM_API_ID, DAEMON_TELEGRAM_API_HASH]
+    policyTier: sensitive
+
+  # ---- PPATK OSINT connectors ----
+  - type: ahu-online
+    label: AHU Online (Ditjen AHU Kemenkumham) registry lookup
+    capabilities: [batch, rest]
+    requiredConfig: []
+    requiredEnv: [DAEMON_AHU_KEY]
+    policyTier: regulated
+  - type: opencorporates
+    label: OpenCorporates global registry
+    capabilities: [batch, rest]
+    requiredConfig: []
+    requiredEnv: [DAEMON_OPENCORP_KEY]
+    policyTier: internal
+  - type: gleif-lei
+    label: GLEIF LEI lookup
+    capabilities: [batch, rest]
+    requiredConfig: []
+    requiredEnv: []
+    policyTier: internal
+  - type: social-media-ingest
+    label: Social-media public API ingest (x/ig/tiktok/linkedin/github/discord)
+    capabilities: [stream, batch, rest]
+    requiredConfig: [platform]
+    requiredEnv: [DAEMON_SOCIAL_KEY]
+    policyTier: internal
+  - type: data-leak-feed
+    label: Data-leak/breach feed (HIBP-style + internal)
+    capabilities: [batch, rest]
+    requiredConfig: []
+    requiredEnv: [DAEMON_LEAK_FEED_KEY]
+    policyTier: restricted
+
+  # ---- PPATK network / threat intel connectors ----
+  - type: passive-dns
+    label: Passive DNS (DNSDB/Farsight/DomainTools)
+    capabilities: [batch, rest]
+    requiredConfig: [vendor]
+    requiredEnv: [DAEMON_PDNS_KEY]
+    policyTier: internal
+  - type: ct-log
+    label: Certificate Transparency log monitor (crt.sh, Google CT)
+    capabilities: [stream, batch]
+    requiredConfig: []
+    requiredEnv: []
+    policyTier: internal
+  - type: whois-historical
+    label: Historical WHOIS (Whoxy/DomainTools)
+    capabilities: [batch, rest]
+    requiredConfig: [vendor]
+    requiredEnv: [DAEMON_WHOIS_KEY]
+    policyTier: internal
+  - type: shodan
+    label: Shodan host/banner intel
+    capabilities: [batch, rest]
+    requiredConfig: []
+    requiredEnv: [DAEMON_SHODAN_KEY]
+    policyTier: internal
+  - type: censys
+    label: Censys host/cert intel
+    capabilities: [batch, rest]
+    requiredConfig: []
+    requiredEnv: [DAEMON_CENSYS_KEY]
+    policyTier: internal
+  - type: bgp-feed
+    label: BGP feed (RIPE RIS / RouteViews)
+    capabilities: [stream, batch]
+    requiredConfig: []
+    requiredEnv: []
+    policyTier: internal
+  - type: misp-feed
+    label: MISP threat-intel feed
+    capabilities: [batch, stream, rest]
+    requiredConfig: [endpoint]
+    requiredEnv: [DAEMON_MISP_KEY]
+    policyTier: restricted
+  - type: otx-feed
+    label: AlienVault OTX feed
+    capabilities: [batch, rest]
+    requiredConfig: []
+    requiredEnv: [DAEMON_OTX_KEY]
+    policyTier: internal
+  - type: abusech-feed
+    label: abuse.ch feeds (URLhaus, MalwareBazaar, ThreatFox)
+    capabilities: [batch, rest]
+    requiredConfig: [feed]
+    requiredEnv: []
+    policyTier: internal
+  - type: malware-sandbox
+    label: Malware sandbox (Cuckoo/CAPE/Joe/AnyRun)
+    capabilities: [batch, rest, file-submit]
+    requiredConfig: [vendor, endpoint]
+    requiredEnv: [DAEMON_SANDBOX_KEY]
+    policyTier: restricted
+
+groups:
+  - id: ppatk-aml
+    label: PPATK AML/CFT core
+    connectors: [goaml-xml, swift-mt, pjk-host-to-host, sipesat-feed]
+  - id: ppatk-sanctions
+    label: PPATK sanctions / watchlist
+    connectors: [dttot-feed, un-sanctions-feed, ofac-sdn-feed]
+  - id: ppatk-crypto
+    label: Blockchain / VASP intel
+    connectors: [blockchain-rpc, bitcoin-esplora, solana-helius, tron-grid, chain-indexer, mempool-stream, vasp-label-feed]
+  - id: ppatk-darkweb
+    label: Darkweb intel
+    connectors: [tor-crawler, i2p-crawler, paste-monitor, telegram-public-channel]
+  - id: ppatk-osint
+    label: OSINT enrichment
+    connectors: [ahu-online, opencorporates, gleif-lei, social-media-ingest, data-leak-feed]
+  - id: ppatk-netintel
+    label: Network / threat intel
+    connectors: [passive-dns, ct-log, whois-historical, shodan, censys, bgp-feed, misp-feed, otx-feed, abusech-feed, malware-sandbox]

@@ -1,0 +1,7 @@
+entityType: ASN
+fields:
+  - { name: number, type: number, required: true }
+  - { name: name, type: string }
+  - { name: country, type: string }
+  - { name: bulletproofScore, type: number }
+  - { name: abuseContact, type: string }

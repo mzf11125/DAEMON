@@ -1,5 +1,6 @@
 import neo4j, { type Driver } from "neo4j-driver";
 import type { EntityRecord } from "@daemon/context-ports";
+import type { Neo4jProvenanceAnnotation } from "../provenance/types.js";
 
 export type Neo4jGraphStoreConfig = {
   uri: string;
@@ -129,11 +130,38 @@ export class Neo4jGraphStore {
 
   async upsertEntity(
     record: EntityRecord,
-    options?: { typeLabel?: string | null },
+    options?: {
+      typeLabel?: string | null;
+      /**
+       * Optional provenance annotation.
+       * When provided, adds cryptographic proof metadata to the Neo4j node:
+       *   __epoch_root   — the finalized Merkle root of the epoch
+       *   __epoch_id     — numeric epoch identifier
+       *   __entity_hash  — SHA-256 of entity content
+       *   __proof        — JSON-serialized Merkle inclusion path
+       *
+       * This enables cross-store verification: an auditor can retrieve the
+       * node's __proof from Neo4j and verify it against the PostgreSQL
+       * epoch root without touching the raw database.
+       *
+       * Protocol step 3 from 03C_DAEMON_CROSS_STORE_CRYPTOGRAPHIC_PROVENANCE_PROTOCOL_DESIGN.md
+       */
+      provenance?: Neo4jProvenanceAnnotation;
+    },
   ): Promise<void> {
     const typeLabel = options?.typeLabel ?? sanitizeTypeLabel(record.entityType);
     const labelClause = typeLabel ? `:Entity:${typeLabel}` : ":Entity";
     const props = flattenProperties(record);
+
+    // Inject provenance metadata as reserved node properties
+    if (options?.provenance) {
+      const p = options.provenance;
+      props["__epoch_root"] = p.__epoch_root;
+      props["__epoch_id"] = p.__epoch_id;
+      props["__entity_hash"] = p.__entity_hash;
+      props["__proof"] = p.__proof;
+    }
+
     const session = this.openSession();
     try {
       await session.run(

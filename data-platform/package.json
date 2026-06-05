@@ -28,7 +28,11 @@
       ],
       "product-sessions/gpt-session-store": [
         "./dist/product-sessions/gpt-session-store.d.ts"
-      ]
+      ],
+      "provenance": ["./dist/provenance/index.d.ts"],
+      "provenance/epoch-manager": ["./dist/provenance/epoch-manager.d.ts"],
+      "provenance/verifier": ["./dist/provenance/provenance-verifier.d.ts"],
+      "provenance/smt": ["./dist/provenance/smt.d.ts"]
     }
   },
   "exports": {
@@ -89,11 +93,31 @@
       "types": "./dist/product-sessions/gpt-session-store.d.ts",
       "import": "./dist/product-sessions/gpt-session-store.js",
       "default": "./dist/product-sessions/gpt-session-store.js"
+    },
+    "./provenance": {
+      "types": "./dist/provenance/index.d.ts",
+      "import": "./dist/provenance/index.js",
+      "default": "./dist/provenance/index.js"
+    },
+    "./provenance/epoch-manager": {
+      "types": "./dist/provenance/epoch-manager.d.ts",
+      "import": "./dist/provenance/epoch-manager.js",
+      "default": "./dist/provenance/epoch-manager.js"
+    },
+    "./provenance/verifier": {
+      "types": "./dist/provenance/provenance-verifier.d.ts",
+      "import": "./dist/provenance/provenance-verifier.js",
+      "default": "./dist/provenance/provenance-verifier.js"
+    },
+    "./provenance/smt": {
+      "types": "./dist/provenance/smt.d.ts",
+      "import": "./dist/provenance/smt.js",
+      "default": "./dist/provenance/smt.js"
     }
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --test --import tsx operational-store/postgres-client.test.ts cache/redis-client.test.ts graph-store/postgres-graph-store.test.ts event-bus/nats-publisher.test.ts",
+    "test": "node --test --import tsx operational-store/postgres-client.test.ts cache/redis-client.test.ts graph-store/postgres-graph-store.test.ts event-bus/nats-publisher.test.ts provenance/smt.test.ts",
     "lint": "tsc -p tsconfig.json --noEmit",
     "db:migrate": "node --import tsx migrations/run-migrations.ts"
   },

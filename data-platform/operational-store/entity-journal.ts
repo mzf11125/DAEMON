@@ -1,6 +1,8 @@
 import type { EntityRecord, OntologyScope } from "@daemon/context-ports";
 import { PostgresClient } from "./postgres-client.js";
 import { withTenantSession } from "./tenant-session.js";
+import type { EpochManager } from "../provenance/epoch-manager.js";
+import type { InclusionProof, NonInclusionProof } from "../provenance/types.js";
 
 export interface EntityJournal {
   upsert(record: EntityRecord): Promise<void>;
@@ -9,6 +11,16 @@ export interface EntityJournal {
   loadAll(): Promise<EntityRecord[]>;
   loadScope(scope: OntologyScope): Promise<EntityRecord[]>;
   listPage?(input: EntityListPageInput): Promise<EntityListPageResult>;
+  /**
+   * Retrieve the inclusion proof for an entity at a specific epoch.
+   * Returns null if provenance is not configured or no proof exists.
+   */
+  getProof?(entityId: string, epochId: number): Promise<InclusionProof | null>;
+  /**
+   * Retrieve a non-inclusion proof (forensic absence) for an entity at a specific epoch.
+   * Returns null if provenance is not configured or entity is actually present.
+   */
+  getNonInclusionProof?(entityId: string, epochId: number): Promise<NonInclusionProof | null>;
   close(): Promise<void>;
 }
 
@@ -44,7 +56,26 @@ export interface EntityListPageResult {
 
 /** Postgres snapshot journal for durable entity state. */
 export class PostgresEntityJournal implements EntityJournal {
+  /**
+   * Optional EpochManager for cryptographic provenance.
+   * When set, every upsert() call will:
+   *  1. Compute SHA-256 of entity content
+   *  2. Insert into daemon_entity_proof_log
+   *  3. Update the in-memory Sparse Merkle Tree
+   * When null, upsert() behaves exactly as before (no overhead).
+   */
+  private epochManager: EpochManager | null = null;
+
   constructor(private readonly pg: PostgresClient) {}
+
+  /**
+   * Attach an EpochManager to enable cryptographic provenance tracking.
+   * Call this after construction before the first upsert.
+   */
+  withProvenance(epochManager: EpochManager): this {
+    this.epochManager = epochManager;
+    return this;
+  }
 
   static fromEnv(
     env: NodeJS.ProcessEnv = process.env,
@@ -121,6 +152,31 @@ export class PostgresEntityJournal implements EntityJournal {
         ],
       );
     });
+
+    // Cryptographic provenance: record entity hash into the active epoch.
+    // Fire-and-forget style: provenance failure does NOT fail the write
+    // (provenance is an auditing layer, not a transactional gate).
+    if (this.epochManager) {
+      try {
+        const epochId = await this.epochManager.getOrOpenEpoch(
+          record.tenantId,
+          record.domainId,
+        );
+        await this.epochManager.recordEntityCommit(epochId, {
+          tenantId: record.tenantId,
+          domainId: record.domainId,
+          entityId: record.entityId,
+          properties: record.properties,
+          version: record.version,
+        });
+      } catch (err) {
+        // Log but do not propagate — provenance failure is non-fatal
+        console.warn(
+          `[provenance] Failed to record entity commit for ${record.entityId}:`,
+          err,
+        );
+      }
+    }
   }
 
   async recordChange(input: OntologyChangeInput): Promise<void> {
@@ -255,6 +311,42 @@ export class PostgresEntityJournal implements EntityJournal {
       }
       return { items, nextCursor };
     });
+  }
+
+  // ─── Provenance API ─────────────────────────────────────────────────────
+
+  /**
+   * Retrieve the inclusion proof for an entity at a given epoch.
+   *
+   * Note: This is a convenience shim. For full forensic workflows, use
+   * ProvenanceVerifier.checkEntityProvenance() which has tenant/domain context.
+   * Returns null if provenance is not enabled.
+   */
+  async getProof(
+    _entityId: string,
+    _epochId: number,
+  ): Promise<InclusionProof | null> {
+    if (!this.epochManager) return null;
+    // Full proof retrieval requires tenantId and domainId context.
+    // Callers should use EpochManager.buildInclusionProof() or
+    // ProvenanceVerifier.checkEntityProvenance() directly.
+    return null;
+  }
+
+  /**
+   * Retrieve a non-inclusion proof for forensic absence verification.
+   * Returns null if provenance is not enabled.
+   *
+   * For full forensic workflows, use ProvenanceVerifier.checkForensicAbsence().
+   */
+  async getNonInclusionProof(
+    _entityId: string,
+    _epochId: number,
+  ): Promise<NonInclusionProof | null> {
+    if (!this.epochManager) return null;
+    // Full non-inclusion proof requires tenantId and domainId context.
+    // Use ProvenanceVerifier.checkForensicAbsence() for complete forensic checks.
+    return null;
   }
 
   async close(): Promise<void> {

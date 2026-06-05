@@ -16,3 +16,6 @@ docs/private/client-definition/
 
 # Local CodeQL analysis artifacts (CI uses .github/codeql/)
 static_analysis_codeql_1/
+
+# Local docs
+local_docs/

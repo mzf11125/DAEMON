@@ -1,0 +1,3110 @@
+[
+  {
+    "table_name": "activity_logs",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "user_name",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "user_role",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "action",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "entity_type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "entity_id",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "description",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "metadata",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "ip_address",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "activity_logs",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "synced_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "triggered_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "period_quarter",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "kpis_synced",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "kpis_failed",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "antero_sync_log",
+    "column_name": "error_log",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "user_name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "action",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "entity_type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "entity_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "details",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "operation_type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "entity_type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "entity_id",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "requested_by_user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "requested_by_name",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "progress_message",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "payload",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "result",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "error_message",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "rollback_status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "rollback_message",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "requested_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "started_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "completed_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "failed_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "background_operation_requests",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "behavior_score_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "pillar",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "key_behavior",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "evidence",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "evidence_photo_url",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_key_scores",
+    "column_name": "evidence_attachments",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "scorecard_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "pillar",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "score",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "evidence",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "evidence_photo_url",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "behavior_scores",
+    "column_name": "evidence_attachments",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_behavior_pillars",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_behavior_pillars",
+    "column_name": "key",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_behavior_pillars",
+    "column_name": "label",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_behavior_pillars",
+    "column_name": "short_desc",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "config_behavior_pillars",
+    "column_name": "icon",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "config_behavior_pillars",
+    "column_name": "sort_order",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_behavior_pillars",
+    "column_name": "is_active",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_behavior_pillars",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_leverage_indicators",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_leverage_indicators",
+    "column_name": "key",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_leverage_indicators",
+    "column_name": "label",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_leverage_indicators",
+    "column_name": "short_desc",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "config_leverage_indicators",
+    "column_name": "sort_order",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_leverage_indicators",
+    "column_name": "is_active",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "config_leverage_indicators",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "report_date",
+    "data_type": "date",
+    "udt_name": "date",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "notes",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "status",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "approved_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "approved_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "reject_reason",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "approval_comment",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "report_kind",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "period_week_start",
+    "data_type": "date",
+    "udt_name": "date",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "period_month",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "revision_no",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "submitted_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "resubmitted_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "rejected_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "rejected_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "reopen_requested_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "reopen_requested_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "reopen_request_reason",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "reopen_request_status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "reopen_reviewed_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "daily_reports",
+    "column_name": "reopen_reviewed_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "user_name",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "user_role",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "action",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "module",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "entity_type",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "entity_id",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "error_message",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "suggested_action",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "metadata",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "severity",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "error_logs",
+    "column_name": "ip_address",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "response_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "dimension",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "pillar",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "key_behavior",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "indicator",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "evidence",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "evidence_attachments",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_items",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "assignment_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "reviewer_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "reviewee_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "rater_group",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "dimension",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "period_month",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "feedback_360_responses",
+    "column_name": "submitted_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "organization_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "job_level_default",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "app_role_default",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "is_active",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "is_vacant",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "notes",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "job_positions",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "scorecard_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "dimension",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "kpi_type",
+    "data_type": "USER-DEFINED",
+    "udt_name": "kpi_type",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "is_lagging",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "target_value",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "actual_value",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "target_unit",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "achievement_pct",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "is_inverse",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "sort_order",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "kpi_category",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "source",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "last_synced_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "target_period_value",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "target_period_unit",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "is_team_rollup",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "team_rollup_child_kpi_names",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "antero_kpi_field",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "is_active",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_entries",
+    "column_name": "kpi_template_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "parent_kpi_template_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "child_kpi_template_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "source_scope_type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "source_user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "is_active",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "notes",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_rollup_mappings",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "kpi_template_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "effective_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "effective_month",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "target_default",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "target_unit",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "target_period_value",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "target_period_unit",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "is_inverse",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "is_team_rollup",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "team_rollup_child_kpi_names",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_histories",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_history_rollup_children",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_history_rollup_children",
+    "column_name": "history_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_history_rollup_children",
+    "column_name": "child_kpi_template_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_history_rollup_children",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_template_target_history_rollup_children",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "role",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "job_position",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "target_default",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "target_unit",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "kpi_type",
+    "data_type": "USER-DEFINED",
+    "udt_name": "kpi_type",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "is_lagging",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "is_inverse",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "description",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "sort_order",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "is_active",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "kpi_category",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "antero_kpi_field",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "target_period_value",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "target_period_unit",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "is_team_rollup",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "team_rollup_child_kpi_names",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "is_shared",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "kpi_templates",
+    "column_name": "job_position_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "scorecard_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "indicator",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "score",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "evidence",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "evidence_photo_url",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "leverage_scores",
+    "column_name": "evidence_attachments",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "title",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "message",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "is_read",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "link_url",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "organization_revenue_targets",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organization_revenue_targets",
+    "column_name": "organization_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organization_revenue_targets",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organization_revenue_targets",
+    "column_name": "target_revenue",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organization_revenue_targets",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organization_revenue_targets",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "type",
+    "data_type": "USER-DEFINED",
+    "udt_name": "org_type",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "code",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "head_user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "parent_org_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "originated_revenue",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "earned_revenue",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "revenue_period",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "organizations",
+    "column_name": "antero_kantor_code",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "push_subscriptions",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "push_subscriptions",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "push_subscriptions",
+    "column_name": "endpoint",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "push_subscriptions",
+    "column_name": "auth",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "push_subscriptions",
+    "column_name": "p256dh",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "push_subscriptions",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "reviewer_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "employee_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "scorecard_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "period_quarter",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "strengths",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "improvements",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "goals_next",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "overall_comment",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "rating",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "submitted_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "acknowledged_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "quarterly_reviews",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "report_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "kpi_template_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "kpi_name",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "target",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "actual",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "unit",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "notes",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "report_entries",
+    "column_name": "evidence_attachments",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "reviewer_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "reviewee_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "review_type",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "period_quarter",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "note",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "is_active",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "period_month",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "rater_group",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "is_anonymous",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "review_assignments",
+    "column_name": "submitted_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "ro_kpi_profiles",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "ro_kpi_profiles",
+    "column_name": "organization_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "ro_kpi_profiles",
+    "column_name": "category",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "ro_kpi_profiles",
+    "column_name": "weight_pct",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "ro_kpi_profiles",
+    "column_name": "label",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "ro_kpi_profiles",
+    "column_name": "sort_order",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "ro_kpi_profiles",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "role_access_config",
+    "column_name": "menu_key",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "role_access_config",
+    "column_name": "role",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "role_access_config",
+    "column_name": "allowed",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "role_access_config",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "role_access_config",
+    "column_name": "updated_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "scorecard_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "period_quarter",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "output_score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "behavior_score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "leverage_score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "obl_raw",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "obl_final",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "kpi_snapshot",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "behavior_snapshot",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "leverage_snapshot",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "period_month",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecard_checkpoints",
+    "column_name": "safety_cap",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "period_quarter",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "status",
+    "data_type": "USER-DEFINED",
+    "udt_name": "scorecard_status",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "output_score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "behavior_score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "leverage_score",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "obl_final",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "approved_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "approved_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "report_deadline",
+    "data_type": "date",
+    "udt_name": "date",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "safety_cap",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "scorecards",
+    "column_name": "safety_cap_reason",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "kpi_template_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "month",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "actual_value",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "notes",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "inputted_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "inputted_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_actuals",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "shared_kpi_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "entry_month",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "entry_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "actual_value",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "status",
+    "data_type": "USER-DEFINED",
+    "udt_name": "shared_kpi_status",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "notes",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "updated_by",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpi_entries",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "owner_a_type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "owner_b_type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "owner_a_org_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "owner_b_org_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "target_value",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "period_quarter",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "shared_kpis",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "employee_id",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "email",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "role",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "job_level",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "job_position",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "organization_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "supervisor_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "branch_name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "parent_branch_name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "weight_profile",
+    "data_type": "USER-DEFINED",
+    "udt_name": "weight_profile",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "avatar_url",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "is_active",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "is_superadmin",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "religion",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "gender",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "marital_status",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "blood_type",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "nationality_code",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "currency",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "length_of_service",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "payment_schedule",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "approval_line_name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "approval_line_position",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "app_role",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "job_position_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "wallpaper_url",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "users",
+    "column_name": "avatar_focus_x",
+    "data_type": "double precision",
+    "udt_name": "float8",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "avatar_focus_y",
+    "data_type": "double precision",
+    "udt_name": "float8",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "avatar_zoom",
+    "data_type": "double precision",
+    "udt_name": "float8",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "wallpaper_focus_x",
+    "data_type": "double precision",
+    "udt_name": "float8",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "wallpaper_focus_y",
+    "data_type": "double precision",
+    "udt_name": "float8",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "users",
+    "column_name": "wallpaper_zoom",
+    "data_type": "double precision",
+    "udt_name": "float8",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "org_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "org_name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "org_type",
+    "data_type": "USER-DEFINED",
+    "udt_name": "org_type",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "org_code",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "parent_org_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "parent_org_name",
+    "data_type": "character varying",
+    "udt_name": "varchar",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "member_count",
+    "data_type": "bigint",
+    "udt_name": "int8",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "avg_obl",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "avg_output",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "avg_behavior",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "avg_leverage",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "pending_count",
+    "data_type": "bigint",
+    "udt_name": "int8",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "period_year",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "v_unit_dashboard",
+    "column_name": "period_quarter",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "user_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "kpi_entry_id",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "week_start_date",
+    "data_type": "date",
+    "udt_name": "date",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "actual_value",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "target_value",
+    "data_type": "numeric",
+    "udt_name": "numeric",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "status",
+    "data_type": "USER-DEFINED",
+    "udt_name": "pulse_status",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "notes",
+    "data_type": "text",
+    "udt_name": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "weekly_pulses",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "is_nullable": "NO"
+  }
+]

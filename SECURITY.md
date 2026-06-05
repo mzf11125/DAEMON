@@ -1,21 +1,27 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+| Version | Supported |
+| ------- | --------- |
+| 0.1.x   | Yes       |
+| < 0.1   | No        |
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
+Report security issues privately to **security@daemon.ai** (or your organization's security contact if this fork is internal).
 
-Use this section to tell people how to report a vulnerability.
+Please include:
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+- Affected component (gateway, collect-sensing, policy engine, etc.)
+- Steps to reproduce
+- Impact assessment (confidentiality, integrity, availability)
+- Any suggested fix or mitigation
+
+We aim to acknowledge reports within **3 business days** and provide a severity assessment within **10 business days**. Critical issues affecting tenant isolation or authentication may receive expedited patches.
+
+Do not open public GitHub issues for undisclosed vulnerabilities.
+
+## Secure deployment
+
+See [docs/04-deployment.md](docs/04-deployment.md) for production environment requirements (API keys, webhook HMAC, policy engine URL, OIDC settings).

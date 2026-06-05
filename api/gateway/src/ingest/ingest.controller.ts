@@ -6,7 +6,9 @@ import { IngestWebhookService } from "./ingest-webhook.service";
 import { IngestListenerService } from "./ingest-listener.service";
 import { Protected } from "../auth/protected.decorator";
 import { PolicyCheck } from "../auth/policy-check.decorator";
-import { TenantContextService } from "../platform/tenant-context";
+import { WebhookAuth } from "../auth/webhook-auth.decorator";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 
 interface StartJobBody {
   sourceId: string;
@@ -46,11 +48,11 @@ export class IngestController {
     private readonly pipeline: IngestPipelineService,
     private readonly webhooks: IngestWebhookService,
     private readonly listeners: IngestListenerService,
-    private readonly tenantContext: TenantContextService,
   ) {}
 
   @Get("jobs")
   @Protected()
+  @PolicyCheck("ingest", "ingest-job")
   listJobs() {
     return this.ingest.listJobs();
   }
@@ -63,6 +65,8 @@ export class IngestController {
   }
 
   @Get("jobs/:id")
+  @Protected()
+  @PolicyCheck("ingest", "ingest-job")
   getJob(@Param("id") id: string) {
     return this.ingest.getJob(id);
   }
@@ -71,10 +75,9 @@ export class IngestController {
   @Protected()
   @PolicyCheck("ingest", "ingest-source")
   runSource(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Param("sourceId") sourceId: string,
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     return this.pipeline.runSource(ctx, sourceId);
   }
 
@@ -82,21 +85,22 @@ export class IngestController {
   @Protected()
   @PolicyCheck("ingest", "ingest-record")
   ingestRecords(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Body() body: IngestRecordsBody,
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     const records = normalizeIngestRecords(body);
     return this.ingest.ingestRecords(ctx, body.sourceId ?? "gateway", records);
   }
 
   @Post("webhooks/:sourceId")
+  @WebhookAuth()
   @PolicyCheck("ingest", "ingest-webhook")
   webhookIngest(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Param("sourceId") sourceId: string,
     @Body() body: unknown,
     @Req() req: Request,
+    @Headers() headers: Record<string, string | string[] | undefined>,
   ) {
     const raw =
       typeof req.body === "string"
@@ -107,16 +111,17 @@ export class IngestController {
       raw,
       typeof sig === "string" ? sig : Array.isArray(sig) ? sig[0] : undefined,
     );
-    const ctx = this.tenantContext.resolve(headers);
     const records = this.webhooks.normalizePayload(body);
     return this.webhooks.ingest(ctx, sourceId, records);
   }
 
   @Post("listeners/:listenerId/events")
+  @WebhookAuth()
   @PolicyCheck("ingest", "ingest-listener")
   listenerIngest(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Param("listenerId") listenerId: string,
+    @Headers() headers: Record<string, string | string[] | undefined>,
     @Body() body: unknown,
   ) {
     const idem = headers["x-idempotency-key"];
@@ -127,12 +132,13 @@ export class IngestController {
           ? idem[0]
           : undefined;
     this.listeners.assertIdempotency(listenerId, key);
-    const ctx = this.tenantContext.resolve(headers);
     const records = this.listeners.normalizeBatch(body);
     return this.listeners.ingest(ctx, listenerId, records);
   }
 
   @Post("agents/heartbeat")
+  @Protected()
+  @PolicyCheck("ingest", "ingest-source")
   agentHeartbeat(
     @Body()
     body: {

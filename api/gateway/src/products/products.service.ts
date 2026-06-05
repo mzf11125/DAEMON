@@ -3,6 +3,7 @@ import { ontologyId } from "@daemon/platform-types";
 import { GptSessionStore } from "@daemon/data-platform/product-sessions/gpt-session-store";
 import { ProductRuntime } from "@daemon/products/shared/product-runtime.js";
 import { GptOrchestrator } from "@daemon/products/customer-gpt/gpt-orchestrator.js";
+import { ShadowPricing } from "@daemon/products/analytics-workflows/shadow-pricing.js";
 import { DaemonRuntime } from "../platform/daemon-runtime";
 import type { TenantContextHeaders } from "../platform/tenant-context";
 
@@ -58,5 +59,23 @@ export class ProductsService {
       sessionId: sessionId ?? null,
       priorCitations,
     };
+  }
+
+  async shadowPricingSimulate(
+    ctx: TenantContextHeaders,
+    body: {
+      ontologyId?: string;
+      shipmentRef?: string;
+      limit?: number;
+    },
+  ) {
+    const product = this.productRuntime(ctx);
+    const pricing = new ShadowPricing(product);
+    const ont = body.ontologyId ? ontologyId(body.ontologyId) : undefined;
+    return pricing.simulate({
+      ontologyId: ont,
+      shipmentRef: body.shipmentRef,
+      limit: body.limit,
+    });
   }
 }

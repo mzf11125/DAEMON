@@ -1,21 +1,22 @@
-import { Body, Controller, Headers, Param, Post } from "@nestjs/common";
+import { Body, Controller, Param, Post } from "@nestjs/common";
+import { Protected } from "../auth/protected.decorator";
+import { PolicyCheck } from "../auth/policy-check.decorator";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 import { PipelinesService } from "./pipelines.service";
-import { TenantContextService } from "../platform/tenant-context";
 
 @Controller("v1/pipelines")
 export class PipelinesController {
-  constructor(
-    private readonly pipelines: PipelinesService,
-    private readonly tenantContext: TenantContextService,
-  ) {}
+  constructor(private readonly pipelines: PipelinesService) {}
 
   @Post(":pipelineId/run")
+  @Protected()
+  @PolicyCheck("write", "pipeline")
   run(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Param("pipelineId") pipelineId: string,
     @Body() body: { dag: { nodes: Array<Record<string, unknown>> } },
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     return this.pipelines.runPipeline(ctx, pipelineId, {
       nodes: body.dag.nodes.map((n) => ({
         id: String(n.id),

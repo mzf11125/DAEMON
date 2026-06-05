@@ -29,6 +29,17 @@ pnpm run test:repo
 
 `tests/integration/gateway-http.test.ts` boots the Nest gateway in-process with a mock ingest HTTP server (in-memory ontology; it does not use `DAEMON_POSTGRES_URL` unless you pass it explicitly). It includes `POST /v1/ingest/sources/demo-parties/run` against `configs/collect-sensing/sources.yaml` and `tests/fixtures/ingest/parties.jsonl` when `DAEMON_REPO_ROOT` points at the repo (set automatically in that test). `tests/e2e/ingest-read-write-http.test.ts` runs the full HTTP chain when `DAEMON_INTEGRATION_REQUIRED=1`. Postgres integration tests skip when `DAEMON_POSTGRES_URL` is unset **or** when nothing is listening on that URL (for example compose is stopped but the variable remains in your shell).
 
+### Gateway security tests
+
+`tests/integration/gateway-security.test.ts` asserts fail-closed auth on the in-process gateway:
+
+- `GET /v1/read/entities` and `GET /v1/search` return **401** without credentials.
+- Session-backed routes return **403** when `X-Daemon-Tenant` does not match the API key tenant.
+- Webhook ingest returns **401/503** when HMAC is required but `DAEMON_WEBHOOK_HMAC_SECRET` is unset.
+- `POST /v1/policy/check` requires authentication.
+
+CI runs `pnpm run check:route-auth` to ensure every controller route declares `@Public`, `@Protected`, `@WebhookAuth`, or `@PolicyCheck`.
+
 To exercise source-run locally without upstream Go:
 
 ```bash

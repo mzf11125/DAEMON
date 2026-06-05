@@ -1,21 +1,27 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { GovernanceService } from "./governance.service";
 import type { SchemaChangeDescriptor } from "@daemon/ontology/governance/governance-policy-loader.js";
+import { Protected } from "../auth/protected.decorator";
+import { PolicyCheck } from "../auth/policy-check.decorator";
+import { GovernanceService } from "./governance.service";
 import type { ValidatePackChangeRequest } from "./governance.service.js";
 
 /**
- * Dev/admin stub for evaluating pack schema changes against governance-policies.yaml.
+ * Pack governance: validate and promote ontology packs (admin-only).
  */
 @Controller("v1/governance/pack")
 export class GovernanceController {
   constructor(private readonly governance: GovernanceService) {}
 
   @Post("validate-change")
+  @Protected()
+  @PolicyCheck("write", "ontology-pack")
   validateChange(@Body() body: ValidatePackChangeRequest | SchemaChangeDescriptor) {
     return this.governance.validatePackChange(body);
   }
 
   @Post("promote")
+  @Protected()
+  @PolicyCheck("write", "ontology-pack")
   promote(
     @Body()
     body: {

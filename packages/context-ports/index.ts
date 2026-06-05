@@ -12,3 +12,9 @@ export {
   defaultScope,
 } from "./ontology-store.js";
 export type { AuditEvent, AuditPort } from "./audit-port.js";
+export {
+  SCOPE_SEGMENT_PATTERN,
+  assertSafeScopeSegment,
+  assertSafeScope,
+  resolveWithinDirectory,
+} from "./scope-path.js";

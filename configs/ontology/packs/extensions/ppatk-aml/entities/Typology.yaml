@@ -1,0 +1,8 @@
+entityType: Typology
+fields:
+  - { name: code, type: string, required: true }        # structuring, smurfing, layering, tbml, mule, ransomware-payout
+  - { name: label, type: string, required: true }
+  - { name: description, type: string }
+  - { name: indicators, type: object }
+  - { name: source, type: string }                       # ppatk, fatf, egmont, internal
+  - { name: revision, type: string }

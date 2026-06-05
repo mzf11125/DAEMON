@@ -1,21 +1,22 @@
-import { Controller, Get, Headers, Query } from "@nestjs/common";
+import { Controller, Get, Query } from "@nestjs/common";
+import { Protected } from "../auth/protected.decorator";
+import { PolicyCheck } from "../auth/policy-check.decorator";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 import { OntologyPackService } from "./ontology-pack.service";
-import { TenantContextService } from "../platform/tenant-context";
 
 @Controller("v1/ontology")
 export class OntologyPackController {
-  constructor(
-    private readonly packs: OntologyPackService,
-    private readonly tenantContext: TenantContextService,
-  ) {}
+  constructor(private readonly packs: OntologyPackService) {}
 
   @Get("pack-resolution")
+  @Protected()
+  @PolicyCheck("read", "ontology-pack")
   packResolution(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Query("environment") environment?: string,
     @Query("packBranch") packBranch?: string,
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     return this.packs.packResolution(ctx, { environment, packBranch });
   }
 }

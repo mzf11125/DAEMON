@@ -1,17 +1,18 @@
-import { Controller, Get, Headers } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
+import { Protected } from "../auth/protected.decorator";
+import { PolicyCheck } from "../auth/policy-check.decorator";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 import { DataHealthService } from "./data-health.service";
-import { TenantContextService } from "../platform/tenant-context";
 
 @Controller("v1/data-health")
 export class DataHealthController {
-  constructor(
-    private readonly dataHealth: DataHealthService,
-    private readonly tenantContext: TenantContextService,
-  ) {}
+  constructor(private readonly dataHealth: DataHealthService) {}
 
   @Get("summary")
-  summary(@Headers() headers: Record<string, string | string[] | undefined>) {
-    const ctx = this.tenantContext.resolve(headers);
+  @Protected()
+  @PolicyCheck("read", "data-health")
+  summary(@DaemonScope() ctx: TenantContextHeaders) {
     return this.dataHealth.summary(ctx);
   }
 }

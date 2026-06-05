@@ -1,0 +1,8 @@
+entityType: ThreatActor
+fields:
+  - { name: name, type: string, required: true }
+  - { name: aliases, type: object }
+  - { name: motivation, type: string }                   # financial, espionage, hacktivist, state
+  - { name: origin, type: string }
+  - { name: firstSeenAt, type: string }
+  - { name: mitreGroupId, type: string }

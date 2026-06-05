@@ -24,27 +24,38 @@ function contextFor(request: FakeRequest, protectedRoute: boolean): ExecutionCon
   } as unknown as ExecutionContext;
 }
 
-const auth = AuthService.create({ DAEMON_AUTH_MODE: "dev" } as NodeJS.ProcessEnv);
+const GUARD_TEST_KEY = "guard-unit-test-key";
+const auth = AuthService.create({
+  DAEMON_AUTH_MODE: "dev",
+  DAEMON_API_KEY: GUARD_TEST_KEY,
+  NODE_ENV: "development",
+} as NodeJS.ProcessEnv);
 const guard = new AuthGuard(auth, new Reflector());
 
-test("attaches a resolved session to the request", () => {
-  const request: FakeRequest = { headers: { "x-api-key": "daemon-dev-key" } };
-  assert.equal(guard.canActivate(contextFor(request, false)), true);
+test("attaches a resolved session to the request", async () => {
+  const request: FakeRequest = { headers: { "x-api-key": GUARD_TEST_KEY } };
+  assert.equal(await guard.canActivate(contextFor(request, false)), true);
   assert.ok(request.daemonSession);
 });
 
-test("open route passes without a session", () => {
+test("open route passes without a session", async () => {
   const request: FakeRequest = { headers: {} };
-  assert.equal(guard.canActivate(contextFor(request, false)), true);
+  assert.equal(await guard.canActivate(contextFor(request, false)), true);
   assert.equal(request.daemonSession, undefined);
 });
 
-test("protected route without a session is rejected", () => {
+test("protected route without a session is rejected", async () => {
   const request: FakeRequest = { headers: {} };
-  assert.throws(() => guard.canActivate(contextFor(request, true)), UnauthorizedException);
+  await assert.rejects(
+    () => guard.canActivate(contextFor(request, true)),
+    UnauthorizedException,
+  );
 });
 
-test("malformed credential is surfaced as unauthorized", () => {
+test("malformed credential is surfaced as unauthorized", async () => {
   const request: FakeRequest = { headers: { "x-api-key": "bogus" } };
-  assert.throws(() => guard.canActivate(contextFor(request, true)), UnauthorizedException);
+  await assert.rejects(
+    () => guard.canActivate(contextFor(request, true)),
+    UnauthorizedException,
+  );
 });

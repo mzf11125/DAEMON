@@ -1,0 +1,12 @@
+entityType: SmartContract
+fields:
+  - { name: address, type: string, required: true }
+  - { name: chain, type: string, required: true }
+  - { name: name, type: string }
+  - { name: contractKind, type: string }                 # erc20, erc721, dex-router, mixer, lending, bridge
+  - { name: verified, type: boolean }
+  - { name: deployedAt, type: string }
+  - { name: sourceUrl, type: string }
+  - { name: abiHash, type: string }
+  - { name: bytecodeHash, type: string }
+  - { name: auditStatus, type: string }

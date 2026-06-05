@@ -1,0 +1,4 @@
+junctionType: ListingMention
+endpoints:
+  - DarkwebListing
+  - Document

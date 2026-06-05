@@ -1,0 +1,10 @@
+entityType: Certificate
+fields:
+  - { name: sha256, type: string, required: true }
+  - { name: subject, type: string }
+  - { name: issuer, type: string }
+  - { name: san, type: object }
+  - { name: notBefore, type: string }
+  - { name: notAfter, type: string }
+  - { name: keyAlgo, type: string }
+  - { name: keySize, type: number }

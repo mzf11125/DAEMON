@@ -1,0 +1,9 @@
+entityType: ReportingEntity
+fields:
+  - { name: legalName, type: string, required: true }
+  - { name: pjkKind, type: string, required: true }    # bank, pva, fintech, notaris, dealer, vasp
+  - { name: regulator, type: string }                  # ojk, bappebti, kemenkumham
+  - { name: licenseNumber, type: string }
+  - { name: jurisdiction, type: string }
+  - { name: contactPic, type: object }
+  - { name: status, type: string }                     # active, suspended, revoked

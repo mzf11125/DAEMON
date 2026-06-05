@@ -1,0 +1,7 @@
+junctionType: FlagTarget
+endpoints:
+  - Flag
+  - Party
+  - Wallet
+  - FinancialAccount
+  - Case

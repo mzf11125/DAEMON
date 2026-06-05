@@ -1,0 +1,4 @@
+junctionType: ReportFiledBy
+endpoints:
+  - STRReport
+  - ReportingEntity

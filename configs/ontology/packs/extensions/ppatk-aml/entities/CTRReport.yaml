@@ -1,0 +1,7 @@
+entityType: CTRReport
+fields:
+  - { name: reportId, type: string, required: true }
+  - { name: filedAt, type: string, required: true }
+  - { name: thresholdRule, type: string }                # default: cash >= IDR 500_000_000
+  - { name: aggregatedWindowHours, type: number }
+  - { name: status, type: string }

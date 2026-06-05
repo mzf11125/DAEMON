@@ -1,0 +1,11 @@
+entityType: Disclosure
+fields:
+  - { name: disclosureId, type: string, required: true }
+  - { name: recipient, type: string, required: true }    # polri, kejagung, kpk, bea-cukai, fiu-foreign
+  - { name: channel, type: string }                      # egmont-esw, courier, secure-portal
+  - { name: classification, type: string }               # rahasia, sangat-rahasia
+  - { name: legalBasis, type: string }                   # uu-8-2010-pasal-44
+  - { name: signedAt, type: string }
+  - { name: signedBy, type: string }
+  - { name: approvers, type: object }                    # dual-control
+  - { name: status, type: string }                       # drafted, approved, dispatched, acknowledged

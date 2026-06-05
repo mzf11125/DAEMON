@@ -1,0 +1,11 @@
+entityType: CorporateRecord
+fields:
+  - { name: registryId, type: string, required: true }   # AHU NIB, Companies House, OpenCorporates id
+  - { name: registrySource, type: string, required: true } # ahu, opencorporates, gleif, sec, eu-bris
+  - { name: jurisdiction, type: string, required: true }
+  - { name: legalName, type: string, required: true }
+  - { name: incorporationDate, type: string }
+  - { name: legalForm, type: string }
+  - { name: status, type: string }                       # active, dissolved, suspended
+  - { name: lei, type: string }
+  - { name: registeredAddress, type: object }

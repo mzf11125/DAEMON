@@ -1,0 +1,10 @@
+entityType: Label
+fields:
+  - { name: namespace, type: string, required: true }    # ppatk, chainalysis, trm, elliptic, internal, community
+  - { name: key, type: string, required: true }          # exchange:binance, mixer:tornado-cash, scam:rugpull, sanctions:ofac
+  - { name: confidence, type: number }                   # 0..1
+  - { name: validFrom, type: string }
+  - { name: validTo, type: string }
+  - { name: assertedBy, type: string }                   # analyst id or system name
+  - { name: rationale, type: string }
+  - { name: severity, type: string }                     # info, low, medium, high, critical

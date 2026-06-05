@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Headers, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { Protected } from "../auth/protected.decorator";
 import { PolicyCheck } from "../auth/policy-check.decorator";
-import { TenantContextService } from "../platform/tenant-context";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 import { IngestScheduleService } from "./ingest-schedule.service";
 
 interface CreateScheduleBody {
@@ -18,27 +19,19 @@ interface PatchScheduleBody {
 
 @Controller("v1/ingest/schedules")
 export class IngestSchedulesController {
-  constructor(
-    private readonly schedules: IngestScheduleService,
-    private readonly tenantContext: TenantContextService,
-  ) {}
+  constructor(private readonly schedules: IngestScheduleService) {}
 
   @Get()
   @Protected()
   @PolicyCheck("ingest", "ingest-schedule")
-  list(@Headers() headers: Record<string, string | string[] | undefined>) {
-    const ctx = this.tenantContext.resolve(headers);
+  list(@DaemonScope() ctx: TenantContextHeaders) {
     return this.schedules.list(ctx);
   }
 
   @Post()
   @Protected()
   @PolicyCheck("ingest", "ingest-schedule")
-  create(
-    @Headers() headers: Record<string, string | string[] | undefined>,
-    @Body() body: CreateScheduleBody,
-  ) {
-    const ctx = this.tenantContext.resolve(headers);
+  create(@DaemonScope() ctx: TenantContextHeaders, @Body() body: CreateScheduleBody) {
     return this.schedules.create(ctx, body);
   }
 
@@ -46,11 +39,10 @@ export class IngestSchedulesController {
   @Protected()
   @PolicyCheck("ingest", "ingest-schedule")
   patch(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Param("id") id: string,
     @Body() body: PatchScheduleBody,
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     return this.schedules.patch(ctx, id, body);
   }
 }

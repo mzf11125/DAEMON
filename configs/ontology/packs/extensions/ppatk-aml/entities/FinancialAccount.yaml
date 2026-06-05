@@ -1,0 +1,10 @@
+entityType: FinancialAccount
+fields:
+  - { name: accountNumber, type: string, required: true }
+  - { name: accountKind, type: string, required: true }  # giro, tabungan, deposito, e-wallet, custody
+  - { name: currency, type: string }
+  - { name: openedAt, type: string }
+  - { name: closedAt, type: string }
+  - { name: status, type: string }
+  - { name: riskTier, type: string }                     # low, medium, high, prohibited
+  - { name: pjkRef, type: string }                       # ref to ReportingEntity

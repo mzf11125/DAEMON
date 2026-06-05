@@ -1,0 +1,11 @@
+entityType: DarkwebListing
+fields:
+  - { name: listingId, type: string, required: true }
+  - { name: marketplace, type: string, required: true }
+  - { name: title, type: string }
+  - { name: category, type: string }                     # drugs, fraud, malware, data-leak, weapons, services
+  - { name: pricingCrypto, type: object }                # {btc: 0.05, xmr: 1.2}
+  - { name: capturedAt, type: string, required: true }
+  - { name: capturedBy, type: string }                   # crawler-id (redacted in default views)
+  - { name: rawHash, type: string }                      # sha256 of evidence artifact
+  - { name: language, type: string }

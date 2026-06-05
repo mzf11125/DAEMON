@@ -1,19 +1,17 @@
-import { Body, Controller, Get, Headers, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { EvalsService } from "./evals.service";
 import { Protected } from "../auth/protected.decorator";
-import { TenantContextService } from "../platform/tenant-context";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 
 @Controller("v1/evals")
 export class EvalsController {
-  constructor(
-    private readonly evals: EvalsService,
-    private readonly tenantContext: TenantContextService,
-  ) {}
+  constructor(private readonly evals: EvalsService) {}
 
   @Post("run")
   @Protected()
   run(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Body()
     body: {
       suite: {
@@ -26,14 +24,13 @@ export class EvalsController {
       };
     },
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     return this.evals.runEval(ctx, body.suite);
   }
 
   @Post("record")
   @Protected()
   record(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Body()
     body: {
       suiteId: string;
@@ -43,17 +40,15 @@ export class EvalsController {
       metadata?: Record<string, unknown>;
     },
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     return this.evals.record(ctx, body);
   }
 
   @Get("runs")
   @Protected()
   list(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Query("limit") limit?: string,
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     return this.evals.list(ctx, limit ? Number(limit) : 20);
   }
 }

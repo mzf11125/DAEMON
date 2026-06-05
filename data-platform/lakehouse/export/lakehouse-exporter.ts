@@ -1,7 +1,11 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
-import type { OntologyScope } from "@daemon/context-ports";
+import {
+  type OntologyScope,
+  assertSafeScope,
+  resolveWithinDirectory,
+} from "@daemon/context-ports";
 import { PostgresClient } from "../../operational-store/postgres-client.js";
 import { withTenantSession } from "../../operational-store/tenant-session.js";
 
@@ -17,6 +21,15 @@ export interface ExportResult {
   rowCount: number;
   catalogId: string;
   icebergMetadataUri?: string;
+}
+
+const EXPORT_ID_PATTERN =
+  /^exp-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+function assertSafeExportId(exportId: string): void {
+  if (!EXPORT_ID_PATTERN.test(exportId)) {
+    throw new Error(`invalid export id: ${exportId}`);
+  }
 }
 
 /**
@@ -48,7 +61,9 @@ export class LakehouseExporter {
     if (!this.pg) {
       throw new Error("DAEMON_POSTGRES_URL required for lakehouse export");
     }
+    assertSafeScope(scope);
     const exportId = `exp-${randomUUID()}`;
+    assertSafeExportId(exportId);
     const format = options.format ?? "jsonl";
     const limit = Math.min(options.limit ?? 10_000, 100_000);
     const since = options.since;
@@ -68,22 +83,31 @@ export class LakehouseExporter {
       return res.rows as Array<Record<string, unknown>>;
     });
 
-    const dir = join(this.baseDir, scope.tenantId, scope.domainId);
+    const dir = resolveWithinDirectory(
+      this.baseDir,
+      scope.tenantId,
+      scope.domainId,
+    );
     await mkdir(dir, { recursive: true });
     const ext = format === "parquet" ? "jsonl" : "jsonl";
     const fileName = `${exportId}.${ext}`;
-    const filePath = join(dir, fileName);
+    const filePath = resolveWithinDirectory(dir, fileName);
     const lines = rows.map((r) => JSON.stringify(r)).join("\n");
     await writeFile(filePath, lines ? `${lines}\n` : "", "utf8");
 
     const locationUri = `file://${filePath}`;
     const catalogId = `ds-${randomUUID()}`;
-    const icebergDir = join(dir, `${exportId}.iceberg`);
+    const icebergDir = resolveWithinDirectory(dir, `${exportId}.iceberg`);
     await mkdir(icebergDir, { recursive: true });
-    const icebergMetadataUri = `file://${join(icebergDir, "metadata", "v0.metadata.json")}`;
-    await mkdir(join(icebergDir, "metadata"), { recursive: true });
+    const metadataDir = resolveWithinDirectory(icebergDir, "metadata");
+    const metadataPath = resolveWithinDirectory(
+      metadataDir,
+      "v0.metadata.json",
+    );
+    const icebergMetadataUri = `file://${metadataPath}`;
+    await mkdir(metadataDir, { recursive: true });
     await writeFile(
-      join(icebergDir, "metadata", "v0.metadata.json"),
+      metadataPath,
       JSON.stringify(
         {
           format: "iceberg-mvp",

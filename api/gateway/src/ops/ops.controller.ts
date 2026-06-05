@@ -1,16 +1,16 @@
-import { Controller, Get, Headers } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { OpsService } from "./ops.service";
+import { Public } from "../auth/public.decorator";
 import { Protected } from "../auth/protected.decorator";
-import { TenantContextService } from "../platform/tenant-context";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 
 @Controller("v1/ops")
 export class OpsController {
-  constructor(
-    private readonly ops: OpsService,
-    private readonly tenantContext: TenantContextService,
-  ) {}
+  constructor(private readonly ops: OpsService) {}
 
   @Get("health")
+  @Public()
   health() {
     return this.ops.health();
   }
@@ -23,8 +23,7 @@ export class OpsController {
 
   @Get("jobs")
   @Protected()
-  jobs(@Headers() headers: Record<string, string | string[] | undefined>) {
-    const ctx = this.tenantContext.resolve(headers);
+  jobs(@DaemonScope() ctx: TenantContextHeaders) {
     return this.ops.listJobs(ctx);
   }
 }

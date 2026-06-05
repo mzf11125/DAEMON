@@ -4,6 +4,9 @@
 sources:
   - id: demo-parties
     enabled: true
+    scope:
+      tenantId: inst-alpha
+      domainId: foundation
     connector:
       type: file
       format: jsonl

@@ -1,22 +1,19 @@
-import { Body, Controller, Get, Headers, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { AgentsService } from "./agents.service";
 import { Protected } from "../auth/protected.decorator";
-import { TenantContextService } from "../platform/tenant-context";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 
 @Controller("v1/agents")
 export class AgentsController {
-  constructor(
-    private readonly agents: AgentsService,
-    private readonly tenantContext: TenantContextService,
-  ) {}
+  constructor(private readonly agents: AgentsService) {}
 
   @Post("sessions")
   @Protected()
   createSession(
-    @Headers() headers: Record<string, string | string[] | undefined>,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Body() body: { tools?: string[]; metadata?: Record<string, unknown> },
   ) {
-    const ctx = this.tenantContext.resolve(headers);
     return this.agents.createSession(ctx, body ?? {});
   }
 

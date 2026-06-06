@@ -11,7 +11,8 @@
       "import": "./dist/ontology-query-chain.js",
       "default": "./dist/ontology-query-chain.js"
     },
-    "./validate-cypher.js": "./dist/validate-cypher.js"
+    "./validate-cypher.js": "./dist/validate-cypher.js",
+    "./fusion-profile/intelligence-fusion.js": "./dist/fusion-profile/intelligence-fusion.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

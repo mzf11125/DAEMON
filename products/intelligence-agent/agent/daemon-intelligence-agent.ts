@@ -13,6 +13,8 @@ import { createYdcTools, isYdcEnabled } from "./ydc-tools.js";
 import { createDaemonApiTools } from "./daemon-api-tools.js";
 import { createOsintAnalystSubagent } from "../subagents/osint-analyst.js";
 import { createDarkwebAnalystSubagent } from "../subagents/darkweb-analyst.js";
+import { graphAnalystSubagent } from "../subagents/graph-analyst.js";
+import { strNarratorSubagent } from "../subagents/str-narrator.js";
 
 export interface DaemonIntelligenceAgentOptions {
   readonly model: BaseChatModel;
@@ -39,7 +41,8 @@ function createAgentBackend() {
 const PPATK_SYSTEM_PROMPT =
   "You are the Daemon Ontology Intelligence Agent for PPATK/APU-PPT compliance investigations. " +
   "Coordinate OSINT (surface web via YOU.COM YDC), dark web clearnet signals, risk scoring, and STR narrative support. " +
-  "Delegate to osint-analyst for entity enrichment and adverse media; delegate to darkweb-analyst for dark web signal analysis. " +
+  "Delegate to osint-analyst for entity enrichment and adverse media; delegate to darkweb-analyst for dark web signal analysis; " +
+  "delegate to graph-analyst for Neo4j link analysis; delegate to str-narrator for STR/LTMS draft narratives. " +
   "Durable notes live in /memories/AGENTS.md; temporal investigation logs in /memories/TEMPORAL.md. " +
   "All OSINT evidence must be provenance-signed before ontology ingest. Refuse illegal or unauthorized intelligence gathering.";
 
@@ -70,6 +73,8 @@ export async function createDaemonIntelligenceAgent(
     subagents: [
       createOsintAnalystSubagent({ tools: osintTools }),
       createDarkwebAnalystSubagent({ tools: [...ydcTools, ...daemonApiTools] }),
+      graphAnalystSubagent,
+      strNarratorSubagent,
     ] as never,
     checkpointer: new MemorySaver(),
   });
@@ -88,7 +93,7 @@ export function getDaemonIntelligenceAgentCapabilities() {
   return {
     packageRoot: intelligenceAgentRoot(),
     ydcEnabled: isYdcEnabled(),
-    subagents: ["osint-analyst", "darkweb-analyst"],
+    subagents: ["osint-analyst", "darkweb-analyst", "graph-analyst", "str-narrator"],
     memoryPath: "/memories/AGENTS.md",
     skillsPath: "/skills/",
   };

@@ -365,6 +365,176 @@ fn apply_single(facts: &mut HashMap<String, Value>, action: &Action) {
     }
 }
 
+// ── Taint Propagation ──────────────────────────────────────────────
+// BigPlan Phase 4.2 | Taint propagation untuk crypto wallet dan transaksi
+
+/// Taint score: 0.0 = clean, 1.0 = fully tainted
+pub type TaintScore = f64;
+
+/// Sebuah node dalam taint graph (wallet, account, atau entity lainnya)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TaintNode {
+    pub id: String,
+    pub node_type: String,
+    pub taint_score: TaintScore,
+    pub taint_sources: Vec<String>,
+    pub is_seed: bool,
+}
+
+/// Edge dalam taint graph (transaksi atau transfer)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TaintEdge {
+    pub from_id: String,
+    pub to_id: String,
+    pub flow_fraction: f64,
+    pub edge_type: String,
+    pub timestamp: Option<String>,
+}
+
+/// Konfigurasi propagasi
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TaintConfig {
+    pub threshold: TaintScore,
+    pub decay_factor: f64,
+    pub max_hops: usize,
+    pub method: TaintMethod,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum TaintMethod {
+    Haircut,
+    Poison,
+    Fifo,
+}
+
+impl Default for TaintConfig {
+    fn default() -> Self {
+        Self {
+            threshold: 0.1,
+            decay_factor: 0.9,
+            max_hops: 6,
+            method: TaintMethod::Haircut,
+        }
+    }
+}
+
+/// Hasil taint propagation
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TaintResult {
+    pub tainted_nodes: Vec<TaintNode>,
+    pub propagation_hops: usize,
+    pub total_tainted_value_fraction: f64,
+    pub method_used: TaintMethod,
+}
+
+/// Taint Propagation Engine — tracks taint through financial/crypto flows.
+pub struct TaintPropagationEngine {
+    config: TaintConfig,
+    nodes: HashMap<String, TaintNode>,
+    edges: Vec<TaintEdge>,
+}
+
+impl TaintPropagationEngine {
+    pub fn new(config: TaintConfig) -> Self {
+        Self {
+            config,
+            nodes: HashMap::new(),
+            edges: Vec::new(),
+        }
+    }
+
+    pub fn add_node(&mut self, node: TaintNode) {
+        self.nodes.insert(node.id.clone(), node);
+    }
+
+    pub fn add_edge(&mut self, edge: TaintEdge) {
+        self.edges.push(edge);
+    }
+
+    pub fn seed_taint(&mut self, node_id: &str, taint_score: TaintScore) {
+        if let Some(node) = self.nodes.get_mut(node_id) {
+            node.taint_score = taint_score.clamp(0.0, 1.0);
+            node.is_seed = true;
+            node.taint_sources.push(node_id.to_string());
+        }
+    }
+
+    pub fn propagate(&mut self) -> TaintResult {
+        let mut hop = 0;
+        let mut changed = true;
+
+        while changed && hop < self.config.max_hops {
+            changed = false;
+            hop += 1;
+
+            let edges = self.edges.clone();
+
+            for edge in &edges {
+                let source_taint = self
+                    .nodes
+                    .get(&edge.from_id)
+                    .map(|n| n.taint_score)
+                    .unwrap_or(0.0);
+
+                if source_taint < self.config.threshold {
+                    continue;
+                }
+
+                let propagated_taint = match self.config.method {
+                    TaintMethod::Haircut => {
+                        source_taint * edge.flow_fraction * self.config.decay_factor
+                    }
+                    TaintMethod::Poison => {
+                        if source_taint >= self.config.threshold {
+                            source_taint * self.config.decay_factor
+                        } else {
+                            0.0
+                        }
+                    }
+                    TaintMethod::Fifo => {
+                        source_taint * edge.flow_fraction * self.config.decay_factor
+                    }
+                };
+
+                if propagated_taint < self.config.threshold {
+                    continue;
+                }
+
+                if let Some(dest_node) = self.nodes.get_mut(&edge.to_id) {
+                    let new_taint = (dest_node.taint_score + propagated_taint).min(1.0);
+                    if new_taint > dest_node.taint_score {
+                        dest_node.taint_score = new_taint;
+                        if !dest_node.taint_sources.contains(&edge.from_id) {
+                            dest_node.taint_sources.push(edge.from_id.clone());
+                        }
+                        changed = true;
+                    }
+                }
+            }
+        }
+
+        let tainted_nodes: Vec<TaintNode> = self
+            .nodes
+            .values()
+            .filter(|n| n.taint_score >= self.config.threshold)
+            .cloned()
+            .collect();
+
+        let total_fraction = if self.nodes.is_empty() {
+            0.0
+        } else {
+            tainted_nodes.len() as f64 / self.nodes.len() as f64
+        };
+
+        TaintResult {
+            tainted_nodes,
+            propagation_hops: hop,
+            total_tainted_value_fraction: total_fraction,
+            method_used: self.config.method.clone(),
+        }
+    }
+}
+
 // ── Tests ──────────────────────────────────────────────────────────
 
 #[cfg(test)]
@@ -825,5 +995,76 @@ mod tests {
         };
         let p = plan(&rs, &initial, &goal, 10);
         assert!(!p.achieved);
+    }
+
+    #[test]
+    fn taint_haircut_propagates() {
+        let mut engine = TaintPropagationEngine::new(TaintConfig {
+            max_hops: 1,
+            ..TaintConfig::default()
+        });
+        engine.add_node(TaintNode {
+            id: "wallet_a".into(),
+            node_type: "wallet".into(),
+            taint_score: 0.0,
+            taint_sources: vec![],
+            is_seed: false,
+        });
+        engine.add_node(TaintNode {
+            id: "wallet_b".into(),
+            node_type: "wallet".into(),
+            taint_score: 0.0,
+            taint_sources: vec![],
+            is_seed: false,
+        });
+        engine.seed_taint("wallet_a", 1.0);
+        engine.add_edge(TaintEdge {
+            from_id: "wallet_a".into(),
+            to_id: "wallet_b".into(),
+            flow_fraction: 0.5,
+            edge_type: "transaction".into(),
+            timestamp: None,
+        });
+        let result = engine.propagate();
+        assert!(result.tainted_nodes.iter().any(|n| n.id == "wallet_b"));
+        let b = result
+            .tainted_nodes
+            .iter()
+            .find(|n| n.id == "wallet_b")
+            .unwrap();
+        assert!(b.taint_score > 0.0 && b.taint_score < 1.0);
+    }
+
+    #[test]
+    fn taint_below_threshold_stops() {
+        let config = TaintConfig {
+            threshold: 0.5,
+            ..TaintConfig::default()
+        };
+        let mut engine = TaintPropagationEngine::new(config);
+        engine.add_node(TaintNode {
+            id: "a".into(),
+            node_type: "wallet".into(),
+            taint_score: 0.0,
+            taint_sources: vec![],
+            is_seed: false,
+        });
+        engine.add_node(TaintNode {
+            id: "b".into(),
+            node_type: "wallet".into(),
+            taint_score: 0.0,
+            taint_sources: vec![],
+            is_seed: false,
+        });
+        engine.seed_taint("a", 0.3);
+        engine.add_edge(TaintEdge {
+            from_id: "a".into(),
+            to_id: "b".into(),
+            flow_fraction: 1.0,
+            edge_type: "tx".into(),
+            timestamp: None,
+        });
+        let result = engine.propagate();
+        assert!(!result.tainted_nodes.iter().any(|n| n.id == "b"));
     }
 }

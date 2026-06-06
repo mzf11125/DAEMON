@@ -144,6 +144,14 @@ export class ProvenanceHandler {
         );
       }
 
+      if (body.epochId === undefined) {
+        throw new DaemonError(
+          ErrorCodes.VALIDATION,
+          "epochId is required in request body",
+          400,
+        );
+      }
+
       const { verifier } = this.getServices();
       const result = await verifier.checkForensicAbsence(
         body.tenantId,
@@ -176,7 +184,7 @@ export class ProvenanceHandler {
       const role = req.headers["x-daemon-role"];
       if (role !== "operator") {
         throw new DaemonError(
-          ErrorCodes.FORBIDDEN,
+          ErrorCodes.POLICY_DENIED,
           "closing an epoch requires operator role (X-Daemon-Role: operator)",
           403,
         );

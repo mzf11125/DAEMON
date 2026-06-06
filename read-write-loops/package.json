@@ -11,7 +11,9 @@
     "./writes/logic-engine-client.js": "./dist/writes/logic-engine-client.js",
     "./writes/write-logic-guard.js": "./dist/writes/write-logic-guard.js",
     "./loop-controller/loop-orchestrator.js": "./dist/loop-controller/loop-orchestrator.js",
-    "./loop-controller/approval-gates.js": "./dist/loop-controller/approval-gates.js"
+    "./loop-controller/approval-gates.js": "./dist/loop-controller/approval-gates.js",
+    "./loop-controller/sanctions-screener.js": "./dist/loop-controller/sanctions-screener.js",
+    "./loop-controller/typology-rule-engine.js": "./dist/loop-controller/typology-rule-engine.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

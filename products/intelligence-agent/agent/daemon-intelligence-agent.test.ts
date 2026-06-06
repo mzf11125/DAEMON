@@ -6,7 +6,12 @@ import { getDaemonIntelligenceAgentCapabilities } from "./daemon-intelligence-ag
 describe("daemon-intelligence-agent", () => {
   it("exports capabilities metadata (happy path)", () => {
     const caps = getDaemonIntelligenceAgentCapabilities();
-    assert.deepEqual(caps.subagents, ["osint-analyst", "darkweb-analyst"]);
+    assert.deepEqual(caps.subagents, [
+      "osint-analyst",
+      "darkweb-analyst",
+      "graph-analyst",
+      "str-narrator",
+    ]);
     assert.ok(caps.packageRoot.includes("intelligence-agent"));
   });
 

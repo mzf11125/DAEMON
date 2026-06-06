@@ -98,26 +98,21 @@ rules:
       - audit-loop
       - neo4j-graph-sync
 
-  # ---- PPATK AML core ----
+  # ---- PPATK AML core (targets limited to PropagationExecutor wiring) ----
   - id: ppatk-financial-transaction-register
     trigger: register
     entityTypes: [FinancialTransaction]
     propagate:
       - read-model-projection
       - neo4j-graph-sync
-      - typology-rule-engine
-      - sanctions-screen
       - lakehouse-bronze
       - lakehouse-silver
-      - materialized-view:tx-by-risk
   - id: ppatk-str-report-register
     trigger: register
     entityTypes: [STRReport, CTRReport, CBCCReport]
     propagate:
       - read-model-projection
       - neo4j-graph-sync
-      - typology-rule-engine
-      - case-auto-assemble
       - lakehouse-bronze
       - audit-loop
   - id: ppatk-sanctions-list-register
@@ -125,15 +120,12 @@ rules:
     entityTypes: [SanctionsListEntry]
     propagate:
       - read-model-projection
-      - sanctions-recompute
       - audit-loop
   - id: ppatk-disclosure-register
     trigger: register
     entityTypes: [Disclosure]
     propagate:
-      - dual-control-approval
-      - external-write-guard
-      - chain-of-custody-sign
+      - read-model-projection
       - audit-loop
   - id: ppatk-aml-entities-register
     trigger: register
@@ -155,17 +147,12 @@ rules:
     propagate:
       - read-model-projection
       - neo4j-graph-sync
-      - sanctions-screen
-      - taint-recompute
-      - materialized-view:wallet-by-risk
   - id: ppatk-onchain-tx-register
     trigger: register
     entityTypes: [OnChainTransaction]
     propagate:
       - read-model-projection
       - neo4j-graph-sync
-      - typology-rule-engine
-      - taint-propagate
       - lakehouse-bronze
   - id: ppatk-crypto-entities-register
     trigger: register
@@ -185,23 +172,18 @@ rules:
     entityTypes: [Label]
     propagate:
       - read-model-projection
-      - taint-recompute
-      - alert-rule-eval
       - audit-loop
   - id: ppatk-label-patch
     trigger: patch
     entityTypes: [Label]
     propagate:
       - read-model-projection
-      - taint-recompute
-      - alert-rule-eval
       - audit-loop
   - id: ppatk-flag-register
     trigger: register
     entityTypes: [Flag]
     propagate:
       - read-model-projection
-      - notify-analyst-queue
       - audit-loop
   - id: ppatk-label-source-register
     trigger: register
@@ -223,8 +205,6 @@ rules:
       - read-model-projection
       - neo4j-graph-sync
       - semantic-vector-index
-      - quarantine-scan
-      - chain-of-custody-sign
       - lakehouse-bronze
 
   # ---- PPATK OSINT ----
@@ -246,7 +226,6 @@ rules:
     entityTypes: [Persona]
     propagate:
       - read-model-projection
-      - attribution-recompute
       - audit-loop
 
   # ---- PPATK network/threat intel ----
@@ -264,7 +243,6 @@ rules:
       - read-model-projection
       - neo4j-graph-sync
       - semantic-vector-index
-      - threat-intel-enrich
       - lakehouse-bronze
   - id: ppatk-malware-sample-register
     trigger: register
@@ -272,6 +250,4 @@ rules:
     propagate:
       - read-model-projection
       - neo4j-graph-sync
-      - sandbox-dispatch
-      - taint-recompute
       - audit-loop

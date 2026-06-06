@@ -5,11 +5,11 @@ import { ontologyId, entityId } from "@daemon/platform-types";
 import { AnalyticsWorkflows } from "./analytics-workflows.js";
 
 describe("AnalyticsWorkflows", () => {
-  it("searchAndReport and buildDashboard compose modules", () => {
+  it("searchAndReport and buildDashboard compose modules", async () => {
     const ont = ontologyId(`prod-aw-${Date.now()}`);
     globalRegistry.register(ont, { status: "live", label: "metric-a" }, entityId("aw-1"));
     const flows = new AnalyticsWorkflows();
-    const report = flows.searchAndReport({
+    const report = await flows.searchAndReport({
       query: "metric",
       ontologyId: ont,
       reportTitle: "Metrics",

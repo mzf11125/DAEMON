@@ -1,5 +1,6 @@
 import { describe, it, beforeEach } from "node:test";
 import assert from "node:assert/strict";
+import { join } from "node:path";
 import { entityId, ontologyId, ErrorCodes } from "@daemon/platform-types";
 import { DaemonError } from "@daemon/platform-types";
 import {
@@ -26,7 +27,7 @@ function cmd(patch: Record<string, unknown>): WriteCommand {
 describe("assertActionTypeAllowed", () => {
   beforeEach(() => {
     resetActionTypeGuardCacheForTests();
-    process.env.DAEMON_REPO_ROOT = process.cwd();
+    process.env.DAEMON_REPO_ROOT = join(import.meta.dirname, "..", "..");
   });
 
   it("requires actionType for RoutingDecision writes", () => {

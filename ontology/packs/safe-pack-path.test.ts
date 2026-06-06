@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { join } from "node:path";
 import { foundationPackRoot } from "./load-pack.js";
 import {
   assertPackDirectoryUnderConfigs,
@@ -40,7 +41,7 @@ test("resolvePackTypeYamlPath stays under foundation pack", () => {
     "Party",
     "entity",
   );
-  assert.ok(path.endsWith("entities/Party.yaml"));
+  assert.ok(path.endsWith(join("entities", "Party.yaml")));
   assert.doesNotThrow(() => resolvePackManifestPath(packDir));
 });
 

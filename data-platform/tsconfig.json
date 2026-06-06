@@ -14,7 +14,8 @@
     "migrations/**/*.ts",
     "lakehouse/**/*.ts",
     "product-sessions/**/*.ts",
-    "mdm/**/*.ts"
+    "mdm/**/*.ts",
+    "provenance/**/*.ts"
   ],
   "exclude": ["**/*.test.ts"]
 }

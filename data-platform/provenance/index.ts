@@ -15,6 +15,9 @@ export {
 export { EpochManager } from "./epoch-manager.js";
 export type { EntityCommitInput, EpochCommitResult } from "./epoch-manager.js";
 
+export { EpochScheduler } from "./epoch-scheduler.js";
+export type { SchedulerOptions, SchedulerLogger, OpenEpochScope } from "./epoch-scheduler.js";
+
 export { ProvenanceVerifier } from "./provenance-verifier.js";
 export type {
   VerificationResult,

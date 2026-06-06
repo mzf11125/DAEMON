@@ -166,12 +166,36 @@ export class SparseMerkleTree {
   private readonly leaves = new Map<HexHash, HexHash>();
 
   /**
+   * Internal node hash cache.
+   * Key format: `"${depth}:${binaryPrefix}"` — e.g. `"3:101"`.
+   * Leaf level (depth=256) is NOT cached here; the `leaves` Map is the source.
+   *
+   * Invariant: cache is always consistent with the current `leaves` state.
+   * Any `insert()` call invalidates all ancestor cache entries along the key path.
+   */
+  private readonly _nodeCache = new Map<string, HexHash>();
+
+  /**
    * Insert or update a leaf.
+   * Invalidates all cached ancestor nodes along the key's 256-bit path
+   * so that subsequent `getRoot()` and proof generation recompute correctly.
+   *
    * @param smtKey   - 256-bit hex key (from deriveSmtKey)
    * @param leafHash - pre-computed leaf hash (from hashLeaf())
    */
   insert(smtKey: HexHash, leafHash: HexHash): void {
-    this.leaves.set(smtKey.toLowerCase(), leafHash.toLowerCase());
+    const key = smtKey.toLowerCase();
+    this.leaves.set(key, leafHash.toLowerCase());
+    // Invalidate all ancestor nodes (depth 0 to 255) along this key's path
+    const bits = hexToBits(key);
+    let prefix = "";
+    for (let depth = 0; depth < TREE_DEPTH; depth++) {
+      this._nodeCache.delete(`${depth}:${prefix}`);
+      prefix += bits[depth]!.toString();
+    }
+    // Also invalidate the leaf-level parent cache entry (depth=TREE_DEPTH is
+    // resolved from `leaves` directly, but clear any stale depth-255 entry)
+    this._nodeCache.delete(`${TREE_DEPTH}:${prefix}`);
   }
 
   /** Total number of inserted leaves. */
@@ -228,28 +252,25 @@ export class SparseMerkleTree {
 
   /**
    * Compute the hash of the subtree at (depth, keyPrefix).
+   * Results are memoised in `_nodeCache`; stale entries are removed by `insert()`.
    *
    * @param depth     - current depth (0 = just below root, 256 = leaf level)
    * @param keyPrefix - binary string of bits chosen so far (length = depth)
-   *
-   * At depth=256 we are at leaf level: return the stored leaf hash or
-   * EMPTY_LEAF_HASH if no leaf is present at that key.
-   *
-   * At depth<256: recurse into left (prefix+"0") and right (prefix+"1")
-   * sub-trees. If a sub-tree has no leaves, substitute EMPTY_HASHES[256-depth-1].
    */
   private _subtreeHash(depth: number, keyPrefix: string): HexHash {
     if (depth === TREE_DEPTH) {
-      // Leaf level — decode prefix back to hex key
+      // Leaf level — decode prefix back to hex key (not cached via _nodeCache)
       const hexKey = this._bitsToHex(keyPrefix);
       return this.leaves.get(hexKey) ?? EMPTY_LEAF_HASH;
     }
 
+    // Cache lookup
+    const cacheKey = `${depth}:${keyPrefix}`;
+    const cached = this._nodeCache.get(cacheKey);
+    if (cached !== undefined) return cached;
+
     const leftPrefix = keyPrefix + "0";
     const rightPrefix = keyPrefix + "1";
-
-    // Height of each child subtree = TREE_DEPTH - depth - 1
-    // (0 at depth=255, i.e. just above leaf)
     const emptyChildHash = EMPTY_HASHES[TREE_DEPTH - depth - 1]!;
 
     const leftHash = this._hasAnyLeafWithPrefix(leftPrefix)
@@ -260,7 +281,9 @@ export class SparseMerkleTree {
       ? this._subtreeHash(depth + 1, rightPrefix)
       : emptyChildHash;
 
-    return _hashInternal(leftHash, rightHash);
+    const result = _hashInternal(leftHash, rightHash);
+    this._nodeCache.set(cacheKey, result);
+    return result;
   }
 
   /**

@@ -12,11 +12,10 @@
   "dependencies": {
     "@daemon/action-runtime": "workspace:*",
     "@daemon/collect-sensing": "workspace:*",
-    "@daemon/data-platform": "workspace:*",
     "@daemon/context-ports": "workspace:*",
+    "@daemon/data-platform": "workspace:*",
     "@daemon/observability": "workspace:*",
     "@daemon/ontology": "workspace:*",
-    "@daemon/ontology-query": "workspace:*",
     "@daemon/platform-types": "workspace:*",
     "@daemon/products": "workspace:*",
     "@daemon/read-write-loops": "workspace:*",
@@ -24,13 +23,14 @@
     "@nestjs/common": "^11.1.24",
     "@nestjs/core": "^11.1.24",
     "@nestjs/platform-express": "^11.1.24",
-    "dotenv": "^16.4.7",
-    "jose": "^5.9.6",
+    "dotenv": "^16.6.1",
+    "jose": "^5.10.0",
     "reflect-metadata": "^0.2.2",
-    "yaml": "^2.6.1",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "yaml": "^2.6.1"
   },
   "devDependencies": {
+    "@daemon/ontology-query": "workspace:*",
     "@nestjs/cli": "^11.0.21",
     "@nestjs/schematics": "^11.0.9",
     "@types/express": "^5.0.0",

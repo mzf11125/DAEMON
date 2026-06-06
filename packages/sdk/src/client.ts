@@ -43,7 +43,7 @@ export class DaemonClient {
   private readonly getSession?: () => Promise<DaemonSession | null>;
 
   constructor(private readonly config: DaemonClientConfig) {
-    this.fetchFn = config.fetch ?? globalThis.fetch;
+    this.fetchFn = config.fetch ?? (typeof globalThis.fetch === "function" ? globalThis.fetch.bind(globalThis) : globalThis.fetch);
     this.getSession = config.getSession;
   }
 

@@ -1,8 +1,23 @@
+/**
+ * Provenance reference carried in a commit entry.
+ * Set by entity-journal when provenance tracking is active.
+ */
+export interface CommitProvenanceRef {
+  /** The epoch this entity was recorded in */
+  readonly epochId: number;
+  /** The Merkle root of that epoch (only set after epoch is closed) */
+  readonly epochRoot?: string;
+  /** SHA-256 of entity content at time of commit */
+  readonly entityHash: string;
+}
+
 export interface CommitEntry {
   writeId: string;
   entityKey: string;
   version: number;
   committedAt: string;
+  /** Optional cryptographic provenance reference — present when provenance tracking is active */
+  provenanceRef?: CommitProvenanceRef;
 }
 
 /**

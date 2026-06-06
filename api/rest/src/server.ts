@@ -20,6 +20,7 @@ import { openApiDocument } from "./openapi.js";
 import { OntologyGovernance } from "@daemon/ontology/governance/ontology-governance.js";
 import type { SchemaChangeDescriptor } from "@daemon/ontology/governance/governance-policy-loader.js";
 import { diffPackChange } from "@daemon/ontology/packs/pack-diff.js";
+import { ProvenanceHandler } from "./provenance-handler.js";
 
 interface WriteBody {
   entityId: string;
@@ -43,8 +44,9 @@ export function createRestServer(): Server {
   const writes = new CommandGateway();
   const analytics = new AnalyticsWorkflows();
   const automations = new AutomationsWorkflows();
+  const provenance = new ProvenanceHandler();
 
-  return createServer((req, res) => {
+  const server = createServer((req, res) => {
     const started = performance.now();
     const route = normalizeRoutePath(
       new URL(req.url ?? "/", "http://localhost").pathname,
@@ -62,10 +64,17 @@ export function createRestServer(): Server {
         durationMs,
       });
     });
-    handle(req, res, reads, writes, analytics, automations).catch((err) => {
+    handle(req, res, reads, writes, analytics, automations, provenance).catch((err) => {
       sendError(res, err);
     });
   });
+
+  // Graceful shutdown: close provenance Postgres connection
+  server.on("close", () => {
+    provenance.close().catch(() => {});
+  });
+
+  return server;
 }
 
 async function handle(
@@ -75,10 +84,17 @@ async function handle(
   writes: CommandGateway,
   analytics: AnalyticsWorkflows,
   automations: AutomationsWorkflows,
+  provenance: ProvenanceHandler,
 ): Promise<void> {
   const method = req.method ?? "GET";
   const url = new URL(req.url ?? "/", "http://localhost");
   const path = url.pathname;
+
+  // ── Provenance routes ───────────────────────────────────────────────────
+  if (path.startsWith("/v1/provenance")) {
+    const handled = await provenance.handleRequest(method, path, url, req, res);
+    if (handled) return;
+  }
 
   if (method === "GET" && path === "/health") {
     return sendJson(res, 200, { status: "ok" });

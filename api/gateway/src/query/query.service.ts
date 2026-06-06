@@ -37,7 +37,7 @@ export class QueryService {
       domainId: ctx.domainId,
     };
     const chain = OntologyQueryChain.fromEnv(store, {
-      resolveSchemaSummary: (scope) => {
+      resolveSchemaSummary: (scope: OntologyScope) => {
         const tenant = this.runtime.tenants.require(scope.tenantId);
         const pack = this.runtime.packs.resolve(tenant, scope.domainId);
         return buildPackGraphSchema(pack).promptSchemaSummary;

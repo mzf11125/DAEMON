@@ -31,6 +31,7 @@
       ],
       "provenance": ["./dist/provenance/index.d.ts"],
       "provenance/epoch-manager": ["./dist/provenance/epoch-manager.d.ts"],
+      "provenance/epoch-scheduler": ["./dist/provenance/epoch-scheduler.d.ts"],
       "provenance/verifier": ["./dist/provenance/provenance-verifier.d.ts"],
       "provenance/smt": ["./dist/provenance/smt.d.ts"],
       "mdm/mdm-store": ["./dist/mdm/mdm-store.d.ts"],
@@ -106,6 +107,11 @@
       "types": "./dist/provenance/epoch-manager.d.ts",
       "import": "./dist/provenance/epoch-manager.js",
       "default": "./dist/provenance/epoch-manager.js"
+    },
+    "./provenance/epoch-scheduler": {
+      "types": "./dist/provenance/epoch-scheduler.d.ts",
+      "import": "./dist/provenance/epoch-scheduler.js",
+      "default": "./dist/provenance/epoch-scheduler.js"
     },
     "./provenance/verifier": {
       "types": "./dist/provenance/provenance-verifier.d.ts",

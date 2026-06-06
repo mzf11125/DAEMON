@@ -3,7 +3,7 @@ import {
   Kind,
   NoSchemaIntrospectionCustomRule,
   type ASTVisitor,
-  type RuleFunction,
+  type ValidationRule,
   type SelectionSetNode,
   specifiedRules,
   type ValidationContext,
@@ -15,15 +15,15 @@ export const MAX_GRAPHQL_QUERY_CHARS = 16_384;
 export const MAX_GRAPHQL_BODY_BYTES = 65_536;
 export const MAX_GRAPHQL_DEPTH = 10;
 
-export function validationRules(): readonly RuleFunction[] {
-  const rules: RuleFunction[] = [...specifiedRules, depthLimitRule(MAX_GRAPHQL_DEPTH)];
+export function validationRules(): readonly ValidationRule[] {
+  const rules: ValidationRule[] = [...specifiedRules, depthLimitRule(MAX_GRAPHQL_DEPTH)];
   if (process.env.NODE_ENV === "production") {
     rules.push(NoSchemaIntrospectionCustomRule);
   }
   return rules;
 }
 
-function depthLimitRule(maxDepth: number): RuleFunction {
+function depthLimitRule(maxDepth: number): ValidationRule {
   return function depthLimit(context: ValidationContext): ASTVisitor {
     return {
       Document(node) {

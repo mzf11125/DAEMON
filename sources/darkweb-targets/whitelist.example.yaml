@@ -1,0 +1,29 @@
+# Dark Web Crawl Whitelist — PPATK Daemon Ontology
+# LEGAL: Setiap target WAJIB memiliki otorisasi resmi dari pejabat berwenang.
+# Dasar hukum: UU No. 8/2010 Pasal 44 tentang PPATK
+#
+# INSTRUKSI PENGISIAN:
+# 1. Dapatkan persetujuan tertulis dari Kepala PPATK atau pejabat yang ditunjuk
+# 2. Isi authorizedBy dengan email resmi pejabat
+# 3. Set isActive: true hanya setelah persetujuan diterima
+# 4. Scan interval MINIMUM 24 jam (tidak boleh lebih sering)
+
+targets:
+  - id: "example-market-01"
+    onionUrl: "http://REPLACE_WITH_AUTHORIZED_ONION_URL.onion"
+    category: "marketplace"       # marketplace | forum | paste | vendor_shop
+    scanIntervalHours: 24
+    isActive: false               # JANGAN set true tanpa otorisasi!
+    authorizedBy: ""              # WAJIB: email pejabat yang mengotorisasi
+    authorizationDate: ""         # WAJIB: tanggal otorisasi (ISO: YYYY-MM-DD)
+    tags:
+      - drugs
+      - darknet-market
+
+# PANDUAN OTORISASI:
+# Sebelum menambahkan target baru:
+# 1. Ajukan permohonan ke Unit Intelijen Keuangan PPATK
+# 2. Lengkapi formulir PPATK-DW-AUTH-01
+# 3. Dapatkan tanda tangan Kepala Subdirektorat
+# 4. Simpan dokumen otorisasi di sistem manajemen dokumen PPATK
+# 5. Baru update whitelist.yaml (BUKAN whitelist.example.yaml)

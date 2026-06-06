@@ -1,8 +1,21 @@
 import { useMemo, useState } from "react";
 import type { EvalSuiteInput, PipelineRunRequest } from "@daemon/sdk";
 import { createDaemonClient } from "./daemon-client.js";
+import { IntelligencePanel } from "./panels/IntelligencePanel.js";
+import { CaseManagementPanel } from "./panels/CaseManagementPanel.js";
+import { STRReviewPanel } from "./panels/STRReviewPanel.js";
+import { CreditMonitorPanel } from "./panels/CreditMonitorPanel.js";
 
-type Tab = "connect" | "pipeline" | "ontology" | "lakehouse" | "aip";
+type Tab =
+  | "connect"
+  | "pipeline"
+  | "ontology"
+  | "lakehouse"
+  | "aip"
+  | "intelligence"
+  | "cases"
+  | "str-review"
+  | "credit-monitor";
 
 const DEFAULT_PIPELINE = `{
   "nodes": [
@@ -22,6 +35,12 @@ const DEFAULT_EVAL = `{
 export function App() {
   const client = useMemo(() => createDaemonClient(), []);
   const [tab, setTab] = useState<Tab>("connect");
+  const [apiUrl] = useState(
+    import.meta.env.VITE_DAEMON_API_URL ?? "http://127.0.0.1:3000",
+  );
+  const [apiKey] = useState(
+    import.meta.env.VITE_DAEMON_API_KEY ?? "daemon-dev-key",
+  );
   const [out, setOut] = useState<string>("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,6 +76,10 @@ export function App() {
             ["ontology", "Ontology"],
             ["lakehouse", "Lakehouse"],
             ["aip", "AIP"],
+            ["intelligence", "🔍 Intelligence"],
+            ["cases", "📁 Cases"],
+            ["str-review", "📋 STR Review"],
+            ["credit-monitor", "💳 Credit"],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -198,6 +221,22 @@ export function App() {
               </button>
             </div>
           </>
+        )}
+
+        {tab === "intelligence" && (
+          <IntelligencePanel apiUrl={apiUrl} apiKey={apiKey} />
+        )}
+
+        {tab === "cases" && (
+          <CaseManagementPanel apiUrl={apiUrl} apiKey={apiKey} />
+        )}
+
+        {tab === "str-review" && (
+          <STRReviewPanel apiUrl={apiUrl} apiKey={apiKey} />
+        )}
+
+        {tab === "credit-monitor" && (
+          <CreditMonitorPanel apiUrl={apiUrl} apiKey={apiKey} />
         )}
 
         {tab === "aip" && (

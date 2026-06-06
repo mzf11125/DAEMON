@@ -126,7 +126,7 @@ export function createYdcTools(httpFetch: YdcHttpFetch = globalThis.fetch.bind(g
     },
   );
 
-  return [ydcWebSearchTool, ydcContentsExtractTool];
+  return [ydcWebSearchTool, ydcContentsExtractTool] as const;
 }
 
 export const ydcTools = createYdcTools();

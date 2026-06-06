@@ -12,6 +12,8 @@ packages:
   - "action-runtime"
   - "products"
   - "products/ontology-query"
+  - "products/intelligence-agent"
+  - "engine"
   - "api/graphql"
   - "api/rest"
   - "api/grpc"

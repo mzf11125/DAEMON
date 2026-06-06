@@ -6,6 +6,10 @@ import {
   type HttpFetch,
 } from "./api-connectors/http-pull-connector.js";
 import {
+  YDCIntelligenceConnector,
+  resolveYdcApiKey,
+} from "./api-connectors/ydc-intelligence-connector.js";
+import {
   PostgresReadConnector,
   type QueryExecutor,
 } from "./db-connectors/postgres-read-connector.js";
@@ -59,6 +63,35 @@ function buildConnector(
         url: config.url,
         headers: config.headers,
         recordIdKey: config.recordIdKey,
+      });
+    }
+    case "ydc-intelligence": {
+      if (!options.httpFetch) {
+        throw new Error(
+          `ydc-intelligence connector for source ${sourceId} requires httpFetch`,
+        );
+      }
+      const apiKey = resolveYdcApiKey();
+      if (!apiKey) {
+        throw new Error(
+          `ydc-intelligence connector for source ${sourceId} requires YDC_API_KEY`,
+        );
+      }
+      return new YDCIntelligenceConnector(options.httpFetch, {
+        sourceId,
+        apiKey,
+        mode: config.mode,
+        query: config.query,
+        urls: config.urls,
+        researchEffort: config.researchEffort,
+        livecrawl: config.livecrawl,
+        country: config.country,
+        language: config.language,
+        safesearch: config.safesearch,
+        creditsAlert: config.creditsAlert,
+        creditsHardLimit: config.creditsHardLimit,
+        initialCreditsUsd: config.initialCreditsUsd,
+        baseUrl: config.baseUrl,
       });
     }
     case "postgres-read": {

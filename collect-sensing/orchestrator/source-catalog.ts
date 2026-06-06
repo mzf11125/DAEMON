@@ -5,6 +5,7 @@ import { sourcesConfigPath, sourcesConfigPaths } from "../paths.js";
 export type ConnectorType =
   | "file"
   | "http-pull"
+  | "ydc-intelligence"
   | "postgres-read"
   | "event-subscriber"
   | "s3"
@@ -24,6 +25,22 @@ export interface HttpPullConnectorConfig {
   readonly headers?: Record<string, string>;
   readonly body?: unknown;
   readonly recordIdKey?: string;
+}
+
+export interface YdcIntelligenceConnectorConfig {
+  readonly type: "ydc-intelligence";
+  readonly mode: "search" | "contents" | "research";
+  readonly query?: string;
+  readonly urls?: readonly string[];
+  readonly researchEffort?: "lite" | "standard" | "deep" | "exhaustive";
+  readonly livecrawl?: "web" | "news" | "all";
+  readonly country?: string;
+  readonly language?: string;
+  readonly safesearch?: "off" | "moderate" | "strict";
+  readonly creditsAlert?: number;
+  readonly creditsHardLimit?: number;
+  readonly initialCreditsUsd?: number;
+  readonly baseUrl?: string;
 }
 
 export interface PostgresReadConnectorConfig {
@@ -72,6 +89,7 @@ export interface JdbcCdcConnectorConfig {
 export type SourceConnectorConfig =
   | FileConnectorConfig
   | HttpPullConnectorConfig
+  | YdcIntelligenceConnectorConfig
   | PostgresReadConnectorConfig
   | EventSubscriberConnectorConfig
   | S3ConnectorConfig
@@ -144,6 +162,47 @@ function parseConnector(raw: unknown, sourceId: string): SourceConnectorConfig {
       body: obj.body,
       recordIdKey:
         typeof obj.recordIdKey === "string" ? obj.recordIdKey : undefined,
+    };
+  }
+  if (type === "ydc-intelligence") {
+    const mode = obj.mode;
+    if (mode !== "search" && mode !== "contents" && mode !== "research") {
+      throw new Error(`source ${sourceId}: ydc-intelligence mode must be search|contents|research`);
+    }
+    const researchEffort = obj.researchEffort;
+    if (
+      researchEffort !== undefined &&
+      researchEffort !== "lite" &&
+      researchEffort !== "standard" &&
+      researchEffort !== "deep" &&
+      researchEffort !== "exhaustive"
+    ) {
+      throw new Error(`source ${sourceId}: invalid ydc-intelligence researchEffort`);
+    }
+    return {
+      type: "ydc-intelligence",
+      mode,
+      query: typeof obj.query === "string" ? obj.query : undefined,
+      urls: Array.isArray(obj.urls)
+        ? obj.urls.filter((u): u is string => typeof u === "string")
+        : undefined,
+      researchEffort,
+      livecrawl:
+        obj.livecrawl === "web" || obj.livecrawl === "news" || obj.livecrawl === "all"
+          ? obj.livecrawl
+          : undefined,
+      country: typeof obj.country === "string" ? obj.country : undefined,
+      language: typeof obj.language === "string" ? obj.language : undefined,
+      safesearch:
+        obj.safesearch === "off" || obj.safesearch === "moderate" || obj.safesearch === "strict"
+          ? obj.safesearch
+          : undefined,
+      creditsAlert: typeof obj.creditsAlert === "number" ? obj.creditsAlert : undefined,
+      creditsHardLimit:
+        typeof obj.creditsHardLimit === "number" ? obj.creditsHardLimit : undefined,
+      initialCreditsUsd:
+        typeof obj.initialCreditsUsd === "number" ? obj.initialCreditsUsd : undefined,
+      baseUrl: typeof obj.baseUrl === "string" ? obj.baseUrl : undefined,
     };
   }
   if (type === "postgres-read") {

@@ -1,0 +1,10 @@
+# YDC (you.com) Intelligence API configuration
+# See: https://documentation.you.com/api-reference
+apiKey: ${YDC_API_KEY}
+baseUrl: https://api.ydc-index.io
+creditAlertThreshold: 10
+creditHardLimit: 5
+perQueryLogging: true
+researchEffortMax: deep
+defaultCountry: ID
+defaultLanguage: ID

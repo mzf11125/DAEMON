@@ -1,0 +1,15 @@
+actionType:
+  apiName: CancelCase
+  displayName: Cancel Case
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: true
+    - name: cancelledBy
+      type: string
+      required: true
+    - name: cancelReason
+      type: string
+      required: true
+  requiresApproval: true

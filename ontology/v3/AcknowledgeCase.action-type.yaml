@@ -1,0 +1,15 @@
+actionType:
+  apiName: AcknowledgeCase
+  displayName: Acknowledge Case
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: true
+    - name: acknowledgedBy
+      type: string
+      required: true
+    - name: note
+      type: string
+      required: false
+  requiresApproval: false

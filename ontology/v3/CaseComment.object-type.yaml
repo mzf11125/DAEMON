@@ -1,0 +1,27 @@
+objectType:
+  apiName: CaseComment
+  displayName: Case Comment
+  primaryKey: commentId
+  titleProperty: content
+  properties:
+    - name: commentId
+      type: string
+      required: true
+    - name: caseId
+      type: string
+      required: true
+    - name: content
+      type: string
+      required: true
+    - name: authorId
+      type: string
+      required: true
+    - name: commentType
+      type: string
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

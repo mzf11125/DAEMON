@@ -1,0 +1,18 @@
+actionType:
+  apiName: ResolveCase
+  displayName: Resolve Case
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: true
+    - name: resolvedBy
+      type: string
+      required: true
+    - name: resolutionSummary
+      type: string
+      required: true
+    - name: resolutionType
+      type: string
+      required: false
+  requiresApproval: false

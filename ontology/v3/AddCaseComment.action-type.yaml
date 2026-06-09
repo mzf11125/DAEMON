@@ -1,0 +1,18 @@
+actionType:
+  apiName: AddCaseComment
+  displayName: Add Case Comment
+  targetObjectType: CaseComment
+  parameters:
+    - name: caseId
+      type: string
+      required: true
+    - name: content
+      type: string
+      required: true
+    - name: authorId
+      type: string
+      required: true
+    - name: commentType
+      type: string
+      required: false
+  requiresApproval: false

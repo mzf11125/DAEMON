@@ -1,0 +1,6 @@
+linkType:
+  apiName: CaseHasComment
+  displayName: Case Has Comment
+  fromObjectType: Case
+  toObjectType: CaseComment
+  cardinality: ONE_TO_MANY

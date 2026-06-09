@@ -29,6 +29,8 @@ objectTypes:
   - Signal
   - Case
   - Decision
+  - CaseComment
+  - CaseTag
 linkTypes:
   - OrganizationOperatesSite
   - SiteHostsAsset
@@ -39,6 +41,8 @@ linkTypes:
   - CaseTargetsOrganization
   - PartyAssignedToCase
   - WorkOrderTargetsAsset
+  - CaseHasComment
+  - CaseHasTag
 actionTypes:
   - RecordObservation
   - OpenCase
@@ -49,6 +53,16 @@ actionTypes:
   - CloseCase
   - CreateShipmentDraft
   - ConfirmShipment
+  - AcknowledgeCase
+  - InvestigateCase
+  - EscalateCase
+  - ResolveCase
+  - CancelCase
+  - ReopenCase
+  - AddCaseComment
+  - UpdateCaseMetadata
+stateModels:
+  - CaseLifecycle
 functions:
   - aggregateObservations
   - computeSignalPriority
@@ -64,3 +78,5 @@ backingDatasets:
   Signal: dataset_signals
   Case: dataset_cases
   Decision: dataset_decisions
+  CaseComment: dataset_case_comments
+  CaseTag: dataset_case_tags

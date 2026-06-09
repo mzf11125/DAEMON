@@ -22,6 +22,48 @@ objectType:
     - name: openedAt
       type: timestamp
       required: false
+    - name: closedAt
+      type: timestamp
+      required: false
+    - name: closeReason
+      type: string
+      required: false
+    - name: resolutionSummary
+      type: string
+      required: false
+    - name: escalationReason
+      type: string
+      required: false
+    - name: reopenedAt
+      type: timestamp
+      required: false
+    - name: reopenReason
+      type: string
+      required: false
+    - name: cancelledAt
+      type: timestamp
+      required: false
+    - name: cancelReason
+      type: string
+      required: false
+    - name: acknowledgedAt
+      type: timestamp
+      required: false
+    - name: acknowledgedBy
+      type: string
+      required: false
+    - name: investigatedAt
+      type: timestamp
+      required: false
+    - name: investigatorId
+      type: string
+      required: false
+    - name: resolvedAt
+      type: timestamp
+      required: false
+    - name: resolvedBy
+      type: string
+      required: false
     - name: createdAt
       type: timestamp
       required: false

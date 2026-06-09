@@ -1,0 +1,18 @@
+actionType:
+  apiName: EscalateCase
+  displayName: Escalate Case
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: true
+    - name: escalatedBy
+      type: string
+      required: true
+    - name: escalationReason
+      type: string
+      required: true
+    - name: escalatedTo
+      type: string
+      required: false
+  requiresApproval: true

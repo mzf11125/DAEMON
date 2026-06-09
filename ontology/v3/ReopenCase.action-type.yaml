@@ -1,0 +1,15 @@
+actionType:
+  apiName: ReopenCase
+  displayName: Reopen Case
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: true
+    - name: reopenedBy
+      type: string
+      required: true
+    - name: reopenReason
+      type: string
+      required: true
+  requiresApproval: true

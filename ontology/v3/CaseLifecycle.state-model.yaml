@@ -1,0 +1,55 @@
+stateModel:
+  apiName: CaseLifecycle
+  displayName: Case Lifecycle
+  targetObjectType: Case
+  property: status
+  initial: open
+  states:
+    - open
+    - acknowledged
+    - assigned
+    - investigating
+    - escalated
+    - resolved
+    - closed
+    - cancelled
+  transitions:
+    - from: open
+      on: AcknowledgeCase
+      to: acknowledged
+    - from: open
+      on: AssignCase
+      to: assigned
+    - from: open
+      on: CancelCase
+      to: cancelled
+    - from: acknowledged
+      on: AssignCase
+      to: assigned
+    - from: assigned
+      on: InvestigateCase
+      to: investigating
+    - from: assigned
+      on: EscalateCase
+      to: escalated
+    - from: assigned
+      on: ReassignCase
+      to: assigned
+    - from: investigating
+      on: EscalateCase
+      to: escalated
+    - from: investigating
+      on: ResolveCase
+      to: resolved
+    - from: escalated
+      on: ResolveCase
+      to: resolved
+    - from: resolved
+      on: CloseCase
+      to: closed
+    - from: resolved
+      on: ReopenCase
+      to: open
+    - from: closed
+      on: ReopenCase
+      to: open

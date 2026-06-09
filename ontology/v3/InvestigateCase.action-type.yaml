@@ -1,0 +1,15 @@
+actionType:
+  apiName: InvestigateCase
+  displayName: Investigate Case
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: true
+    - name: investigatorId
+      type: string
+      required: true
+    - name: investigationNote
+      type: string
+      required: false
+  requiresApproval: false

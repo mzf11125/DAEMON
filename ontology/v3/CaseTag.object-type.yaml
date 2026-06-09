@@ -1,0 +1,24 @@
+objectType:
+  apiName: CaseTag
+  displayName: Case Tag
+  primaryKey: tagId
+  titleProperty: tag
+  properties:
+    - name: tagId
+      type: string
+      required: true
+    - name: caseId
+      type: string
+      required: true
+    - name: tag
+      type: string
+      required: true
+    - name: color
+      type: string
+      required: false
+    - name: createdAt
+      type: timestamp
+      required: false
+    - name: updatedAt
+      type: timestamp
+      required: false

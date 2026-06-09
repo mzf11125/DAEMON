@@ -1,0 +1,6 @@
+linkType:
+  apiName: CaseHasTag
+  displayName: Case Has Tag
+  fromObjectType: Case
+  toObjectType: CaseTag
+  cardinality: ONE_TO_MANY

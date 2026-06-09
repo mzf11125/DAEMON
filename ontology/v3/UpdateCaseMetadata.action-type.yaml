@@ -1,0 +1,21 @@
+actionType:
+  apiName: UpdateCaseMetadata
+  displayName: Update Case Metadata
+  targetObjectType: Case
+  parameters:
+    - name: caseId
+      type: string
+      required: true
+    - name: title
+      type: string
+      required: false
+    - name: priority
+      type: string
+      required: false
+    - name: ownerId
+      type: string
+      required: false
+    - name: updatedBy
+      type: string
+      required: true
+  requiresApproval: false

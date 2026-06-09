@@ -1,0 +1,342 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #e8e8ec;
+  background: #12141a;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+}
+
+header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.35rem;
+}
+
+header p {
+  margin: 0 0 1rem;
+  color: #9aa0b4;
+  font-size: 0.9rem;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+nav button {
+  background: #1e2230;
+  border: 1px solid #2e3548;
+  color: inherit;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+nav button.active {
+  background: #2a4a7a;
+  border-color: #3d6aaa;
+}
+
+.panel {
+  background: #1a1e28;
+  border: 1px solid #2a3040;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 1.05rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+button.primary {
+  background: #2563eb;
+  border: none;
+  color: #fff;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  background: #0f1218;
+  border: 1px solid #333a4d;
+  color: inherit;
+  border-radius: 4px;
+  padding: 0.4rem 0.5rem;
+  font: inherit;
+}
+
+textarea {
+  width: 100%;
+  min-height: 120px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+pre {
+  background: #0f1218;
+  border: 1px solid #2a3040;
+  padding: 0.75rem;
+  overflow: auto;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  max-height: 360px;
+}
+
+.error {
+  color: #f87171;
+  font-size: 0.9rem;
+}
+
+/* ── Phase 5: Intelligence Dashboard Styles ─────────────────── */
+/* BigPlan Phase 5.1–5.3 | Intelligence, Cases, STR, Credit panels */
+
+/* Mode tabs (Intelligence Panel) */
+.intel-mode-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.mode-tab {
+  padding: 0.4rem 1rem;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+.mode-tab.active,
+.mode-tab:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+}
+
+/* Intel form */
+.intel-panel h2,
+.case-panel h2,
+.str-panel h2,
+.credit-panel h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.intel-form { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+.form-group label { font-size: 0.8rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; }
+.intel-input {
+  padding: 0.5rem 0.75rem;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  color: #f9fafb;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+.intel-input:focus { outline: none; border-color: #3b82f6; }
+
+/* Signal cards */
+.intel-result { margin-top: 1.25rem; }
+.result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.result-header h3 { font-size: 1.1rem; font-weight: 700; }
+.result-timestamp { font-size: 0.75rem; color: #6b7280; }
+.result-summary { color: #9ca3af; font-size: 0.875rem; margin-bottom: 0.75rem; }
+.risk-badge { padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 0.75rem; }
+.signals-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.signal-card {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+.signal-header { margin-bottom: 0.25rem; }
+.signal-type { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.signal-title { font-weight: 600; margin: 0.25rem 0; }
+.signal-title a { color: #60a5fa; text-decoration: none; }
+.signal-title a:hover { text-decoration: underline; }
+.signal-snippet { font-size: 0.8rem; color: #9ca3af; margin: 0; }
+
+/* Case Management */
+.case-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.case-filters { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.filter-btn {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #374151;
+  border-radius: 20px;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+.filter-btn.active, .filter-btn:hover { border-color: #3b82f6; color: #60a5fa; }
+.case-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+.case-card {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.case-card:hover { border-color: #3b82f6; }
+.case-card.selected { border-color: #3b82f6; background: #1e3a5f22; }
+.case-card-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
+.case-id { font-size: 0.75rem; color: #6b7280; font-family: monospace; }
+.case-priority { font-size: 0.75rem; }
+.case-title { font-weight: 600; margin: 0.25rem 0; }
+.case-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin: 0.25rem 0; }
+.case-status { padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+.case-assigned, .case-str-badge { font-size: 0.75rem; color: #9ca3af; }
+.case-date { font-size: 0.7rem; color: #6b7280; margin: 0.25rem 0 0; }
+.case-detail { background: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 1rem; margin-top: 0.5rem; }
+.case-detail h3 { font-weight: 700; margin-bottom: 0.75rem; }
+.detail-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.875rem; }
+.detail-table td { padding: 0.35rem 0.5rem; border-bottom: 1px solid #374151; }
+.detail-table td:first-child { color: #6b7280; width: 30%; }
+.case-actions { margin-top: 1rem; }
+
+/* STR Review */
+.str-notice {
+  background: #1f2937;
+  border: 1px solid #f59e0b44;
+  border-left: 4px solid #f59e0b;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #fcd34d;
+  margin-bottom: 1rem;
+}
+.str-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; }
+@media (max-width: 768px) { .str-layout { grid-template-columns: 1fr; } }
+.str-list h3 { font-size: 0.9rem; color: #9ca3af; margin-bottom: 0.5rem; }
+.str-card {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 0.75rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.2s;
+}
+.str-card:hover, .str-card.selected { border-color: #3b82f6; }
+.str-card-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
+.str-id { font-size: 0.7rem; font-family: monospace; color: #6b7280; }
+.str-status { font-size: 0.7rem; font-weight: 700; }
+.str-entity { font-weight: 600; font-size: 0.875rem; margin: 0.2rem 0; }
+.str-typology { font-size: 0.75rem; color: #9ca3af; margin: 0.1rem 0; }
+.str-date { font-size: 0.7rem; color: #6b7280; margin: 0; }
+.str-review-pane { display: flex; flex-direction: column; gap: 0.75rem; }
+.str-meta { display: flex; gap: 1rem; font-size: 0.8rem; color: #9ca3af; margin-bottom: 0.25rem; }
+.str-narrative {
+  width: 100%;
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  color: #f9fafb;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  padding: 0.75rem;
+  resize: vertical;
+  line-height: 1.6;
+}
+.str-comment {
+  width: 100%;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  color: #f9fafb;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  resize: vertical;
+}
+.str-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* Credit Monitor */
+.credit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.refresh-btn {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.refresh-btn:hover { border-color: #3b82f6; color: #60a5fa; }
+.credit-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+.credit-alert.danger { background: #ef444422; border: 1px solid #ef4444; color: #fca5a5; }
+.credit-alert.warning { background: #f59e0b22; border: 1px solid #f59e0b; color: #fcd34d; }
+.credit-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
+@media (max-width: 600px) { .credit-summary { grid-template-columns: repeat(2, 1fr); } }
+.credit-stat {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex; flex-direction: column; gap: 0.25rem;
+}
+.stat-label { font-size: 0.7rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-value { font-size: 1.25rem; font-weight: 700; font-family: monospace; }
+.credit-bar-container { margin-bottom: 1.25rem; }
+.credit-bar-track {
+  height: 10px;
+  background: #374151;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+.credit-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease, background 0.3s ease; }
+.credit-bar-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: #6b7280; }
+.query-log h3 { font-size: 0.9rem; margin-bottom: 0.5rem; }
+.log-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.log-table th {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #374151;
+  color: #6b7280;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+.log-table td { padding: 0.35rem 0.5rem; border-bottom: 1px solid #1f2937; }
+.log-table tr:hover td { background: #1f2937; }
+.mode-badge {
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.mode-search { background: #3b82f622; color: #60a5fa; }
+.mode-contents { background: #8b5cf622; color: #a78bfa; }
+.mode-research { background: #ef444422; color: #f87171; }
+.log-query { color: #e5e7eb; max-width: 300px; }
+.log-cost { font-family: monospace; color: #10b981; }
+.log-entity { font-size: 0.75rem; color: #6b7280; font-family: monospace; }
+.log-time { color: #6b7280; white-space: nowrap; }
+.credit-footer { font-size: 0.75rem; color: #374151; margin-top: 0.75rem; text-align: right; }

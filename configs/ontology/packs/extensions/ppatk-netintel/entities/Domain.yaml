@@ -1,0 +1,11 @@
+entityType: Domain
+fields:
+  - { name: fqdn, type: string, required: true }
+  - { name: registrar, type: string }
+  - { name: registrant, type: object }                  # historical WHOIS object
+  - { name: createdAt, type: string }
+  - { name: expiresAt, type: string }
+  - { name: nameservers, type: object }
+  - { name: dgaScore, type: number }
+  - { name: tld, type: string }
+  - { name: punycode, type: string }                    # IDN homograph detection

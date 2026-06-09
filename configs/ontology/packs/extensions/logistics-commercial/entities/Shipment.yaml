@@ -1,0 +1,14 @@
+entityType: Shipment
+fields:
+  - name: displayName
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  - name: orderRef
+    type: string
+    required: false
+  - name: externalRef
+    type: string
+    required: false

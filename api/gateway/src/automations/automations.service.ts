@@ -12,6 +12,8 @@ import type { AutomationRunResult } from "@daemon/products/automations/task-orch
 export interface AutomationsRunBody {
   steps: WorkflowStep[];
   loop?: AutomationLoopInput;
+  /** When true, run ontology write loop before workflow steps (LOOP → WF). */
+  loopFirst?: boolean;
 }
 
 export interface AutomationsEvaluateBody {
@@ -29,7 +31,9 @@ export class AutomationsService {
   private readonly flows = new AutomationsWorkflows();
 
   run(session: DaemonSession, body: AutomationsRunBody): Promise<AutomationRunResult> {
-    return this.flows.run(session, body.steps ?? [], body.loop);
+    return this.flows.run(session, body.steps ?? [], body.loop, {
+      loopFirst: body.loopFirst,
+    });
   }
 
   evaluate(body: AutomationsEvaluateBody): ApprovalDecision {

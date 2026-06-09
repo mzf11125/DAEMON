@@ -1,0 +1,11 @@
+entityType: Wallet
+fields:
+  - { name: address, type: string, required: true }
+  - { name: chain, type: string, required: true }       # btc, eth, sol, tron, bsc, polygon, arb, op, base
+  - { name: walletKind, type: string }                  # eoa, contract, exchange-hot, exchange-cold, mixer, bridge, defi-pool
+  - { name: clusterId, type: string }
+  - { name: firstSeenAt, type: string }
+  - { name: lastSeenAt, type: string }
+  - { name: riskScore, type: number }                   # 0..100
+  - { name: taintScore, type: number }                  # propagated taint from sanctioned/mixer sources
+  - { name: attributionStrength, type: string }         # confirmed, strong, weak, unknown

@@ -1,0 +1,253 @@
+# Semantic propagation rules (Technology OS alignment). Internal reference only.
+version: "1.0"
+rules:
+  - id: case-register
+    trigger: register
+    entityTypes: [Case]
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - materialized-view:case-by-status
+  - id: case-patch
+    trigger: patch
+    entityTypes: [Case]
+    propagate:
+      - read-model-projection
+      - audit-loop
+      - materialized-view:case-by-status
+  - id: party-patch
+    trigger: patch
+    entityTypes: [Party, Organization]
+    propagate:
+      - read-model-projection
+      - materialized-view:party-by-kind
+  - id: link-register
+    trigger: register
+    entityTypes: [Link]
+    propagate:
+      - read-model-projection
+      - graph-edge-sync
+      - neo4j-graph-sync
+  - id: link-patch
+    trigger: patch
+    entityTypes: [Link]
+    propagate:
+      - read-model-projection
+      - graph-edge-sync
+      - neo4j-graph-sync
+  - id: default-register
+    trigger: register
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - semantic-vector-index
+      - lakehouse-bronze
+      - lakehouse-silver
+  - id: default-patch
+    trigger: patch
+    propagate:
+      - read-model-projection
+      - audit-loop
+      - neo4j-graph-sync
+      - semantic-vector-index
+      - lakehouse-bronze
+      - lakehouse-silver
+  - id: logistics-entity-register
+    trigger: register
+    entityTypes:
+      - Account
+      - Contact
+      - Opportunity
+      - Conversation
+      - Lead
+      - Pipeline
+      - Activity
+      - AccountPlan
+      - Signal
+      - Order
+      - Shipment
+      - TTK
+      - Trip
+      - Manifest
+      - Dispatch
+      - RoutingDecision
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+  - id: logistics-entity-patch
+    trigger: patch
+    entityTypes:
+      - Account
+      - Contact
+      - Opportunity
+      - Conversation
+      - Lead
+      - Pipeline
+      - Activity
+      - AccountPlan
+      - Signal
+      - Order
+      - Shipment
+      - TTK
+      - Trip
+      - Manifest
+      - Dispatch
+      - RoutingDecision
+    propagate:
+      - read-model-projection
+      - audit-loop
+      - neo4j-graph-sync
+
+  # ---- PPATK AML core (targets limited to PropagationExecutor wiring) ----
+  - id: ppatk-financial-transaction-register
+    trigger: register
+    entityTypes: [FinancialTransaction]
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - lakehouse-bronze
+      - lakehouse-silver
+  - id: ppatk-str-report-register
+    trigger: register
+    entityTypes: [STRReport, CTRReport, CBCCReport]
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - lakehouse-bronze
+      - audit-loop
+  - id: ppatk-sanctions-list-register
+    trigger: register
+    entityTypes: [SanctionsListEntry]
+    propagate:
+      - read-model-projection
+      - audit-loop
+  - id: ppatk-disclosure-register
+    trigger: register
+    entityTypes: [Disclosure]
+    propagate:
+      - read-model-projection
+      - audit-loop
+  - id: ppatk-aml-entities-register
+    trigger: register
+    entityTypes:
+      - ReportingEntity
+      - FinancialAccount
+      - BeneficialOwner
+      - Typology
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - semantic-vector-index
+      - lakehouse-bronze
+
+  # ---- PPATK crypto/blockchain ----
+  - id: ppatk-wallet-register
+    trigger: register
+    entityTypes: [Wallet]
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+  - id: ppatk-onchain-tx-register
+    trigger: register
+    entityTypes: [OnChainTransaction]
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - lakehouse-bronze
+  - id: ppatk-crypto-entities-register
+    trigger: register
+    entityTypes:
+      - VASP
+      - CrossChainBridge
+      - SmartContract
+      - TokenAsset
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - semantic-vector-index
+
+  # ---- PPATK labels & flags ----
+  - id: ppatk-label-register
+    trigger: register
+    entityTypes: [Label]
+    propagate:
+      - read-model-projection
+      - audit-loop
+  - id: ppatk-label-patch
+    trigger: patch
+    entityTypes: [Label]
+    propagate:
+      - read-model-projection
+      - audit-loop
+  - id: ppatk-flag-register
+    trigger: register
+    entityTypes: [Flag]
+    propagate:
+      - read-model-projection
+      - audit-loop
+  - id: ppatk-label-source-register
+    trigger: register
+    entityTypes: [LabelSource]
+    propagate:
+      - read-model-projection
+      - audit-loop
+
+  # ---- PPATK darkweb ----
+  - id: ppatk-darkweb-entities-register
+    trigger: register
+    entityTypes:
+      - DarkwebMarketplace
+      - DarkwebVendor
+      - DarkwebListing
+      - OnionService
+      - PgpKey
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - semantic-vector-index
+      - lakehouse-bronze
+
+  # ---- PPATK OSINT ----
+  - id: ppatk-osint-entities-register
+    trigger: register
+    entityTypes:
+      - Persona
+      - CorporateRecord
+      - DataLeak
+      - PublicMention
+      - GeoLocation
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - semantic-vector-index
+      - lakehouse-bronze
+  - id: ppatk-persona-patch
+    trigger: patch
+    entityTypes: [Persona]
+    propagate:
+      - read-model-projection
+      - audit-loop
+
+  # ---- PPATK network/threat intel ----
+  - id: ppatk-netintel-entities-register
+    trigger: register
+    entityTypes:
+      - IPAddress
+      - Domain
+      - Certificate
+      - ASN
+      - MalwareSample
+      - ThreatActor
+      - Campaign
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - semantic-vector-index
+      - lakehouse-bronze
+  - id: ppatk-malware-sample-register
+    trigger: register
+    entityTypes: [MalwareSample]
+    propagate:
+      - read-model-projection
+      - neo4j-graph-sync
+      - audit-loop

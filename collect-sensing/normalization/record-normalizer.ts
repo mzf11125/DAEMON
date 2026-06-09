@@ -11,12 +11,16 @@ import { enrichMetadata } from "./metadata-enricher.js";
 export interface EntityPayload {
   ontologyId: string;
   entityId?: string;
+  /** Pack entity type (e.g. Party) when configured on the normalizer. */
+  entityType?: string;
   properties: Record<string, unknown>;
 }
 
 export interface RecordNormalizerConfig {
   /** Target ontology every produced payload is registered under. */
   ontologyId: string;
+  /** Pack entity type applied to every normalized payload. */
+  entityType?: string;
   /** Map of source field name -> canonical (ontology) field name. */
   mapping: Record<string, string>;
   /**
@@ -52,9 +56,16 @@ export class RecordNormalizer {
     });
 
     const entityId = this.resolveEntityId(record, mapped);
-    return entityId === undefined
-      ? { ontologyId: this.config.ontologyId, properties }
-      : { ontologyId: this.config.ontologyId, entityId, properties };
+    const entityType = this.config.entityType?.trim() || undefined;
+    if (entityType) {
+      properties.entityType = entityType;
+    }
+    const base = {
+      ontologyId: this.config.ontologyId,
+      entityType,
+      properties,
+    };
+    return entityId === undefined ? base : { ...base, entityId };
   }
 
   normalizeMany(records: ReadonlyArray<RawRecord>): EntityPayload[] {

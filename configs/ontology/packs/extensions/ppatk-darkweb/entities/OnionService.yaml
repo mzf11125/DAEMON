@@ -1,0 +1,10 @@
+entityType: OnionService
+fields:
+  - { name: onionAddress, type: string, required: true } # v3 .onion
+  - { name: serviceKind, type: string }                  # market, forum, mixer, ransomware-leak-site, c2
+  - { name: title, type: string }
+  - { name: clearnetMirrors, type: object }
+  - { name: firstSeenAt, type: string }
+  - { name: lastSeenAt, type: string }
+  - { name: sshBanner, type: string }
+  - { name: tlsCertSha256, type: string }

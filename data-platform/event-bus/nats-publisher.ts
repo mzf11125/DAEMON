@@ -3,6 +3,18 @@ export type EventEnvelope = {
   topic: string;
   payload: Record<string, unknown>;
   at: string;
+  /**
+   * Optional cryptographic provenance reference.
+   * Consumers can use this to verify the entity's inclusion in the
+   * committed Merkle root without querying PostgreSQL directly.
+   *
+   * Protocol step 2 from 03C_DAEMON_CROSS_STORE_CRYPTOGRAPHIC_PROVENANCE_PROTOCOL_DESIGN.md
+   */
+  provenanceRef?: {
+    epochId: number;
+    epochRoot: string;
+    entityHash: string;
+  };
 };
 
 export class NatsEventPublisher {

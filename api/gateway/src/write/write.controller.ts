@@ -4,12 +4,9 @@ import type { DaemonSession } from "@daemon/platform-types";
 import { Protected } from "../auth/protected.decorator";
 import { PolicyCheck } from "../auth/policy-check.decorator";
 import { Session } from "../auth/session.decorator";
+import { DaemonScope } from "../auth/daemon-scope.decorator";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 
-/**
- * Write surface. The route is {@link Protected}: the global `AuthGuard`
- * requires a resolved {@link DaemonSession} (api key, bearer, or session
- * header) and `PolicyGuard` enforces a `write:entity` allow decision.
- */
 @Controller("v1")
 export class WriteController {
   constructor(private readonly writes: WriteService) {}
@@ -19,6 +16,7 @@ export class WriteController {
   @PolicyCheck("write", "entity")
   write(
     @Session() session: DaemonSession,
+    @DaemonScope() ctx: TenantContextHeaders,
     @Body()
     body: {
       entityId: string;
@@ -27,6 +25,6 @@ export class WriteController {
       idempotencyKey?: string;
     },
   ) {
-    return this.writes.submit(session, body);
+    return this.writes.submit(session, ctx, body);
   }
 }

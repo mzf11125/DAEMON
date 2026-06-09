@@ -17,6 +17,10 @@ import {
 } from "@daemon/observability/metrics/http-metrics.js";
 import { resolveSession } from "./session.js";
 import { openApiDocument } from "./openapi.js";
+import { OntologyGovernance } from "@daemon/ontology/governance/ontology-governance.js";
+import type { SchemaChangeDescriptor } from "@daemon/ontology/governance/governance-policy-loader.js";
+import { diffPackChange } from "@daemon/ontology/packs/pack-diff.js";
+import { ProvenanceHandler } from "./provenance-handler.js";
 
 interface WriteBody {
   entityId: string;
@@ -40,8 +44,9 @@ export function createRestServer(): Server {
   const writes = new CommandGateway();
   const analytics = new AnalyticsWorkflows();
   const automations = new AutomationsWorkflows();
+  const provenance = new ProvenanceHandler();
 
-  return createServer((req, res) => {
+  const server = createServer((req, res) => {
     const started = performance.now();
     const route = normalizeRoutePath(
       new URL(req.url ?? "/", "http://localhost").pathname,
@@ -59,10 +64,17 @@ export function createRestServer(): Server {
         durationMs,
       });
     });
-    handle(req, res, reads, writes, analytics, automations).catch((err) => {
+    handle(req, res, reads, writes, analytics, automations, provenance).catch((err) => {
       sendError(res, err);
     });
   });
+
+  // Graceful shutdown: close provenance Postgres connection
+  server.on("close", () => {
+    provenance.close().catch(() => {});
+  });
+
+  return server;
 }
 
 async function handle(
@@ -72,10 +84,17 @@ async function handle(
   writes: CommandGateway,
   analytics: AnalyticsWorkflows,
   automations: AutomationsWorkflows,
+  provenance: ProvenanceHandler,
 ): Promise<void> {
   const method = req.method ?? "GET";
   const url = new URL(req.url ?? "/", "http://localhost");
   const path = url.pathname;
+
+  // ── Provenance routes ───────────────────────────────────────────────────
+  if (path.startsWith("/v1/provenance")) {
+    const handled = await provenance.handleRequest(method, path, url, req, res);
+    if (handled) return;
+  }
 
   if (method === "GET" && path === "/health") {
     return sendJson(res, 200, { status: "ok" });
@@ -97,7 +116,7 @@ async function handle(
     const ont = ontologyId(url.searchParams.get("ontologyId") ?? defaultOntology());
     const limitRaw = url.searchParams.get("limit");
     const limit = limitRaw ? Number(limitRaw) : undefined;
-    const report = analytics.searchAndReport({
+    const report = await analytics.searchAndReport({
       query: q,
       ontologyId: ont,
       limit: Number.isFinite(limit) ? limit : undefined,
@@ -113,7 +132,7 @@ async function handle(
     const ont = ontologyId(url.searchParams.get("ontologyId") ?? defaultOntology());
     const limitRaw = url.searchParams.get("limit");
     const limit = limitRaw ? Number(limitRaw) : undefined;
-    const entities = analytics.search({
+    const entities = await analytics.search({
       query: q,
       ontologyId: ont,
       limit: Number.isFinite(limit) ? limit : undefined,
@@ -147,6 +166,46 @@ async function handle(
         404,
       );
     }
+  }
+
+  if (method === "POST" && path === "/v1/governance/pack/validate-change") {
+    const body = await readJson<
+      SchemaChangeDescriptor & {
+        proposedPackDir?: string;
+        proposedOverrides?: {
+          entities?: Record<
+            string,
+            { fields: { name: string; type: string; required?: boolean }[] }
+          >;
+        };
+      }
+    >(req);
+    if (!body?.packId) {
+      throw new DaemonError(ErrorCodes.VALIDATION, "packId is required", 400);
+    }
+    const governance = OntologyGovernance.load();
+    let diff;
+    if (body.proposedPackDir || body.proposedOverrides) {
+      diff = diffPackChange({
+        packId: body.packId,
+        proposedPackDir: body.proposedPackDir,
+        proposedOverrides: body.proposedOverrides,
+      });
+    } else if (!body.changeType || body.breaking === undefined) {
+      throw new DaemonError(
+        ErrorCodes.VALIDATION,
+        "proposedPackDir, proposedOverrides, or legacy changeType+breaking required",
+        400,
+      );
+    }
+    const gate = governance.assertSchemaChange({ ...body, diff });
+    return sendJson(res, 200, {
+      allowed: gate.allowed,
+      reason: gate.reason,
+      obligations: gate.obligations,
+      auditAction: gate.auditAction,
+      diff: gate.diff,
+    });
   }
 
   if (method === "POST" && path === "/v1/automations/run") {
@@ -263,6 +322,8 @@ function sendError(res: ServerResponse, err: unknown): void {
   if (err instanceof DaemonError) {
     return sendJson(res, err.status, { code: err.code, message: err.message });
   }
-  const message = err instanceof Error ? err.message : String(err);
-  sendJson(res, 500, { code: ErrorCodes.INTERNAL, message });
+  restLogger.error("unhandled_error", {
+    message: err instanceof Error ? err.message : String(err),
+  });
+  sendJson(res, 500, { code: ErrorCodes.INTERNAL, message: "internal server error" });
 }

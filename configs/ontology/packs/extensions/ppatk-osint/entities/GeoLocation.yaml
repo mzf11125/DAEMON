@@ -1,0 +1,9 @@
+entityType: GeoLocation
+fields:
+  - { name: lat, type: number }
+  - { name: lon, type: number }
+  - { name: country, type: string }
+  - { name: adminLevel1, type: string }                  # provinsi
+  - { name: adminLevel2, type: string }                  # kabupaten/kota
+  - { name: h3Cell, type: string }                       # Uber H3 index for geo joins
+  - { name: precisionMeters, type: number }

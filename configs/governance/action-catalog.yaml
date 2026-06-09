@@ -1,0 +1,161 @@
+actions:
+  - id: read
+    resource: entity
+    effect: allow
+  - id: write
+    resource: entity
+    effect: allow
+    onCommitted:
+      - workflow: entity-write-audit
+        action: workflow.execute
+  - id: ingest
+    resource: ingest-record
+    effect: allow
+  - id: ingest
+    resource: ingest-job
+    effect: allow
+  - id: ingest
+    resource: ingest-source
+    effect: allow
+  - id: query
+    resource: ontology-nl
+    effect: allow
+  - id: query
+    resource: ontology-search
+    effect: allow
+  - id: query
+    resource: analytics
+    effect: allow
+  - id: read
+    resource: lakehouse
+    effect: allow
+  - id: chat
+    resource: customer-gpt
+    effect: allow
+  - id: read
+    resource: agent-session
+    effect: allow
+  - id: read
+    resource: function-invoke
+    effect: allow
+  - id: ingest
+    resource: ingest-schedule
+    effect: allow
+  - id: ingest
+    resource: ingest-webhook
+    effect: allow
+  - id: read
+    resource: data-health
+    effect: allow
+  - id: write
+    resource: lakehouse-export
+    effect: allow
+  - id: read
+    resource: media
+    effect: allow
+  - id: write
+    resource: media
+    effect: allow
+  - id: read
+    resource: ontology
+    effect: allow
+  - id: read
+    resource: ontology-pack
+    effect: allow
+  - id: write
+    resource: pipeline
+    effect: allow
+  - id: write
+    resource: eval
+    effect: allow
+  - id: read
+    resource: eval
+    effect: allow
+
+  # ---- PPATK governed actions (UU 8/2010 Pasal 41 — kerahasiaan; Pasal 44 — diseminasi) ----
+  - id: read
+    resource: str-report
+    effect: allow
+    requires:
+      - role: ppatk.analyst
+      - row-policy: case.assignedTo == subject.id
+  - id: read
+    resource: ctr-report
+    effect: allow
+    requires:
+      - role: ppatk.analyst
+  - id: read
+    resource: cbcc-report
+    effect: allow
+    requires:
+      - role: ppatk.analyst
+  - id: write
+    resource: typology
+    effect: allow
+    requires:
+      - role: ppatk.deputy_director
+  - id: read
+    resource: sanctions-list
+    effect: allow
+  - id: write
+    resource: sanctions-list
+    effect: allow
+    requires:
+      - role: ppatk.compliance_lead
+  - id: disseminate
+    resource: disclosure
+    effect: allow
+    requires:
+      - dual-approval
+      - role: ppatk.deputy_director
+      - chain-of-custody-sign
+    onCommitted:
+      - workflow: disclosure-egmont-export
+        action: workflow.execute
+      - workflow: disclosure-audit
+        action: workflow.execute
+  - id: read
+    resource: wallet
+    effect: allow
+    requires:
+      - role: ppatk.crypto_analyst
+  - id: write
+    resource: label
+    effect: allow
+    requires:
+      - role: ppatk.analyst
+    onCommitted:
+      - workflow: taint-recompute
+        action: workflow.execute
+  - id: write
+    resource: flag
+    effect: allow
+    requires:
+      - role: ppatk.analyst
+  - id: read
+    resource: darkweb-intel
+    effect: allow
+    requires:
+      - role: ppatk.intel_analyst
+  - id: write
+    resource: darkweb-intel
+    effect: allow
+    requires:
+      - role: ppatk.intel_analyst
+      - chain-of-custody-sign
+  - id: read
+    resource: osint
+    effect: allow
+    requires:
+      - role: ppatk.analyst
+  - id: read
+    resource: netintel
+    effect: allow
+    requires:
+      - role: ppatk.intel_analyst
+  - id: write
+    resource: malware-sample
+    effect: allow
+    requires:
+      - role: ppatk.intel_analyst
+      - quarantine-scan

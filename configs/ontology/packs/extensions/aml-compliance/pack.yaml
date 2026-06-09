@@ -1,0 +1,5 @@
+ontologyId: foundation
+version: 0.1.0
+description: AML compliance extension — adds alert primitives on foundation.
+entityTypes:
+  - Alert

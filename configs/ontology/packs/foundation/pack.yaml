@@ -1,0 +1,14 @@
+ontologyId: foundation
+version: "1.1.0"
+description: Sector-agnostic foundation entities for institutional and enterprise deployments.
+entityTypes:
+  - Party
+  - Organization
+  - Case
+  - Event
+  - Link
+  - Document
+relationTypes:
+  - Link
+junctionTypes:
+  - CaseEvent

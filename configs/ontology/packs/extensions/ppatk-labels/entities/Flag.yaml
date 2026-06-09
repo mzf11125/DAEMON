@@ -1,0 +1,8 @@
+entityType: Flag
+fields:
+  - { name: flagKind, type: string, required: true }     # watch, freeze-request, monitor, escalate, cleared
+  - { name: rationale, type: string }
+  - { name: setBy, type: string }
+  - { name: setAt, type: string }
+  - { name: expiresAt, type: string }
+  - { name: status, type: string }                       # active, expired, revoked

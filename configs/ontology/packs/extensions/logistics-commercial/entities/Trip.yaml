@@ -1,0 +1,11 @@
+entityType: Trip
+fields:
+  - name: tripCode
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  - name: plannedStartAt
+    type: string
+    required: false

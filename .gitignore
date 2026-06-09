@@ -10,6 +10,7 @@ dist/
 *.log
 .DS_Store
 coverage/
+<<<<<<< HEAD
 .venv/
 pipelines/market-intel/.venv/
 bin/
@@ -28,3 +29,17 @@ packages/ontology-language/dist/
 **/*.tsbuildinfo
 .pnpm-store/
 .local/
+=======
+.terraform/
+
+# Private client governance sources and deliverables (NDA)
+docs/private/sources/
+docs/private/extracted/
+docs/private/client-definition/
+
+# Local CodeQL analysis artifacts (CI uses .github/codeql/)
+static_analysis_codeql_1/
+
+# Local docs
+local_docs/
+>>>>>>> upstream/main

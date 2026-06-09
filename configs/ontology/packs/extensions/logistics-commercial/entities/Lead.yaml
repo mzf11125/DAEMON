@@ -1,0 +1,11 @@
+entityType: Lead
+fields:
+  - name: displayName
+    type: string
+    required: true
+  - name: status
+    type: string
+    required: false
+  - name: accountRef
+    type: string
+    required: false

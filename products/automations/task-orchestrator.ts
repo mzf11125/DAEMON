@@ -22,8 +22,14 @@ export class TaskOrchestrator {
   async run(
     steps: WorkflowStep[],
     loopRequest?: LoopRequest,
+    options?: { loopFirst?: boolean },
   ): Promise<AutomationRunResult> {
     this.runtime.assertAllowed("write", "entity");
+    if (options?.loopFirst && loopRequest) {
+      const loop = this.runtime.createLoop().run(loopRequest);
+      const workflowResults = await this.workflows.run(steps);
+      return { workflowResults, loop };
+    }
     const workflowResults = await this.workflows.run(steps);
     if (!loopRequest) {
       return { workflowResults };

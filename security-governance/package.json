@@ -5,7 +5,11 @@
   "type": "module",
   "exports": {
     "./policy-engine.js": "./dist/policy-engine.js",
-    "./guardrails/prompt-guard.js": "./dist/guardrails/prompt-guard.js"
+    "./policy/rbac.js": "./dist/policy/rbac.js",
+    "./policy/abac.js": "./dist/policy/abac.js",
+    "./identity/authz.js": "./dist/identity/authz.js",
+    "./guardrails/prompt-guard.js": "./dist/guardrails/prompt-guard.js",
+    "./audit/audit-port-adapter.js": "./dist/audit/audit-port-adapter.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -13,6 +17,7 @@
     "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@daemon/context-ports": "workspace:*",
     "@daemon/data-platform": "workspace:*",
     "@daemon/platform-types": "workspace:*",
     "yaml": "^2.6.1"

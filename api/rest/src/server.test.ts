@@ -38,8 +38,43 @@ test("openapi document is served", async () => {
   await withServer(async (base) => {
     const res = await fetch(`${base}/openapi.json`);
     assert.equal(res.status, 200);
-    const doc = (await res.json()) as { openapi: string };
+    const doc = (await res.json()) as {
+      openapi: string;
+      components?: {
+        parameters?: Record<string, { name?: string }>;
+      };
+      paths?: Record<
+        string,
+        { post?: { parameters?: Array<{ $ref?: string }> }; get?: { parameters?: unknown[] } }
+      >;
+    };
     assert.equal(doc.openapi, "3.1.0");
+    assert.ok(doc.components?.parameters?.DaemonTenantHeader);
+    assert.ok(doc.components?.parameters?.DaemonDomainHeader);
+    assert.equal(doc.components?.parameters?.DaemonTenantHeader?.name, "X-Daemon-Tenant");
+    const writeParams = doc.paths?.["/v1/write"]?.post?.parameters ?? [];
+    const refs = writeParams
+      .filter((p): p is { $ref: string } => typeof (p as { $ref?: string }).$ref === "string")
+      .map((p) => p.$ref);
+    assert.ok(refs.includes("#/components/parameters/DaemonTenantHeader"));
+    assert.ok(refs.includes("#/components/parameters/DaemonDomainHeader"));
+
+    const requiredPaths = [
+      "/v1/read/entities",
+      "/v1/read/entities/{entityId}",
+      "/v1/search",
+      "/v1/lakehouse/summary",
+      "/v1/lakehouse/events",
+      "/v1/ingest/jobs",
+      "/v1/ingest/records",
+      "/v1/query/ask",
+      "/v1/products/customer-gpt/chat",
+      "/v1/policy/check",
+      "/v1/automations/run",
+    ];
+    for (const p of requiredPaths) {
+      assert.ok(doc.paths?.[p], `missing OpenAPI path ${p}`);
+    }
   });
 });
 
@@ -129,7 +164,10 @@ test("automations run evaluate and approve", async () => {
   await withServer(async (base) => {
     const runRes = await fetch(`${base}/v1/automations/run`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": "daemon-dev-key" },
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": process.env.DAEMON_API_KEY ?? "rest-unit-test-key",
+      },
       body: JSON.stringify({
         steps: [{ id: "s1", action: "notify" }],
         loop: {
@@ -155,7 +193,10 @@ test("automations run evaluate and approve", async () => {
 
     const approveRes = await fetch(`${base}/v1/automations/approve`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": "daemon-dev-key" },
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": process.env.DAEMON_API_KEY ?? "rest-unit-test-key",
+      },
       body: JSON.stringify({
         loop: {
           ontologyId: ont,

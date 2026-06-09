@@ -15,6 +15,9 @@
     "test": "node --test --import tsx \"**/*.test.ts\"",
     "lint": "tsc -p tsconfig.json --noEmit"
   },
+  "dependencies": {
+    "@daemon/platform-types": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.7.2"
   }

@@ -15,3 +15,12 @@ services:
 observability:
   logLevel: info
   metrics: true
+# Map readLoop flags to gateway process env in deploy (K8s/compose):
+#   DAEMON_READ_FROM_PROJECTION=1  — serve reads from EntityReadModelProjection when present
+#   DAEMON_READ_PARITY_CHECK=1       — compare projection vs registry each read; expose /metrics
+readLoop:
+  readFromProjection: true
+  parityCheck: true
+  env:
+    DAEMON_READ_FROM_PROJECTION: "1"
+    DAEMON_READ_PARITY_CHECK: "1"

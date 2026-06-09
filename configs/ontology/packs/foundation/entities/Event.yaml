@@ -1,0 +1,11 @@
+entityType: Event
+fields:
+  - name: eventType
+    type: string
+    required: true
+  - name: occurredAt
+    type: string
+    required: false
+  - name: payload
+    type: object
+    required: false

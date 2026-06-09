@@ -1,0 +1,22 @@
+{
+  "name": "@daemon/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./logic-engine/risk-scoring/composite-risk-engine.js": "./dist/logic-engine/risk-scoring/composite-risk-engine.js",
+    "./logic-engine/entity-resolution/entity-resolver.js": "./dist/logic-engine/entity-resolution/entity-resolver.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test --import tsx \"**/*.test.ts\"",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@daemon/platform-types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

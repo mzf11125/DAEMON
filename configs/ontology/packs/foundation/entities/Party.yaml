@@ -1,0 +1,11 @@
+entityType: Party
+fields:
+  - name: displayName
+    type: string
+    required: true
+  - name: partyKind
+    type: string
+    required: false
+  - name: identifiers
+    type: object
+    required: false

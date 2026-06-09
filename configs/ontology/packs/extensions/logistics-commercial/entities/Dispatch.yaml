@@ -1,0 +1,11 @@
+entityType: Dispatch
+fields:
+  - name: status
+    type: string
+    required: true
+  - name: manifestRef
+    type: string
+    required: false
+  - name: assignedAt
+    type: string
+    required: false

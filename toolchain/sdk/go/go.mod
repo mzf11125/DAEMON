@@ -1,3 +1,3 @@
 module github.com/daemon-platform/toolchain/sdk/go
 
-go 1.22
+go 1.26.3

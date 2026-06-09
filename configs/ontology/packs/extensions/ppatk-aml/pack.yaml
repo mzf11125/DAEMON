@@ -1,0 +1,20 @@
+ontologyId: foundation
+version: 0.1.0
+description: PPATK/INTRAC AML/CFT core extension on foundation (UU 8/2010, UU 9/2013, PerKa PPATK).
+entityTypes:
+  - ReportingEntity
+  - FinancialAccount
+  - FinancialTransaction
+  - STRReport
+  - CTRReport
+  - CBCCReport
+  - BeneficialOwner
+  - SanctionsListEntry
+  - Typology
+  - Disclosure
+junctionTypes:
+  - AccountHolder
+  - TransactionParty
+  - ReportFiledBy
+  - SanctionsHit
+  - DisclosureTarget

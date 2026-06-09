@@ -31,6 +31,17 @@ export class PostgresClient {
     return this.pool.query<T>(text, params as unknown[]);
   }
 
+  async withClient<T>(
+    fn: (client: pg.PoolClient) => Promise<T>,
+  ): Promise<T> {
+    const client = await this.pool.connect();
+    try {
+      return await fn(client);
+    } finally {
+      client.release();
+    }
+  }
+
   async close(): Promise<void> {
     await this.pool.end();
   }

@@ -3,18 +3,152 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "typesVersions": {
+    "*": {
+      "operational-store": ["./dist/operational-store/postgres-client.d.ts"],
+      "cache": ["./dist/cache/redis-client.d.ts"],
+      "graph-store": ["./dist/graph-store/postgres-graph-store.d.ts"],
+      "graph-store/neo4j-graph-store": [
+        "./dist/graph-store/neo4j-graph-store.d.ts"
+      ],
+      "operational-store/entity-journal": [
+        "./dist/operational-store/entity-journal.d.ts"
+      ],
+      "operational-store/tenant-session": [
+        "./dist/operational-store/tenant-session.d.ts"
+      ],
+      "event-bus": ["./dist/event-bus/nats-publisher.d.ts"],
+      "migrations": ["./dist/migrations/run-migrations.d.ts"],
+      "lakehouse/bronze-writer": ["./dist/lakehouse/bronze-writer.d.ts"],
+      "lakehouse/silver-writer": ["./dist/lakehouse/silver-writer.d.ts"],
+      "lakehouse/lakehouse-reader": ["./dist/lakehouse/lakehouse-reader.d.ts"],
+      "lakehouse/bronze-reader": ["./dist/lakehouse/bronze-reader.d.ts"],
+      "lakehouse/export/lakehouse-exporter": [
+        "./dist/lakehouse/export/lakehouse-exporter.d.ts"
+      ],
+      "product-sessions/gpt-session-store": [
+        "./dist/product-sessions/gpt-session-store.d.ts"
+      ],
+      "provenance": ["./dist/provenance/index.d.ts"],
+      "provenance/epoch-manager": ["./dist/provenance/epoch-manager.d.ts"],
+      "provenance/epoch-scheduler": ["./dist/provenance/epoch-scheduler.d.ts"],
+      "provenance/verifier": ["./dist/provenance/provenance-verifier.d.ts"],
+      "provenance/smt": ["./dist/provenance/smt.d.ts"],
+      "mdm/mdm-store": ["./dist/mdm/mdm-store.d.ts"],
+      "mdm/location-matcher": ["./dist/mdm/location-matcher.d.ts"],
+      "mdm/pilot-locations": ["./dist/mdm/pilot-locations.d.ts"]
+    }
+  },
   "exports": {
-    "./operational-store": "./dist/operational-store/postgres-client.js",
+    "./operational-store": {
+      "types": "./dist/operational-store/postgres-client.d.ts",
+      "import": "./dist/operational-store/postgres-client.js",
+      "default": "./dist/operational-store/postgres-client.js"
+    },
+    "./operational-store/entity-journal": {
+      "types": "./dist/operational-store/entity-journal.d.ts",
+      "import": "./dist/operational-store/entity-journal.js",
+      "default": "./dist/operational-store/entity-journal.js"
+    },
+    "./operational-store/tenant-session": {
+      "types": "./dist/operational-store/tenant-session.d.ts",
+      "import": "./dist/operational-store/tenant-session.js",
+      "default": "./dist/operational-store/tenant-session.js"
+    },
     "./cache": "./dist/cache/redis-client.js",
     "./graph-store": "./dist/graph-store/postgres-graph-store.js",
-    "./event-bus": "./dist/event-bus/nats-publisher.js"
+    "./graph-store/neo4j-graph-store": {
+      "types": "./dist/graph-store/neo4j-graph-store.d.ts",
+      "import": "./dist/graph-store/neo4j-graph-store.js",
+      "default": "./dist/graph-store/neo4j-graph-store.js"
+    },
+    "./event-bus": "./dist/event-bus/nats-publisher.js",
+    "./migrations": {
+      "types": "./dist/migrations/run-migrations.d.ts",
+      "import": "./dist/migrations/run-migrations.js",
+      "default": "./dist/migrations/run-migrations.js"
+    },
+    "./lakehouse/bronze-writer": {
+      "types": "./dist/lakehouse/bronze-writer.d.ts",
+      "import": "./dist/lakehouse/bronze-writer.js",
+      "default": "./dist/lakehouse/bronze-writer.js"
+    },
+    "./lakehouse/silver-writer": {
+      "types": "./dist/lakehouse/silver-writer.d.ts",
+      "import": "./dist/lakehouse/silver-writer.js",
+      "default": "./dist/lakehouse/silver-writer.js"
+    },
+    "./lakehouse/lakehouse-reader": {
+      "types": "./dist/lakehouse/lakehouse-reader.d.ts",
+      "import": "./dist/lakehouse/lakehouse-reader.js",
+      "default": "./dist/lakehouse/lakehouse-reader.js"
+    },
+    "./lakehouse/bronze-reader": {
+      "types": "./dist/lakehouse/bronze-reader.d.ts",
+      "import": "./dist/lakehouse/bronze-reader.js",
+      "default": "./dist/lakehouse/bronze-reader.js"
+    },
+    "./lakehouse/export/lakehouse-exporter": {
+      "types": "./dist/lakehouse/export/lakehouse-exporter.d.ts",
+      "import": "./dist/lakehouse/export/lakehouse-exporter.js",
+      "default": "./dist/lakehouse/export/lakehouse-exporter.js"
+    },
+    "./product-sessions/gpt-session-store": {
+      "types": "./dist/product-sessions/gpt-session-store.d.ts",
+      "import": "./dist/product-sessions/gpt-session-store.js",
+      "default": "./dist/product-sessions/gpt-session-store.js"
+    },
+    "./provenance": {
+      "types": "./dist/provenance/index.d.ts",
+      "import": "./dist/provenance/index.js",
+      "default": "./dist/provenance/index.js"
+    },
+    "./provenance/epoch-manager": {
+      "types": "./dist/provenance/epoch-manager.d.ts",
+      "import": "./dist/provenance/epoch-manager.js",
+      "default": "./dist/provenance/epoch-manager.js"
+    },
+    "./provenance/epoch-scheduler": {
+      "types": "./dist/provenance/epoch-scheduler.d.ts",
+      "import": "./dist/provenance/epoch-scheduler.js",
+      "default": "./dist/provenance/epoch-scheduler.js"
+    },
+    "./provenance/verifier": {
+      "types": "./dist/provenance/provenance-verifier.d.ts",
+      "import": "./dist/provenance/provenance-verifier.js",
+      "default": "./dist/provenance/provenance-verifier.js"
+    },
+    "./provenance/smt": {
+      "types": "./dist/provenance/smt.d.ts",
+      "import": "./dist/provenance/smt.js",
+      "default": "./dist/provenance/smt.js"
+    },
+    "./mdm/mdm-store": {
+      "types": "./dist/mdm/mdm-store.d.ts",
+      "import": "./dist/mdm/mdm-store.js",
+      "default": "./dist/mdm/mdm-store.js"
+    },
+    "./mdm/location-matcher": {
+      "types": "./dist/mdm/location-matcher.d.ts",
+      "import": "./dist/mdm/location-matcher.js",
+      "default": "./dist/mdm/location-matcher.js"
+    },
+    "./mdm/pilot-locations": {
+      "types": "./dist/mdm/pilot-locations.d.ts",
+      "import": "./dist/mdm/pilot-locations.js",
+      "default": "./dist/mdm/pilot-locations.js"
+    }
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --test --import tsx operational-store/postgres-client.test.ts cache/redis-client.test.ts graph-store/postgres-graph-store.test.ts event-bus/nats-publisher.test.ts",
-    "lint": "tsc -p tsconfig.json --noEmit"
+    "test": "node --test --import tsx operational-store/postgres-client.test.ts cache/redis-client.test.ts graph-store/postgres-graph-store.test.ts event-bus/nats-publisher.test.ts provenance/smt.test.ts mdm/location-matcher.test.ts",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "db:migrate": "node --import tsx migrations/run-migrations.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.750.0",
+    "@daemon/context-ports": "workspace:*",
+    "neo4j-driver": "^5.28.1",
     "pg": "^8.13.1",
     "redis": "^4.7.0"
   },

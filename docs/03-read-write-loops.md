@@ -27,7 +27,8 @@ sequenceDiagram
 
 ## Components
 
-- **ReadRouter** (`read-write-loops/reads/`): resolves entities from the ontology registry with optional cache.
+- **ReadRouter** (`read-write-loops/reads/read-router.ts`): resolves entities from the ontology registry. When `DAEMON_READ_FROM_PROJECTION=1`, returns the **EntityReadModelProjection** row when present; otherwise falls back to the registry (same NOT_FOUND semantics).
+- **Read parity** (`read-write-loops/reads/read-parity.ts`): optional dual-read comparison when `DAEMON_READ_PARITY_CHECK=1`. Each read loads registry and projection snapshots, compares version, entity type, and stable JSON properties, increments in-process counters, and emits structured `read_parity_mismatch` logs on drift. Prometheus text is appended on gateway `GET /metrics` (`daemon_read_parity_*`).
 - **CommandGateway** (`read-write-loops/writes/command-gateway.ts`): entry point for mutations.
 - **MutationValidator** (`read-write-loops/writes/mutation-validator.ts`): validates payloads against ontology models.
 - **ConflictResolver**: applies `reject`, `last-write-wins`, or `merge` strategies under optimistic concurrency.

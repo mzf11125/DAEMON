@@ -1,0 +1,4 @@
+junctionType: ShipmentLeg
+endpoints:
+  - Shipment
+  - Manifest

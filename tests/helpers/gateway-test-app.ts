@@ -2,6 +2,10 @@ import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import type { INestApplication } from "@nestjs/common";
 import { AppModule } from "../../api/gateway/dist/app.module.js";
+import { DaemonExceptionFilter } from "../../api/gateway/dist/daemon-exception.filter.js";
+import { resetDaemonRuntimeForTests } from "../../api/gateway/src/platform/daemon-runtime.js";
+import { resolvePostgresUrlForTests } from "./postgres-integration.js";
+import { primaryTestApiKey } from "./test-api-keys.js";
 
 export type GatewayTestApp = {
   app: INestApplication;
@@ -14,8 +18,27 @@ export async function createGatewayTestApp(
   env: NodeJS.ProcessEnv = process.env,
 ): Promise<GatewayTestApp> {
   const prev = { ...process.env };
-  Object.assign(process.env, env);
+  const testEnv = { ...env };
+  // Use durable Postgres only when the URL is configured and accepting connections.
+  const requested = testEnv.DAEMON_POSTGRES_URL;
+  if (requested) {
+    const ready = await resolvePostgresUrlForTests(String(requested));
+    if (ready) {
+      testEnv.DAEMON_POSTGRES_URL = ready;
+    } else {
+      delete testEnv.DAEMON_POSTGRES_URL;
+    }
+  }
+  resetDaemonRuntimeForTests();
+  if (!testEnv.DAEMON_API_KEY?.trim()) {
+    testEnv.DAEMON_API_KEY = primaryTestApiKey(testEnv);
+  }
+  Object.assign(process.env, testEnv);
+  if (!testEnv.DAEMON_POSTGRES_URL) {
+    delete process.env.DAEMON_POSTGRES_URL;
+  }
   const app = await NestFactory.create(AppModule, { logger: false });
+  app.useGlobalFilters(new DaemonExceptionFilter());
   await app.listen(0);
   const server = app.getHttpServer();
   const addr = server.address();
@@ -31,4 +54,19 @@ export async function createGatewayTestApp(
   };
 }
 
-export const DEV_API_KEY = "daemon-dev-key";
+export function devApiKey(env: NodeJS.ProcessEnv = process.env): string {
+  return primaryTestApiKey(env);
+}
+
+/** Tenant/domain headers expected by {@link TenantContextService}. */
+export function daemonTenantHeaders(
+  tenantId = "inst-alpha",
+  domainId = "foundation",
+  extra: Record<string, string> = {},
+): Record<string, string> {
+  return {
+    "x-daemon-tenant": tenantId,
+    "x-daemon-domain": domainId,
+    ...extra,
+  };
+}

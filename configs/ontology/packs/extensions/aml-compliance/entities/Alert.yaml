@@ -1,0 +1,11 @@
+entityType: Alert
+fields:
+  - name: alertKind
+    type: string
+    required: true
+  - name: severity
+    type: string
+    required: false
+  - name: narrative
+    type: string
+    required: false

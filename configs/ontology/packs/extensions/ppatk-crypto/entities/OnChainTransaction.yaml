@@ -1,0 +1,13 @@
+entityType: OnChainTransaction
+fields:
+  - { name: txHash, type: string, required: true }
+  - { name: chain, type: string, required: true }
+  - { name: blockNumber, type: number }
+  - { name: blockTime, type: string }
+  - { name: valueNative, type: number }
+  - { name: valueUsd, type: number }
+  - { name: feeNative, type: number }
+  - { name: tokenContract, type: string }
+  - { name: method, type: string }                       # transfer, swap, bridge, mixer-deposit, mixer-withdraw, mint, burn
+  - { name: traceDepth, type: number }                   # hops from tainted source
+  - { name: rawTrace, type: object }

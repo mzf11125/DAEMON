@@ -18,7 +18,10 @@ function mockHost() {
   };
   return {
     host: {
-      switchToHttp: () => ({ getResponse: () => res }),
+      switchToHttp: () => ({
+        getResponse: () => res,
+        getRequest: () => ({ headers: {} }),
+      }),
     } as Parameters<DaemonExceptionFilter["catch"]>[1],
     body,
   };

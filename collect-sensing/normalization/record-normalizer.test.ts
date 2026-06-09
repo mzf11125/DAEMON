@@ -68,6 +68,23 @@ describe("RecordNormalizer", () => {
     );
   });
 
+  it("injects entityType on payload and properties", () => {
+    const normalizer = new RecordNormalizer({
+      ontologyId: "foundation",
+      entityType: "Party",
+      mapping: { partyId: "partyId", name: "displayName" },
+      idField: "partyId",
+    });
+    const payload = normalizer.normalize({
+      sourceId: "demo",
+      recordId: "p-1",
+      payload: { partyId: "p-1", name: "Ada" },
+    });
+    assert.equal(payload.entityType, "Party");
+    assert.equal(payload.properties.entityType, "Party");
+    assert.equal(payload.properties.displayName, "Ada");
+  });
+
   it("rejects empty ontologyId and empty mapping", () => {
     assert.throws(() => new RecordNormalizer({ ontologyId: " ", mapping: { a: "b" } }));
     assert.throws(() => new RecordNormalizer({ ontologyId: "x", mapping: {} }));

@@ -1,0 +1,454 @@
+import { readFileSync } from "node:fs";
+import { parse as parseYaml } from "yaml";
+import { sourcesConfigPath, sourcesConfigPaths } from "../paths.js";
+
+export type ConnectorType =
+  | "file"
+  | "http-pull"
+  | "ydc-intelligence"
+  | "postgres-read"
+  | "event-subscriber"
+  | "s3"
+  | "kafka"
+  | "jdbc-cdc";
+
+export interface FileConnectorConfig {
+  readonly type: "file";
+  readonly format: "jsonl" | "csv";
+  readonly path: string;
+}
+
+export interface HttpPullConnectorConfig {
+  readonly type: "http-pull";
+  readonly url: string;
+  readonly method?: "GET" | "POST";
+  readonly headers?: Record<string, string>;
+  readonly body?: unknown;
+  readonly recordIdKey?: string;
+}
+
+export interface YdcIntelligenceConnectorConfig {
+  readonly type: "ydc-intelligence";
+  readonly mode: "search" | "contents" | "research";
+  readonly query?: string;
+  readonly urls?: readonly string[];
+  readonly researchEffort?: "lite" | "standard" | "deep" | "exhaustive";
+  readonly livecrawl?: "web" | "news" | "all";
+  readonly country?: string;
+  readonly language?: string;
+  readonly safesearch?: "off" | "moderate" | "strict";
+  readonly creditsAlert?: number;
+  readonly creditsHardLimit?: number;
+  readonly initialCreditsUsd?: number;
+  readonly baseUrl?: string;
+}
+
+export interface PostgresReadConnectorConfig {
+  readonly type: "postgres-read";
+  readonly sql: string;
+  readonly params?: ReadonlyArray<unknown>;
+  readonly recordIdColumn?: string;
+}
+
+export interface EventSubscriberConnectorConfig {
+  readonly type: "event-subscriber";
+  readonly subject: string;
+  readonly batchSize?: number;
+  readonly recordIdKey?: string;
+  readonly pullTimeoutMs?: number;
+}
+
+export interface S3ConnectorConfig {
+  readonly type: "s3";
+  readonly bucket: string;
+  readonly prefix?: string;
+  readonly region?: string;
+  readonly format: "jsonl" | "csv";
+  readonly keys?: readonly string[];
+  readonly recordIdKey?: string;
+  readonly endpoint?: string;
+}
+
+export interface KafkaConnectorConfig {
+  readonly type: "kafka";
+  readonly brokers: readonly string[];
+  readonly topic: string;
+  readonly groupId?: string;
+  readonly maxMessages?: number;
+  readonly recordIdKey?: string;
+}
+
+export interface JdbcCdcConnectorConfig {
+  readonly type: "jdbc-cdc";
+  readonly table: string;
+  readonly cursorColumn: string;
+  readonly lastCursor?: string;
+  readonly recordIdColumn?: string;
+}
+
+export type SourceConnectorConfig =
+  | FileConnectorConfig
+  | HttpPullConnectorConfig
+  | YdcIntelligenceConnectorConfig
+  | PostgresReadConnectorConfig
+  | EventSubscriberConnectorConfig
+  | S3ConnectorConfig
+  | KafkaConnectorConfig
+  | JdbcCdcConnectorConfig;
+
+export interface SourceNormalizeConfig {
+  readonly ontologyId: string;
+  readonly entityType?: string;
+  readonly mapping: Record<string, string>;
+  readonly idField?: string;
+  readonly meta?: Record<string, unknown>;
+}
+
+export interface IngestSourceScope {
+  readonly tenantId: string;
+  readonly domainId?: string;
+}
+
+export interface IngestSourceDefinition {
+  readonly id: string;
+  readonly enabled: boolean;
+  readonly scope?: IngestSourceScope;
+  readonly connector: SourceConnectorConfig;
+  readonly normalize: SourceNormalizeConfig;
+}
+
+interface SourcesYaml {
+  sources?: unknown;
+}
+
+function assertObject(value: unknown, label: string): Record<string, unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error(`${label} must be an object`);
+  }
+  return value as Record<string, unknown>;
+}
+
+function parseConnector(raw: unknown, sourceId: string): SourceConnectorConfig {
+  const obj = assertObject(raw, `source ${sourceId} connector`);
+  const type = obj.type;
+  if (type === "file") {
+    const format = obj.format;
+    if (format !== "jsonl" && format !== "csv") {
+      throw new Error(`source ${sourceId}: file connector requires format jsonl|csv`);
+    }
+    const path = obj.path;
+    if (typeof path !== "string" || !path.trim()) {
+      throw new Error(`source ${sourceId}: file connector requires path`);
+    }
+    return { type: "file", format, path: path.trim() };
+  }
+  if (type === "http-pull") {
+    const url = obj.url;
+    if (typeof url !== "string" || !url.trim()) {
+      throw new Error(`source ${sourceId}: http-pull requires url`);
+    }
+    const method = obj.method;
+    if (method !== undefined && method !== "GET" && method !== "POST") {
+      throw new Error(`source ${sourceId}: http-pull method must be GET or POST`);
+    }
+    return {
+      type: "http-pull",
+      url: url.trim(),
+      method: method ?? "GET",
+      headers:
+        typeof obj.headers === "object" && obj.headers !== null && !Array.isArray(obj.headers)
+          ? (obj.headers as Record<string, string>)
+          : undefined,
+      body: obj.body,
+      recordIdKey:
+        typeof obj.recordIdKey === "string" ? obj.recordIdKey : undefined,
+    };
+  }
+  if (type === "ydc-intelligence") {
+    const mode = obj.mode;
+    if (mode !== "search" && mode !== "contents" && mode !== "research") {
+      throw new Error(`source ${sourceId}: ydc-intelligence mode must be search|contents|research`);
+    }
+    const researchEffort = obj.researchEffort;
+    if (
+      researchEffort !== undefined &&
+      researchEffort !== "lite" &&
+      researchEffort !== "standard" &&
+      researchEffort !== "deep" &&
+      researchEffort !== "exhaustive"
+    ) {
+      throw new Error(`source ${sourceId}: invalid ydc-intelligence researchEffort`);
+    }
+    return {
+      type: "ydc-intelligence",
+      mode,
+      query: typeof obj.query === "string" ? obj.query : undefined,
+      urls: Array.isArray(obj.urls)
+        ? obj.urls.filter((u): u is string => typeof u === "string")
+        : undefined,
+      researchEffort,
+      livecrawl:
+        obj.livecrawl === "web" || obj.livecrawl === "news" || obj.livecrawl === "all"
+          ? obj.livecrawl
+          : undefined,
+      country: typeof obj.country === "string" ? obj.country : undefined,
+      language: typeof obj.language === "string" ? obj.language : undefined,
+      safesearch:
+        obj.safesearch === "off" || obj.safesearch === "moderate" || obj.safesearch === "strict"
+          ? obj.safesearch
+          : undefined,
+      creditsAlert: typeof obj.creditsAlert === "number" ? obj.creditsAlert : undefined,
+      creditsHardLimit:
+        typeof obj.creditsHardLimit === "number" ? obj.creditsHardLimit : undefined,
+      initialCreditsUsd:
+        typeof obj.initialCreditsUsd === "number" ? obj.initialCreditsUsd : undefined,
+      baseUrl: typeof obj.baseUrl === "string" ? obj.baseUrl : undefined,
+    };
+  }
+  if (type === "postgres-read") {
+    const sql = obj.sql;
+    if (typeof sql !== "string" || !sql.trim()) {
+      throw new Error(`source ${sourceId}: postgres-read requires sql`);
+    }
+    return {
+      type: "postgres-read",
+      sql: sql.trim(),
+      params: Array.isArray(obj.params) ? obj.params : undefined,
+      recordIdColumn:
+        typeof obj.recordIdColumn === "string" ? obj.recordIdColumn : undefined,
+    };
+  }
+  if (type === "event-subscriber") {
+    const subject = obj.subject;
+    if (typeof subject !== "string" || !subject.trim()) {
+      throw new Error(`source ${sourceId}: event-subscriber requires subject`);
+    }
+    return {
+      type: "event-subscriber",
+      subject: subject.trim(),
+      batchSize: typeof obj.batchSize === "number" ? obj.batchSize : undefined,
+      recordIdKey:
+        typeof obj.recordIdKey === "string" ? obj.recordIdKey : undefined,
+      pullTimeoutMs:
+        typeof obj.pullTimeoutMs === "number" ? obj.pullTimeoutMs : undefined,
+    };
+  }
+  if (type === "s3") {
+    const bucket = obj.bucket;
+    if (typeof bucket !== "string" || !bucket.trim()) {
+      throw new Error(`source ${sourceId}: s3 requires bucket`);
+    }
+    const format = obj.format;
+    if (format !== "jsonl" && format !== "csv") {
+      throw new Error(`source ${sourceId}: s3 format must be jsonl|csv`);
+    }
+    const keys = Array.isArray(obj.keys)
+      ? obj.keys.filter((k): k is string => typeof k === "string")
+      : undefined;
+    return {
+      type: "s3",
+      bucket: bucket.trim(),
+      prefix: typeof obj.prefix === "string" ? obj.prefix : undefined,
+      region: typeof obj.region === "string" ? obj.region : undefined,
+      format,
+      keys,
+      recordIdKey:
+        typeof obj.recordIdKey === "string" ? obj.recordIdKey : undefined,
+      endpoint: typeof obj.endpoint === "string" ? obj.endpoint : undefined,
+    };
+  }
+  if (type === "kafka") {
+    const topic = obj.topic;
+    if (typeof topic !== "string" || !topic.trim()) {
+      throw new Error(`source ${sourceId}: kafka requires topic`);
+    }
+    const brokersRaw = obj.brokers;
+    const brokers = Array.isArray(brokersRaw)
+      ? brokersRaw.filter(
+          (b): b is string => typeof b === "string" && b.trim().length > 0,
+        )
+      : typeof obj.broker === "string"
+        ? [obj.broker]
+        : [];
+    if (brokers.length === 0) {
+      throw new Error(`source ${sourceId}: kafka requires brokers array`);
+    }
+    return {
+      type: "kafka",
+      brokers,
+      topic: topic.trim(),
+      groupId: typeof obj.groupId === "string" ? obj.groupId : undefined,
+      maxMessages:
+        typeof obj.maxMessages === "number" ? obj.maxMessages : undefined,
+      recordIdKey:
+        typeof obj.recordIdKey === "string" ? obj.recordIdKey : undefined,
+    };
+  }
+  if (type === "jdbc-cdc") {
+    const table = obj.table;
+    const cursorColumn = obj.cursorColumn;
+    if (typeof table !== "string" || !table.trim()) {
+      throw new Error(`source ${sourceId}: jdbc-cdc requires table`);
+    }
+    if (typeof cursorColumn !== "string" || !cursorColumn.trim()) {
+      throw new Error(`source ${sourceId}: jdbc-cdc requires cursorColumn`);
+    }
+    return {
+      type: "jdbc-cdc",
+      table: table.trim(),
+      cursorColumn: cursorColumn.trim(),
+      lastCursor:
+        typeof obj.lastCursor === "string" ? obj.lastCursor : undefined,
+      recordIdColumn:
+        typeof obj.recordIdColumn === "string"
+          ? obj.recordIdColumn
+          : undefined,
+    };
+  }
+  throw new Error(
+    `source ${sourceId}: unsupported connector type ${String(type)}`,
+  );
+}
+
+function parseNormalize(raw: unknown, sourceId: string): SourceNormalizeConfig {
+  const obj = assertObject(raw, `source ${sourceId} normalize`);
+  const ontologyId = obj.ontologyId;
+  if (typeof ontologyId !== "string" || !ontologyId.trim()) {
+    throw new Error(`source ${sourceId}: normalize.ontologyId is required`);
+  }
+  const mappingRaw = obj.mapping;
+  if (
+    typeof mappingRaw !== "object" ||
+    mappingRaw === null ||
+    Array.isArray(mappingRaw)
+  ) {
+    throw new Error(`source ${sourceId}: normalize.mapping must be an object`);
+  }
+  const mapping: Record<string, string> = {};
+  for (const [k, v] of Object.entries(mappingRaw)) {
+    if (typeof v !== "string" || !v.trim()) {
+      throw new Error(`source ${sourceId}: mapping.${k} must be a non-empty string`);
+    }
+    mapping[k] = v.trim();
+  }
+  if (Object.keys(mapping).length === 0) {
+    throw new Error(`source ${sourceId}: normalize.mapping must not be empty`);
+  }
+  return {
+    ontologyId: ontologyId.trim(),
+    entityType:
+      typeof obj.entityType === "string" && obj.entityType.trim()
+        ? obj.entityType.trim()
+        : undefined,
+    mapping,
+    idField:
+      typeof obj.idField === "string" && obj.idField.trim()
+        ? obj.idField.trim()
+        : undefined,
+    meta:
+      typeof obj.meta === "object" && obj.meta !== null && !Array.isArray(obj.meta)
+        ? (obj.meta as Record<string, unknown>)
+        : undefined,
+  };
+}
+
+function parseScope(raw: unknown, sourceId: string): IngestSourceScope | undefined {
+  if (raw === undefined) {
+    return undefined;
+  }
+  const obj = assertObject(raw, `source ${sourceId} scope`);
+  const tenantId = obj.tenantId;
+  if (typeof tenantId !== "string" || !tenantId.trim()) {
+    throw new Error(`source ${sourceId}: scope.tenantId is required when scope is set`);
+  }
+  return {
+    tenantId: tenantId.trim(),
+    domainId:
+      typeof obj.domainId === "string" && obj.domainId.trim()
+        ? obj.domainId.trim()
+        : undefined,
+  };
+}
+
+function parseSource(raw: unknown): IngestSourceDefinition {
+  const obj = assertObject(raw, "source entry");
+  const id = obj.id;
+  if (typeof id !== "string" || !id.trim()) {
+    throw new Error("source id is required");
+  }
+  const enabled = obj.enabled !== false;
+  const trimmedId = id.trim();
+  return {
+    id: trimmedId,
+    enabled,
+    scope: parseScope(obj.scope, trimmedId),
+    connector: parseConnector(obj.connector, trimmedId),
+    normalize: parseNormalize(obj.normalize, trimmedId),
+  };
+}
+
+export class SourceCatalog {
+  private readonly byId: Map<string, IngestSourceDefinition>;
+
+  constructor(sources: readonly IngestSourceDefinition[]) {
+    this.byId = new Map();
+    for (const source of sources) {
+      if (this.byId.has(source.id)) {
+        throw new Error(`duplicate ingest source id: ${source.id}`);
+      }
+      this.byId.set(source.id, source);
+    }
+  }
+
+  static fromYamlFile(path: string = sourcesConfigPath()): SourceCatalog {
+    const paths =
+      path === sourcesConfigPath() ? sourcesConfigPaths() : [path];
+    const parsed: IngestSourceDefinition[] = [];
+    for (const filePath of paths) {
+      const text = readFileSync(filePath, "utf8");
+      const doc = parseYaml(text) as SourcesYaml;
+      if (!Array.isArray(doc.sources)) {
+        throw new Error(`${filePath} must contain a sources array`);
+      }
+      parsed.push(...doc.sources.map(parseSource));
+    }
+    const parityFixtures =
+      process.env.DAEMON_PARITY_FIXTURES === "1" ||
+      process.env.DAEMON_PARITY_FIXTURES === "true";
+    const abcFixtures =
+      process.env.DAEMON_ABC_FIXTURES === "1" ||
+      process.env.DAEMON_ABC_FIXTURES === "true";
+    const sources = parsed.map((s) => {
+      if (
+        parityFixtures &&
+        (s.id === "fixture-http-pull" || s.id === "fixture-postgres-read")
+      ) {
+        return { ...s, enabled: true };
+      }
+      if (abcFixtures && s.id.startsWith("abc-fixture-")) {
+        return { ...s, enabled: true };
+      }
+      return s;
+    });
+    return new SourceCatalog(sources);
+  }
+
+  list(): IngestSourceDefinition[] {
+    return [...this.byId.values()];
+  }
+
+  get(sourceId: string): IngestSourceDefinition | undefined {
+    return this.byId.get(sourceId);
+  }
+
+  require(sourceId: string): IngestSourceDefinition {
+    const source = this.byId.get(sourceId);
+    if (!source) {
+      throw new Error(`unknown ingest source: ${sourceId}`);
+    }
+    if (!source.enabled) {
+      throw new Error(`ingest source is disabled: ${sourceId}`);
+    }
+    return source;
+  }
+}

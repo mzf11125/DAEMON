@@ -1,0 +1,11 @@
+entityType: Pipeline
+fields:
+  - name: name
+    type: string
+    required: true
+  - name: stage
+    type: string
+    required: false
+  - name: accountRef
+    type: string
+    required: false

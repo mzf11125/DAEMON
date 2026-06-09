@@ -1,0 +1,14 @@
+relationType: Link
+fromEntityTypes:
+  - Party
+  - Organization
+  - Case
+  - Event
+  - Document
+toEntityTypes:
+  - Party
+  - Organization
+  - Case
+  - Event
+  - Document
+cardinality: many

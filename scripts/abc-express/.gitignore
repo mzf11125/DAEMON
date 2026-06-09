@@ -1,0 +1,5 @@
+migration_report.json
+snapshot.json
+dumps/
+.env
+.env.*

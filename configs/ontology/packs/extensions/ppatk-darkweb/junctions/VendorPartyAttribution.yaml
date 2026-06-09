@@ -1,0 +1,4 @@
+junctionType: VendorPartyAttribution
+endpoints:
+  - DarkwebVendor
+  - Party

@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { DaemonError, ErrorCodes, entityId, ontologyId } from "@daemon/platform-types";
+import { defaultScope } from "@daemon/context-ports";
 import { globalRegistry } from "@daemon/ontology";
+import { getDaemonRuntime } from "../platform/daemon-runtime";
 import { IngestService } from "./ingest.service";
 
 type Handler = (method: string, url: string, body: string) => {
@@ -11,7 +13,9 @@ type Handler = (method: string, url: string, body: string) => {
   body: unknown;
 };
 
-/** Spins up a fake orchestrator, runs `fn` against an IngestService bound to it. */
+const defaultCtx = { tenantId: "default", domainId: "foundation" };
+const scope = defaultScope();
+
 async function withOrchestrator(
   handler: Handler,
   fn: (svc: IngestService) => Promise<void>,
@@ -28,7 +32,7 @@ async function withOrchestrator(
   });
   await new Promise<void>((resolve) => server.listen(0, resolve));
   const { port } = server.address() as AddressInfo;
-  const svc = IngestService.create({
+  const svc = IngestService.create(getDaemonRuntime(), {
     DAEMON_INGEST_URL: `http://127.0.0.1:${port}`,
   } as NodeJS.ProcessEnv);
   try {
@@ -75,12 +79,23 @@ test("ingestRecords forwards the batch and returns acceptance", async () => {
       return { status: 200, body: { jobId: "j2", status: "accepted", accepted: 2 } };
     },
     async (svc) => {
-      const result = await svc.ingestRecords("s1", [
-        { ontologyId: "o", entityId: "ingest-ent-1", properties: { a: 1 } },
-        { ontologyId: "o", properties: { a: 2 } },
+      const result = await svc.ingestRecords(defaultCtx, "s1", [
+        {
+          ontologyId: "foundation",
+          entityId: "ingest-ent-1",
+          entityType: "Party",
+          properties: { displayName: "A", entityType: "Party" },
+        },
+        {
+          ontologyId: "foundation",
+          entityType: "Party",
+          properties: { displayName: "B", entityType: "Party" },
+        },
       ]);
       assert.equal(result.accepted, 2);
-      assert.ok(globalRegistry.get(ontologyId("o"), entityId("ingest-ent-1")));
+      assert.ok(
+        globalRegistry.get(scope, ontologyId("foundation"), entityId("ingest-ent-1")),
+      );
     },
   );
 });
@@ -99,20 +114,49 @@ test("upstream 500 surfaces as an UPSTREAM DaemonError", async () => {
 });
 
 test("ingestRecords with skip upstream registers locally without HTTP", async () => {
-  const svc = IngestService.create({
+  const svc = IngestService.create(getDaemonRuntime(), {
     DAEMON_INGEST_URL: "http://127.0.0.1:1",
     DAEMON_INGEST_SKIP_UPSTREAM: "1",
   } as NodeJS.ProcessEnv);
-  const result = await svc.ingestRecords("dev", [
-    { ontologyId: "default", entityId: "my-entity", properties: { name: "demo" } },
+  const result = await svc.ingestRecords(defaultCtx, "dev", [
+    {
+      ontologyId: "foundation",
+      entityId: "my-entity",
+      entityType: "Party",
+      properties: { displayName: "demo", entityType: "Party" },
+    },
   ]);
   assert.equal(result.status, "accepted");
   assert.equal(result.accepted, 1);
-  assert.ok(globalRegistry.get(ontologyId("default"), entityId("my-entity")));
+  assert.ok(
+    globalRegistry.get(scope, ontologyId("foundation"), entityId("my-entity")),
+  );
+});
+
+test("ingestRecords rejects unknown entity type", async () => {
+  const svc = IngestService.create(getDaemonRuntime(), {
+    DAEMON_INGEST_URL: "http://127.0.0.1:1",
+    DAEMON_INGEST_SKIP_UPSTREAM: "1",
+  } as NodeJS.ProcessEnv);
+  await assert.rejects(
+    () =>
+      svc.ingestRecords(defaultCtx, "dev", [
+        {
+          ontologyId: "foundation",
+          entityId: "bad-type",
+          entityType: "NotInPack",
+          properties: { displayName: "demo", entityType: "NotInPack" },
+        },
+      ]),
+    (err: unknown) =>
+      err instanceof DaemonError &&
+      err.code === ErrorCodes.VALIDATION &&
+      err.status === 400,
+  );
 });
 
 test("unreachable orchestrator surfaces as UPSTREAM", async () => {
-  const svc = IngestService.create({
+  const svc = IngestService.create(getDaemonRuntime(), {
     DAEMON_INGEST_URL: "http://127.0.0.1:1",
   } as NodeJS.ProcessEnv);
   await assert.rejects(

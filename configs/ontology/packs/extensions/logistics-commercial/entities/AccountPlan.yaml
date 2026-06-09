@@ -1,0 +1,11 @@
+entityType: AccountPlan
+fields:
+  - name: name
+    type: string
+    required: true
+  - name: period
+    type: string
+    required: false
+  - name: accountRef
+    type: string
+    required: false

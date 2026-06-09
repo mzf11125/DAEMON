@@ -1,0 +1,58 @@
+domains:
+  - id: foundation
+    label: Foundation
+    packId: foundation
+    description: Core cross-sector ontology primitives.
+  - id: aml-compliance
+    label: AML compliance extension
+    packIds:
+      - foundation
+    extensionPack: aml-compliance
+    description: Optional AML-oriented extensions (loaded when enabled for tenant).
+  - id: logistics
+    label: Logistics commercial extension
+    packIds:
+      - foundation
+    extensionPack: logistics-commercial
+    packBranch: main
+    description: Dual-domain logistics commercial and operational entities (P0/P1) on foundation.
+  - id: ppatk-aml
+    label: PPATK AML/CFT core
+    packIds:
+      - foundation
+    extensionPack: ppatk-aml
+    description: PPATK/INTRAC AML/CFT core (UU 8/2010, UU 9/2013, PerKa PPATK). STR/CTR/CBCC reports, accounts, transactions, sanctions, disclosures.
+  - id: ppatk-crypto
+    label: PPATK blockchain/VASP intel
+    packIds:
+      - foundation
+      - ppatk-aml
+    extensionPack: ppatk-crypto
+    description: On-chain wallets, transactions, VASPs, bridges, smart contracts, tokens. Travel Rule & PerKa PPATK 8/2023 alignment.
+  - id: ppatk-labels
+    label: PPATK flagging & labelling
+    packIds:
+      - foundation
+    extensionPack: ppatk-labels
+    description: Cross-domain labels and operational flags with provenance and confidence weighting.
+  - id: ppatk-darkweb
+    label: PPATK darkweb intel
+    packIds:
+      - foundation
+      - ppatk-labels
+    extensionPack: ppatk-darkweb
+    description: Marketplaces, vendors, listings, onion services, PGP keys, and attribution evidence.
+  - id: ppatk-osint
+    label: PPATK OSINT enrichment
+    packIds:
+      - foundation
+      - ppatk-labels
+    extensionPack: ppatk-osint
+    description: Online personas, corporate registries (AHU, GLEIF, OpenCorporates), data leaks, public mentions, geolocation.
+  - id: ppatk-netintel
+    label: PPATK network & threat intel
+    packIds:
+      - foundation
+      - ppatk-labels
+    extensionPack: ppatk-netintel
+    description: IP/domain/cert/ASN pivots, malware samples, threat actors and campaigns (MITRE ATT&CK aligned).

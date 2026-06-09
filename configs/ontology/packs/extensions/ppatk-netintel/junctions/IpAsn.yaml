@@ -1,0 +1,4 @@
+junctionType: IpAsn
+endpoints:
+  - IPAddress
+  - ASN

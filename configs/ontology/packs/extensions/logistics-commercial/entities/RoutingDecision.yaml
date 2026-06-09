@@ -1,0 +1,11 @@
+entityType: RoutingDecision
+fields:
+  - name: decisionType
+    type: string
+    required: true
+  - name: shipmentRef
+    type: string
+    required: false
+  - name: decidedAt
+    type: string
+    required: false

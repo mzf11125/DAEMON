@@ -10,16 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+<<<<<<< HEAD
         with:
           submodules: recursive
       - uses: actions/setup-go@v5
         with:
           go-version: "1.25.10"
+=======
+>>>>>>> upstream/main
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: pnpm
+<<<<<<< HEAD
       - run: go work sync || true
       - run: |
           for dir in packages/go-common packages/pipeline-runner infra/seed; do
@@ -44,6 +48,18 @@ jobs:
       - run: pnpm --filter @daemon/cli test || echo "cli test skipped if DB unavailable"
       - run: pnpm --filter @daemon/ontology-functions test
       - run: pnpm --filter @daemon/agent-service run lint
+=======
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run spec:check
+      - run: pnpm run check:architecture
+      - run: pnpm run check:route-auth
+      - run: pnpm run check:tenancy-config
+      - run: pnpm run check:ontology-pack
+      - run: pnpm run check:governance-policies
+      - run: pnpm run build
+      - run: pnpm run test
+      - run: pnpm run test:repo
+>>>>>>> upstream/main
 
   integration:
     runs-on: ubuntu-latest
@@ -106,12 +122,53 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
+<<<<<<< HEAD
           go-version: "1.25.10"
+=======
+          go-version: "1.26.3"
+      - run: go work sync
+      - run: go test ./collect-sensing/... ./security-governance/authn/... ./toolchain/sdk/go/... -count=1
+
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo test --workspace
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: daemon
+          POSTGRES_PASSWORD: daemon
+          POSTGRES_DB: daemon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U daemon"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+>>>>>>> upstream/main
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: pnpm
+<<<<<<< HEAD
       - run: go install golang.org/x/vuln/cmd/govulncheck@latest
       - run: |
           # testutil pulls testcontainers/docker; scan production packages only in go-common
@@ -124,3 +181,92 @@ jobs:
       - run: pnpm install --frozen-lockfile || pnpm install
       - run: pnpm audit --audit-level=high
         continue-on-error: true
+=======
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - name: Apply database migrations
+        env:
+          DAEMON_POSTGRES_URL: postgresql://daemon:daemon@localhost:5432/daemon
+        run: pnpm run db:migrate
+      - name: Repo integration tests
+        env:
+          DAEMON_API_KEY: daemon-dev-key
+          DAEMON_POSTGRES_URL: postgresql://daemon_app:daemon_app@localhost:5432/daemon
+          DAEMON_REDIS_URL: redis://localhost:6379
+          DAEMON_INTEGRATION_REQUIRED: "1"
+        run: pnpm run test:repo
+
+  parity-golden:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: daemon
+          POSTGRES_PASSWORD: daemon
+          POSTGRES_DB: daemon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U daemon"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm run check:parity-matrix
+      - name: Apply database migrations
+        env:
+          DAEMON_POSTGRES_URL: postgresql://daemon:daemon@localhost:5432/daemon
+        run: pnpm run db:migrate
+      - name: Foundry parity golden E2E
+        env:
+          DAEMON_POSTGRES_URL: postgresql://daemon_app:daemon_app@localhost:5432/daemon
+          DAEMON_INTEGRATION_REQUIRED: "1"
+          DAEMON_REPO_ROOT: ${{ github.workspace }}
+        run: node --test --import tsx tests/integration/foundry-parity-golden.integration.test.ts
+
+  antero-parity:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: daemon
+          POSTGRES_PASSWORD: daemon
+          POSTGRES_DB: daemon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U daemon"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - name: Apply database migrations
+        env:
+          DAEMON_POSTGRES_URL: postgresql://daemon:daemon@localhost:5432/daemon
+        run: pnpm run db:migrate
+      - name: ANTERO shadow parity golden E2E
+        env:
+          DAEMON_POSTGRES_URL: postgresql://daemon_app:daemon_app@localhost:5432/daemon
+          DAEMON_INTEGRATION_REQUIRED: "1"
+          DAEMON_ABC_FIXTURES: "1"
+          DAEMON_REPO_ROOT: ${{ github.workspace }}
+        run: node --test --import tsx tests/integration/antero-shadow-parity.integration.test.ts
+>>>>>>> upstream/main

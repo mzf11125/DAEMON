@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { CommandGateway } from "@daemon/read-write-loops/writes/command-gateway.js";
 import type { DaemonSession } from "@daemon/platform-types";
-import { entityId, ontologyId } from "@daemon/platform-types";
+import { DaemonRuntime } from "../platform/daemon-runtime";
+import type { TenantContextHeaders } from "../platform/tenant-context";
 
 @Injectable()
 export class WriteService {
-  private readonly gateway = new CommandGateway();
+  constructor(private readonly runtime: DaemonRuntime) {}
 
-  submit(
+  async submit(
     session: DaemonSession,
+    ctx: TenantContextHeaders,
     body: {
       entityId: string;
       ontologyId: string;
@@ -16,12 +17,19 @@ export class WriteService {
       idempotencyKey?: string;
     },
   ) {
-    return this.gateway.submit({
+    const scope = { tenantId: ctx.tenantId, domainId: ctx.domainId };
+    const outcome = await this.runtime.runWriteLoop(scope, {
       session,
-      ontologyId: ontologyId(body.ontologyId),
-      entityId: entityId(body.entityId),
+      ontologyId: body.ontologyId,
+      entityId: body.entityId,
       patch: body.patch,
       idempotencyKey: body.idempotencyKey,
     });
+    return {
+      writeId: `loop-${Date.now()}`,
+      status: "committed" as const,
+      version: outcome.version,
+      state: outcome.state,
+    };
   }
 }
